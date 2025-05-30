@@ -1,12 +1,31 @@
 {
   "name": "veko",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "Framework Express + EJS avec auto-refresh et dev tools",
   "main": "index.js",
   "bin": {
     "veko": "./bin/veko.js"
   },
-  "keywords": ["framework", "express", "ejs", "hot-reload", "plugins"],
+  "scripts": {
+    "dev": "node bin/veko.js dev",
+    "build": "node bin/veko.js build", 
+    "start": "node bin/veko.js start",
+    "test": "echo \"Tests à venir\" && exit 0",
+    "prepublishOnly": "npm test",
+    "postinstall": "echo '🚀 Veko.js installé avec succès!'",
+    "demo": "node examples/demo.js"
+  },
+  "keywords": [
+    "framework", 
+    "express", 
+    "ejs", 
+    "hot-reload", 
+    "plugins",
+    "websocket",
+    "dev-server",
+    "auto-refresh",
+    "file-watcher"
+  ],
   "author": "Votre nom <contact@wiltark.fr>",
   "license": "MIT",
   "repository": {
@@ -16,5 +35,29 @@
   "bugs": {
     "url": "https://github.com/wiltark/veko.js/issues"
   },
-  "homepage": "https://github.com/wiltark/veko.js#readme"
+  "homepage": "https://github.com/wiltark/veko.js#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ejs": "^3.1.9",
+    "ws": "^8.14.2",
+    "chokidar": "^3.5.3",
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "files": [
+    "lib/",
+    "bin/",
+    "views/",
+    "error/",
+    "index.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "preferGlobal": true
 }

@@ -1,27 +1,49 @@
 # 🚀 Veko.js
 
-Un framework web **ultra moderne** et **intelligent** pour Node.js avec Express et EJS, conçu pour un développement rapide et efficace avec **hot reload intelligent**, **logs ultra beaux** et **système de plugins extensible**.
+An **ultra-modern** and **intelligent** web framework for Node.js with Express and EJS, designed for rapid and efficient development with **intelligent hot reload**, **beautiful logging**, and **extensible plugin system**.
 
-## ✨ Caractéristiques
+## ✨ Features
 
-- 🔥 **Hot Reload Intelligent** - Rechargement sélectif des routes modifiées
-- 🎨 **Logs Ultra Beaux** - Système de logs colorés avec icônes et timestamps
-- ⚡ **WebSocket Intégré** - Communication temps réel pour le développement
-- 📁 **Chargement Automatique** - Routes, vues et middleware auto-configurés
-- 🛠️ **Mode Développement** - Surveillance avancée des fichiers
-- 🌐 **Préchargement Intelligent** - Cache et préchargement des routes
-- 🔌 **Système de Plugins** - Architecture extensible avec hooks et API complète
-- 🛣️ **Gestion Dynamique des Routes** - Création/suppression de routes à la volée
+- 🔥 **Intelligent Hot Reload** - Selective reloading of modified routes
+- 🎨 **Beautiful Logging** - Colorful logging system with icons and timestamps
+- ⚡ **Integrated WebSocket** - Real-time communication for development
+- 📁 **Auto-loading** - Routes, views, and middleware auto-configured
+- 🛠️ **Development Mode** - Advanced file monitoring
+- 🌐 **Smart Prefetching** - Route caching and prefetching
+- 🔌 **Plugin System** - Extensible architecture with hooks and complete API
+- 🛣️ **Dynamic Route Management** - Create/delete routes on-the-fly
+- 🎨 **Advanced Layout System** - Powerful templating with sections and helpers
+- 📦 **Auto Module Installation** - Automatic dependency management
 
 ## 🚀 Installation
+
+### Global Installation (CLI)
+
+```bash
+npm install -g veko
+```
+
+### Project Installation
 
 ```bash
 npm install veko
 ```
 
-## 📦 Démarrage rapide
+## 📦 Quick Start
 
-### 1. Application basique
+### 1. Create a New Project
+
+```bash
+# Create a new project
+veko setup my-app
+
+# With options
+veko setup --name my-blog --template blog --git
+
+# Available templates: default, api, blog, admin
+```
+
+### 2. Basic Application
 
 ```javascript
 const { App } = require('veko');
@@ -31,6 +53,10 @@ const app = new App({
   viewsDir: 'views',
   staticDir: 'public',
   routesDir: 'routes',
+  layouts: {
+    enabled: true,
+    defaultLayout: 'main'
+  },
   plugins: {
     enabled: true,
     autoLoad: true,
@@ -38,29 +64,33 @@ const app = new App({
   }
 });
 
-app.loadRoutes() // Charge automatiquement toutes les routes
+app.loadRoutes() // Automatically load all routes
    .listen();
 ```
 
-### 2. Mode développement ultra moderne
+### 3. Ultra-Modern Development Mode
 
 ```javascript
 const { startDev } = require('veko');
 
-// Démarrage simple en mode dev
+// Simple dev startup
 startDev({ port: 3000 });
 ```
 
-Ou directement avec la classe App :
+Or directly with the App class:
 
 ```javascript
 const { App } = require('veko');
 
 const app = new App({
   port: 3000,
-  isDev: true, // Active le mode développement
-  wsPort: 3008, // Port WebSocket pour hot reload
-  watchDirs: ['views', 'routes', 'public'], // Dossiers surveillés
+  isDev: true, // Enable development mode
+  wsPort: 3008, // WebSocket port for hot reload
+  watchDirs: ['views', 'routes', 'public'], // Watched directories
+  layouts: {
+    enabled: true,
+    defaultLayout: 'main'
+  },
   plugins: {
     enabled: true,
     autoLoad: true,
@@ -71,194 +101,433 @@ const app = new App({
 app.loadRoutes().listen();
 ```
 
-## 🔌 Système de Plugins
+### 4. CLI Commands
 
-Veko.js inclut un système de plugins puissant et extensible qui permet d'ajouter des fonctionnalités sans modifier le core du framework.
+```bash
+# Start development server
+veko dev
 
-### Configuration des plugins
+# Start with custom port
+veko dev --port 8080
+
+# Create new project
+veko setup my-project
+
+# Create API project
+veko setup --template api --name my-api
+
+# Create blog project
+veko setup --template blog --name my-blog
+
+# Create admin project
+veko setup --template admin --name admin-panel
+```
+
+## 🎨 Advanced Layout System
+
+Veko.js includes a powerful layout system that automatically wraps your views with layouts, providing sections, helpers, and dynamic content injection.
+
+### Layout Configuration
 
 ```javascript
 const app = new App({
-  plugins: {
-    enabled: true,          // Activer le système de plugins
-    autoLoad: true,         // Chargement automatique des plugins
-    pluginsDir: 'plugins'   // Dossier des plugins
+  layouts: {
+    enabled: true,              // Enable layout system
+    layoutsDir: 'views/layouts', // Layout directory
+    defaultLayout: 'main',       // Default layout name
+    extension: '.ejs',           // Layout file extension
+    sections: ['head', 'header', 'content', 'footer', 'scripts'],
+    cache: true                  // Cache layouts in production
   }
 });
 ```
 
-### Structure d'un plugin
+### Creating Layouts
+
+**views/layouts/main.ejs:**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= meta.title || 'Veko.js App' %></title>
+    
+    <% if (meta.description) { %>
+    <meta name="description" content="<%= meta.description %>">
+    <% } %>
+    
+    <!-- Default CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <% if (layout && layout.css) { %>
+        <% layout.css.forEach(href => { %>
+        <link rel="stylesheet" href="<%= href %>">
+        <% }); %>
+    <% } %>
+    
+    <!-- Custom head section -->
+    <% if (sections && sections.head) { %>
+    <%- sections.head %>
+    <% } %>
+</head>
+<body class="<%= layout && layout.bodyClass || '' %>">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">🚀 Veko.js</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link" href="/about">About</a>
+                <a class="nav-link" href="/contact">Contact</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Custom header -->
+    <% if (sections && sections.header) { %>
+    <header>
+        <%- sections.header %>
+    </header>
+    <% } %>
+    
+    <!-- Main content -->
+    <main class="container my-4">
+        <%- sections.content %>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <% if (sections && sections.footer) { %>
+            <%- sections.footer %>
+            <% } else { %>
+            <p>&copy; <%= new Date().getFullYear() %> - Powered by Veko.js ⚡</p>
+            <% } %>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <% if (layout && layout.js) { %>
+        <% layout.js.forEach(src => { %>
+        <script src="<%= src %>"></script>
+        <% }); %>
+    <% } %>
+    
+    <!-- Custom scripts section -->
+    <% if (sections && sections.scripts) { %>
+    <%- sections.scripts %>
+    <% } %>
+</body>
+</html>
+```
+
+### Using Layouts in Views
+
+**views/home.ejs:**
+
+```html
+<% layout.title('Home - My App') %>
+<% layout.meta('description', 'Welcome to my Veko.js application') %>
+<% layout.css('/css/home.css') %>
+
+<% layout.section('header', `
+<div class="jumbotron bg-gradient text-center text-white p-5">
+    <h1>🎉 Welcome to Veko.js</h1>
+    <p>Ultra-modern Node.js framework</p>
+</div>
+`) %>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h3>🚀 Fast</h3>
+                <p>Optimized performance and ultra-fast loading times.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h3>💎 Modern</h3>
+                <p>Cutting-edge technologies and modern architecture.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h3>🎨 Flexible</h3>
+                <p>Advanced layout system and reusable components.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% layout.section('scripts', `
+<script>
+    console.log('✨ Page loaded with Veko.js!');
+    
+    // Card hover animations
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+</script>
+`) %>
+```
+
+### Layout Helpers
+
+Available helpers in your views:
 
 ```javascript
-// plugins/mon-plugin.js
+// Set page title
+<% layout.title('My Page Title') %>
+
+// Add meta tags
+<% layout.meta('description', 'Page description') %>
+<% layout.meta('keywords', 'veko, nodejs, framework') %>
+
+// Add CSS files
+<% layout.css('/css/custom.css') %>
+<% layout.css('https://cdn.example.com/lib.css') %>
+
+// Add JavaScript files
+<% layout.js('/js/custom.js') %>
+<% layout.js('https://cdn.example.com/lib.js') %>
+
+// Define sections
+<% layout.section('sectionName', 'content') %>
+<% layout.section('header', `
+<div class="custom-header">
+    <h1>Custom Header</h1>
+</div>
+`) %>
+```
+
+### Layout Management API
+
+```javascript
+// Create a new layout
+app.createLayout('admin', customLayoutContent);
+
+// Delete a layout
+app.deleteLayout('admin');
+
+// List all available layouts
+const layouts = app.listLayouts();
+
+// Reload layouts in development mode
+app.reloadLayouts();
+
+// Render with specific layout
+app.renderWithCustomLayout(res, 'view', 'admin', data);
+
+// Render without layout
+app.renderWithoutLayout(res, 'view', data);
+```
+
+## 🔌 Plugin System
+
+Veko.js includes a powerful and extensible plugin system that allows adding functionality without modifying the framework core.
+
+### Plugin Configuration
+
+```javascript
+const app = new App({
+  plugins: {
+    enabled: true,          // Enable plugin system
+    autoLoad: true,         // Automatic plugin loading
+    pluginsDir: 'plugins'   // Plugin directory
+  }
+});
+```
+
+### Plugin Structure
+
+```javascript
+// plugins/my-plugin.js
 module.exports = {
-  name: 'mon-plugin',
+  name: 'my-plugin',
   version: '1.0.0',
-  description: 'Description de mon plugin',
-  author: 'Mon Nom',
+  description: 'Description of my plugin',
+  author: 'My Name',
   
-  // Dépendances (autres plugins requis)
-  dependencies: ['autre-plugin'],
+  // Dependencies (other required plugins)
+  dependencies: ['other-plugin'],
   
-  // Configuration par défaut
+  // Default configuration
   defaultConfig: {
     enabled: true,
-    option1: 'valeur'
+    option1: 'value'
   },
 
-  // Méthode appelée lors du chargement
+  // Method called during loading
   async load(app, config, context) {
-    // Votre code d'initialisation
-    context.log('success', 'Plugin chargé!');
+    // Your initialization code
+    context.log('success', 'Plugin loaded!');
     
-    // Ajouter une route
-    context.addRoute('get', '/mon-plugin', (req, res) => {
+    // Add a route
+    context.addRoute('get', '/my-plugin', (req, res) => {
       res.json({ message: 'Hello from plugin!' });
     });
     
-    // Ajouter un middleware
+    // Add middleware
     context.addMiddleware((req, res, next) => {
-      req.pluginData = { source: 'mon-plugin' };
+      req.pluginData = { source: 'my-plugin' };
       next();
     });
     
-    // Ajouter des hooks
+    // Add hooks
     context.hook('route:create', (method, path) => {
-      context.log('info', `Route créée: ${method} ${path}`);
+      context.log('info', `Route created: ${method} ${path}`);
     });
   },
 
-  // Méthode appelée lors du déchargement
+  // Method called during unloading
   async unload(app, config) {
-    console.log('Plugin déchargé');
+    console.log('Plugin unloaded');
   },
 
-  // Activation/désactivation
+  // Activation/deactivation
   async activate(app, config) {
-    console.log('Plugin activé');
+    console.log('Plugin activated');
   },
 
   async deactivate(app, config) {
-    console.log('Plugin désactivé');
+    console.log('Plugin deactivated');
   }
 };
 ```
 
-### API du contexte plugin
+### Plugin Context API
 
-Chaque plugin reçoit un contexte riche avec de nombreuses fonctionnalités :
+Each plugin receives a rich context with numerous functionalities:
 
 ```javascript
 async load(app, config, context) {
   // === HOOKS ===
-  // Ajouter un hook
+  // Add a hook
   context.hook('hookName', callback);
   context.removeHook('hookName', callback);
   
-  // === ROUTES ET MIDDLEWARE ===
-  // Ajouter une route
+  // === ROUTES AND MIDDLEWARE ===
+  // Add a route
   context.addRoute('get', '/path', handler);
   
-  // Ajouter un middleware
+  // Add middleware
   context.addMiddleware(middlewareFunction);
   
-  // Ajouter une commande CLI
+  // Add CLI command
   context.addCommand('name', handler, 'description');
   
-  // === LOGS ===
-  // Logger avec le nom du plugin automatique
-  context.log('success', 'Message', 'détails');
+  // === LOGGING ===
+  // Log with automatic plugin name
+  context.log('success', 'Message', 'details');
   
-  // === ACCÈS AUX AUTRES PLUGINS ===
-  // Obtenir un autre plugin
-  const otherPlugin = context.getPlugin('autre-plugin');
+  // === ACCESS TO OTHER PLUGINS ===
+  // Get another plugin
+  const otherPlugin = context.getPlugin('other-plugin');
   
-  // Lister tous les plugins
+  // List all plugins
   const plugins = context.listPlugins();
   
   // === CONFIGURATION ===
-  // Lire la config
+  // Read config
   const config = context.getConfig();
   
-  // Modifier la config
+  // Modify config
   context.updateConfig({ newOption: 'value' });
   
-  // === STOCKAGE PERSISTANT ===
-  // Sauvegarder des données
+  // === PERSISTENT STORAGE ===
+  // Save data
   context.storage.set('key', 'value');
   context.storage.set({ key1: 'value1', key2: 'value2' });
   
-  // Lire des données
+  // Read data
   const value = context.storage.get('key', 'defaultValue');
   const allData = context.storage.get();
   
-  // Supprimer des données
+  // Delete data
   context.storage.delete('key');
   context.storage.clear();
 }
 ```
 
-### Gestion des plugins
+### Plugin Management
 
 ```javascript
-// Charger un plugin manuellement
-await app.loadPlugin('nom-plugin', { option: 'value' });
+// Load plugin manually
+await app.loadPlugin('plugin-name', { option: 'value' });
 
-// Décharger un plugin
-await app.unloadPlugin('nom-plugin');
+// Unload plugin
+await app.unloadPlugin('plugin-name');
 
-// Recharger un plugin
-await app.reloadPlugin('nom-plugin', { newConfig: true });
+// Reload plugin
+await app.reloadPlugin('plugin-name', { newConfig: true });
 
-// Lister les plugins
+// List plugins
 const plugins = app.listPlugins();
 
-// Activer/désactiver un plugin
-await app.plugins.togglePlugin('nom-plugin', true);
+// Enable/disable plugin
+await app.plugins.togglePlugin('plugin-name', true);
 
-// Statistiques
+// Statistics
 const stats = app.plugins.getStats();
-console.log(`${stats.active}/${stats.total} plugins actifs`);
+console.log(`${stats.active}/${stats.total} plugins active`);
 ```
 
-### Hooks disponibles
+### Available Hooks
 
-Le système de plugins dispose de nombreux hooks intégrés :
+The plugin system provides numerous built-in hooks:
 
 ```javascript
-// Hooks d'application
-app:init          // Initialisation de l'app
-app:start         // Démarrage du serveur
-app:stop          // Arrêt du serveur
+// Application hooks
+app:init          // Application initialization
+app:start         // Server startup
+app:stop          // Server shutdown
 
-// Hooks de routes
-route:load        // Chargement d'une route
-route:create      // Création d'une route
-route:created     // Route créée (après)
-route:delete      // Suppression d'une route
+// Route hooks
+route:load        // Route loading
+route:create      // Route creation
+route:created     // Route created (after)
+route:delete      // Route deletion
 
-// Hooks de requêtes
-request:start     // Début de requête
-request:end       // Fin de requête
+// Request hooks
+request:start     // Request start
+request:end       // Request end
 
-// Hooks WebSocket
-websocket:connect    // Connexion WebSocket
-websocket:disconnect // Déconnexion WebSocket
+// WebSocket hooks
+websocket:connect    // WebSocket connection
+websocket:disconnect // WebSocket disconnection
 
-// Hooks de fichiers
-file:change       // Modification de fichier
+// File hooks
+file:change       // File modification
 
-// Hooks de plugins
-plugin:load       // Chargement d'un plugin
-plugin:unload     // Déchargement d'un plugin
+// Plugin hooks
+plugin:load       // Plugin loading
+plugin:unload     // Plugin unloading
 
-// Hooks d'erreurs
-error:handle      // Gestion d'erreur
+// Error hooks
+error:handle      // Error handling
 ```
 
-### Exemples de plugins
+### Plugin Examples
 
-#### Plugin de base de données
+#### Database Plugin
 
 ```javascript
 // plugins/database.js
@@ -267,7 +536,7 @@ const mongoose = require('mongoose');
 module.exports = {
   name: 'database',
   version: '1.0.0',
-  description: 'Plugin de connexion MongoDB',
+  description: 'MongoDB connection plugin',
   
   defaultConfig: {
     uri: 'mongodb://localhost:27017/myapp',
@@ -280,19 +549,19 @@ module.exports = {
   async load(app, config, context) {
     try {
       await mongoose.connect(config.uri, config.options);
-      context.log('success', 'Connexion MongoDB établie');
+      context.log('success', 'MongoDB connection established');
       
-      // Exposer mongoose dans l'app
+      // Expose mongoose in app
       app.db = mongoose;
       
-      // Hook de fermeture
+      // Shutdown hook
       context.hook('app:stop', async () => {
         await mongoose.disconnect();
-        context.log('info', 'Connexion MongoDB fermée');
+        context.log('info', 'MongoDB connection closed');
       });
       
     } catch (error) {
-      context.log('error', 'Erreur connexion MongoDB', error.message);
+      context.log('error', 'MongoDB connection error', error.message);
       throw error;
     }
   },
@@ -303,7 +572,7 @@ module.exports = {
 };
 ```
 
-#### Plugin d'authentification
+#### Authentication Plugin
 
 ```javascript
 // plugins/auth.js
@@ -312,7 +581,7 @@ const jwt = require('jsonwebtoken');
 module.exports = {
   name: 'auth',
   version: '1.0.0',
-  description: 'Plugin d\'authentification JWT',
+  description: 'JWT authentication plugin',
   dependencies: ['database'],
   
   defaultConfig: {
@@ -321,12 +590,12 @@ module.exports = {
   },
 
   async load(app, config, context) {
-    // Middleware d'authentification
+    // Authentication middleware
     const authMiddleware = (req, res, next) => {
       const token = req.headers.authorization?.split(' ')[1];
       
       if (!token) {
-        return res.status(401).json({ error: 'Token manquant' });
+        return res.status(401).json({ error: 'Missing token' });
       }
       
       try {
@@ -334,15 +603,15 @@ module.exports = {
         req.user = decoded;
         next();
       } catch (error) {
-        res.status(401).json({ error: 'Token invalide' });
+        res.status(401).json({ error: 'Invalid token' });
       }
     };
     
-    // Routes d'authentification
+    // Authentication routes
     context.addRoute('post', '/auth/login', async (req, res) => {
       const { email, password } = req.body;
       
-      // Validation utilisateur (exemple)
+      // User validation (example)
       const user = await validateUser(email, password);
       
       if (user) {
@@ -354,7 +623,7 @@ module.exports = {
         
         res.json({ token, user });
       } else {
-        res.status(401).json({ error: 'Identifiants invalides' });
+        res.status(401).json({ error: 'Invalid credentials' });
       }
     });
     
@@ -362,15 +631,15 @@ module.exports = {
       res.json({ user: req.user });
     });
     
-    // Exposer le middleware dans l'app
+    // Expose middleware in app
     app.authMiddleware = authMiddleware;
     
-    context.log('success', 'Plugin d\'authentification chargé');
+    context.log('success', 'Authentication plugin loaded');
   }
 };
 ```
 
-#### Plugin de cache
+#### Cache Plugin
 
 ```javascript
 // plugins/cache.js
@@ -379,7 +648,7 @@ const NodeCache = require('node-cache');
 module.exports = {
   name: 'cache',
   version: '1.0.0',
-  description: 'Plugin de cache en mémoire',
+  description: 'In-memory cache plugin',
   
   defaultConfig: {
     stdTTL: 600, // 10 minutes
@@ -389,7 +658,7 @@ module.exports = {
   async load(app, config, context) {
     const cache = new NodeCache(config);
     
-    // Middleware de cache
+    // Cache middleware
     const cacheMiddleware = (duration = 300) => {
       return (req, res, next) => {
         const key = req.originalUrl;
@@ -411,7 +680,7 @@ module.exports = {
       };
     };
     
-    // API de cache
+    // Cache API
     app.cache = {
       get: (key) => cache.get(key),
       set: (key, value, ttl) => cache.set(key, value, ttl),
@@ -421,29 +690,29 @@ module.exports = {
       stats: () => cache.getStats()
     };
     
-    // Route de stats
+    // Stats route
     context.addRoute('get', '/cache/stats', (req, res) => {
       res.json(cache.getStats());
     });
     
-    context.log('success', 'Plugin de cache chargé');
+    context.log('success', 'Cache plugin loaded');
   }
 };
 ```
 
-### Plugin inline (création à la volée)
+### Inline Plugin Creation
 
 ```javascript
-// Créer un plugin simple directement dans le code
+// Create a simple plugin directly in code
 const simplePlugin = app.plugins.createSimplePlugin(
   'logger-plugin',
   (app, config, context) => {
-    // Hook pour logger toutes les requêtes
+    // Hook to log all requests
     context.hook('request:start', (req) => {
       context.log('info', `${req.method} ${req.url}`);
     });
     
-    // Route de debug
+    // Debug route
     context.addRoute('get', '/debug/logs', (req, res) => {
       res.json({
         plugin: 'logger-plugin',
@@ -453,26 +722,26 @@ const simplePlugin = app.plugins.createSimplePlugin(
   },
   {
     version: '1.0.0',
-    description: 'Plugin de logging des requêtes'
+    description: 'Request logging plugin'
   }
 );
 
 await app.loadPlugin(simplePlugin);
 ```
 
-## 🛣️ Gestion Dynamique des Routes
+## 🛣️ Dynamic Route Management
 
-Veko.js permet de créer, modifier et supprimer des routes dynamiquement en cours d'exécution.
+Veko.js allows creating, modifying, and deleting routes dynamically during runtime.
 
-### Création de routes dynamiques
+### Dynamic Route Creation
 
 ```javascript
-// Créer une route à la volée
+// Create route on-the-fly
 app.createRoute('get', '/api/dynamic', (req, res) => {
-  res.json({ message: 'Route créée dynamiquement!' });
+  res.json({ message: 'Route created dynamically!' });
 });
 
-// Avec middleware
+// With middleware
 app.createRoute('post', '/api/secure', [
   authMiddleware,
   validationMiddleware,
@@ -481,95 +750,97 @@ app.createRoute('post', '/api/secure', [
   }
 ]);
 
-// Mettre à jour une route existante
+// Update existing route
 app.updateRoute('get', '/api/dynamic', (req, res) => {
-  res.json({ message: 'Route mise à jour!' });
+  res.json({ message: 'Route updated!' });
 });
 
-// Supprimer une route
+// Delete route
 app.deleteRoute('get', '/api/dynamic');
 ```
 
-### Création de fichiers de routes
+### Creating Route Files
 
 ```javascript
-// Créer un fichier de route physique
+// Create physical route file
 app.createRouteFile('/users/profile', {
   get: (req, res) => {
     res.render('profile', { user: req.user });
   },
   post: (req, res) => {
-    // Mise à jour profil
+    // Profile update
     res.json({ updated: true });
   }
 }, {
-  description: 'Gestion du profil utilisateur',
+  description: 'User profile management',
   middleware: [authMiddleware]
 });
 
-// Supprimer un fichier de route
+// Delete route file
 app.deleteRouteFile('/users/profile');
 
-// Lister toutes les routes
+// List all routes
 const routes = app.listRoutes();
 console.log(routes);
 ```
 
-## 🎨 Logs Ultra Beaux
+## 🎨 Beautiful Logging
 
-Veko.js propose un système de logs révolutionnaire avec :
+Veko.js offers a revolutionary logging system with:
 
-- 🕒 **Timestamps français** formatés
-- 🎯 **Badges colorés** avec icônes Unicode
-- 📊 **Types de logs** spécialisés
-- 🌈 **Couleurs ANSI** optimisées
+- 🕒 **Formatted timestamps**
+- 🎯 **Colored badges** with Unicode icons
+- 📊 **Specialized log types**
+- 🌈 **Optimized ANSI colors**
 
-### Types de logs disponibles
+### Available Log Types
 
 ```javascript
-app.log('success', 'Opération réussie', '✅ Détails supplémentaires');
-app.log('error', 'Erreur critique', '❌ Message d\'erreur');
-app.log('warning', 'Attention', '⚠️ Avertissement');
-app.log('info', 'Information', 'ℹ️ Info générale');
-app.log('server', 'Serveur', '🚀 Démarrage serveur');
-app.log('route', 'Route', '🌐 Nouvelle route');
-app.log('dev', 'Développement', '🛠️ Mode dev');
-app.log('file', 'Fichier', '📁 Modification fichier');
-app.log('reload', 'Rechargement', '🔄 Hot reload');
-app.log('create', 'Création', '➕ Élément créé');
-app.log('delete', 'Suppression', '🗑️ Élément supprimé');
+app.log('success', 'Operation successful', '✅ Additional details');
+app.log('error', 'Critical error', '❌ Error message');
+app.log('warning', 'Warning', '⚠️ Warning message');
+app.log('info', 'Information', 'ℹ️ General info');
+app.log('server', 'Server', '🚀 Server startup');
+app.log('route', 'Route', '🌐 New route');
+app.log('dev', 'Development', '🛠️ Dev mode');
+app.log('file', 'File', '📁 File modification');
+app.log('reload', 'Reload', '🔄 Hot reload');
+app.log('create', 'Creation', '➕ Element created');
+app.log('delete', 'Deletion', '🗑️ Element deleted');
+app.log('install', 'Installation', '📦 Module installed');
 ```
 
-### Exemple de sortie console
+### Console Output Example
 
 ```
-[14:32:15] ✨  Serveur démarré avec succès 🌐 http://localhost:3000
-[14:32:16] 🛠️  Mode développement actif 🔥 Hot reload intelligent sur port 3008
-[14:32:16] 🔌  Plugin database chargé database v1.0.0
-[14:32:16] 🔌  Plugin auth chargé auth v1.0.0
-[14:32:17] 💎  Système de plugins 🔌 2/2 plugins actifs
-[14:32:17] 🌐  Route chargée index.js → /
-[14:32:18] ➕  Route créée dynamiquement GET /api/users
-[14:32:19] 📁  Fichier modifié 📝 routes/users.js
-[14:32:19] 🔄  Route rechargée 🔄 routes/users.js
+[2:32:15 PM] ✨  Server started successfully 🌐 http://localhost:3000
+[2:32:16 PM] 🛠️  Development mode active 🔥 Intelligent hot reload on port 3008
+[2:32:16 PM] 🔌  Plugin database loaded database v1.0.0
+[2:32:16 PM] 🔌  Plugin auth loaded auth v1.0.0
+[2:32:17 PM] 💎  Plugin system 🔌 2/2 plugins active
+[2:32:17 PM] 🌐  Route loaded index.js → /
+[2:32:18 PM] ➕  Route created dynamically GET /api/users
+[2:32:19 PM] 📁  File modified 📝 routes/users.js
+[2:32:19 PM] 🔄  Route reloaded 🔄 routes/users.js
 ```
 
-## 🔥 Hot Reload Intelligent
+## 🔥 Intelligent Hot Reload
 
-### Rechargement sélectif par type de fichier
+### Selective Reload by File Type
 
-- **Routes modifiées** → Rechargement de la route uniquement
-- **Vues modifiées** → Rechargement léger des templates
-- **Fichiers statiques** → Rechargement complet du navigateur
-- **Plugins modifiés** → Rechargement du plugin spécifique
+- **Modified routes** → Route-only reload
+- **Modified views** → Light template reload
+- **Static files** → Full browser reload
+- **Modified plugins** → Specific plugin reload
+- **Modified layouts** → Layout cache clear and reload
 
-### Configuration du hot reload
+### Hot Reload Configuration
 
 ```javascript
 const app = new App({
   isDev: true,
-  wsPort: 3008, // Port WebSocket
-  watchDirs: ['views', 'routes', 'public', 'src', 'plugins'], // Dossiers surveillés
+  wsPort: 3008, // WebSocket port
+  watchDirs: ['views', 'routes', 'public', 'src', 'plugins'], // Watched directories
   prefetch: {
     enabled: true,
     maxConcurrent: 3,
@@ -580,48 +851,53 @@ const app = new App({
 });
 ```
 
-### Script client automatique
+### Automatic Client Script
 
-Le script de hot reload est automatiquement injecté dans vos pages :
+The hot reload script is automatically injected into your pages:
 
 ```javascript
-// Injecté automatiquement dans </body>
+// Automatically injected before </body>
 <script>
 (function() {
   const ws = new WebSocket('ws://localhost:3008');
   
-  ws.onopen = () => console.log('🔗 Veko.js connecté');
+  ws.onopen = () => console.log('🔗 Veko.js connected');
   ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
     
     switch(data.type) {
       case 'reload':
-        console.log('🔄 Rechargement complet...');
+        console.log('🔄 Full reload...');
         setTimeout(() => window.location.reload(), 300);
         break;
         
       case 'route-reload':
-        console.log('🔄 Route rechargée:', data.route);
+        console.log('🔄 Route reloaded:', data.route);
         if (window.location.pathname === data.route) {
           setTimeout(() => window.location.reload(), 300);
         }
         break;
         
       case 'route-created':
-        console.log('➕ Route créée:', data.method, data.path);
+        console.log('➕ Route created:', data.method, data.path);
         break;
         
       case 'route-deleted':
-        console.log('🗑️ Route supprimée:', data.method, data.path);
+        console.log('🗑️ Route deleted:', data.method, data.path);
         break;
         
       case 'view-reload':
-        console.log('🎨 Vue rechargée:', data.file);
+        console.log('🎨 View reloaded:', data.file);
+        setTimeout(() => window.location.reload(), 300);
+        break;
+        
+      case 'layout-reload':
+        console.log('🎨 Layout reloaded:', data.file);
         setTimeout(() => window.location.reload(), 300);
         break;
         
       case 'plugin-reload':
-        console.log('🔌 Plugin rechargé:', data.plugin);
+        console.log('🔌 Plugin reloaded:', data.plugin);
         break;
     }
   };
@@ -629,10 +905,10 @@ Le script de hot reload est automatiquement injecté dans vos pages :
 </script>
 ```
 
-## 📁 Structure du projet
+## 📁 Project Structure
 
 ```
-mon-projet/
+my-project/
 ├── routes/
 │   ├── index.js          # Route: /
 │   ├── about.js          # Route: /about
@@ -642,42 +918,50 @@ mon-projet/
 │   └── api/
 │       └── products.js   # Route: /api/products
 ├── views/
+│   ├── layouts/          # Layout templates
+│   │   ├── main.ejs      # Main layout
+│   │   └── admin.ejs     # Admin layout
+│   ├── partials/         # Reusable components
 │   ├── index.ejs
 │   └── about.ejs
 ├── public/
 │   ├── css/
-│   └── js/
-├── plugins/              # Plugins personnalisés
+│   ├── js/
+│   └── images/
+├── plugins/              # Custom plugins
 │   ├── database.js
 │   ├── auth.js
 │   └── cache.js
-├── data/                 # Données des plugins
+├── data/                 # Plugin data
 │   └── plugins/
 │       ├── database.json
 │       └── auth.json
+├── config/               # Configuration files
+│   └── app.js
+├── middleware/           # Custom middleware
 └── package.json
 ```
 
-## 🛣️ Système de routes
+## 🛣️ Route System
 
-### Routes automatiques
+### Automatic Routes
 
-Veko.js charge automatiquement toutes les routes depuis le dossier `routes/`. Le nom du fichier détermine l'URL :
+Veko.js automatically loads all routes from the `routes/` folder. The filename determines the URL:
 
 - `routes/index.js` → `/`
 - `routes/about.js` → `/about`
 - `routes/users/profile.js` → `/users/profile`
 - `routes/api/users.js` → `/api/users`
 
-### Paramètres dynamiques
+### Dynamic Parameters
 
-Utilisez des crochets pour les paramètres :
+Use brackets for parameters:
 - `routes/users/[id].js` → `/users/:id`
 - `routes/posts/[slug]/comments.js` → `/posts/:slug/comments`
 
-### Format des fichiers de routes
+### Route File Formats
 
-#### Méthodes HTTP (recommandé)
+#### HTTP Methods (Recommended)
 
 ```javascript
 // routes/users.js
@@ -705,13 +989,13 @@ module.exports = {
 };
 ```
 
-#### Fonction personnalisée
+#### Custom Function
 
 ```javascript
 // routes/custom.js
 module.exports = (app) => {
   app.get('/custom', (req, res) => {
-    res.json({ message: 'Route personnalisée' });
+    res.json({ message: 'Custom route' });
   });
   
   app.post('/custom/:action', middleware, (req, res) => {
@@ -720,19 +1004,19 @@ module.exports = (app) => {
 };
 ```
 
-## ⚡ Mode développement ultra moderne
+## ⚡ Ultra-Modern Development Mode
 
-Le mode développement inclut :
+Development mode includes:
 
-- 🔥 **Hot Reload Intelligent** - Rechargement sélectif par type de fichier
-- 📡 **WebSocket** - Communication temps réel serveur ↔ client
-- 🎨 **Logs Colorés** - Système de logs avec badges et icônes
-- 🔍 **Surveillance Avancée** - Monitoring des fichiers avec chokidar
-- ⚡ **Performance** - Rechargement uniquement des parties modifiées
-- 🛠️ **Debugging** - Messages d'erreur détaillés avec stack traces
-- 🔌 **Hot Plugin Reload** - Rechargement des plugins en temps réel
+- 🔥 **Intelligent Hot Reload** - Selective reload by file type
+- 📡 **WebSocket** - Real-time server ↔ client communication
+- 🎨 **Colorful Logs** - Logging system with badges and icons
+- 🔍 **Advanced Monitoring** - File monitoring with chokidar
+- ⚡ **Performance** - Reload only modified parts
+- 🛠️ **Debugging** - Detailed error messages with stack traces
+- 🔌 **Hot Plugin Reload** - Real-time plugin reloading
 
-### Configuration complète
+### Complete Configuration
 
 ```javascript
 const app = new App({
@@ -745,6 +1029,13 @@ const app = new App({
   watchDirs: ['views', 'routes', 'public', 'src', 'plugins'],
   errorLog: 'error.log',
   showStack: true,
+  autoInstall: true,
+  layouts: {
+    enabled: true,
+    defaultLayout: 'main',
+    layoutsDir: 'views/layouts',
+    cache: false // Disable cache in dev mode
+  },
   plugins: {
     enabled: true,
     autoLoad: true,
@@ -760,38 +1051,39 @@ const app = new App({
 });
 ```
 
-### Gestion avancée des erreurs
+### Advanced Error Handling
 
 ```javascript
-// Gestion automatique des erreurs non capturées
+// Automatic handling of uncaught errors
 process.on('uncaughtException', (error) => {
-  app.log('error', 'Erreur non gérée', error.message);
-  // Notification WebSocket automatique aux clients
+  app.log('error', 'Uncaught exception', error.message);
+  // Automatic WebSocket notification to clients
 });
 
 process.on('unhandledRejection', (reason) => {
-  app.log('error', 'Promise rejetée', reason.toString());
-  // Broadcast automatique de l'erreur
+  app.log('error', 'Promise rejected', reason.toString());
+  // Automatic error broadcast
 });
 ```
 
-## 🎨 Vues avec EJS
+## 🎨 Views with EJS
 
-Veko.js utilise EJS comme moteur de template par défaut avec configuration avancée.
+Veko.js uses EJS as the default template engine with advanced configuration.
 
-### Configuration des vues
+### View Configuration
 
 ```javascript
-// Configuration automatique des dossiers de vues
+// Automatic view directory configuration
 this.express.set('view engine', 'ejs');
 this.express.set('views', [
-  path.join(process.cwd(), this.options.viewsDir), // Dossier projet
-  path.join(__dirname, '..', 'views'),             // Vues Veko.js
-  path.join(__dirname, '..', 'error')              // Pages d'erreur
+  path.join(process.cwd(), this.options.viewsDir), // Project directory
+  path.join(process.cwd(), this.options.layouts.layoutsDir), // Layouts directory
+  path.join(__dirname, '..', 'views'),             // Veko.js views
+  path.join(__dirname, '..', 'error')              // Error pages
 ]);
 ```
 
-### Exemple de vue moderne
+### Modern View Example
 
 ```html
 <!-- views/index.ejs -->
@@ -818,38 +1110,84 @@ this.express.set('views', [
         <% }); %>
       </section>
     <% } else { %>
-      <p>Aucun utilisateur trouvé.</p>
+      <p>No users found.</p>
     <% } %>
   </main>
   
-  <!-- Script hot reload injecté automatiquement en mode dev -->
+  <!-- Hot reload script automatically injected in dev mode -->
 </body>
 </html>
 ```
 
-## 🔧 API Complete
+## 📦 Auto Module Installation
 
-### Classe App
+Veko.js automatically installs missing dependencies during initialization.
+
+### Module Installation Configuration
+
+```javascript
+const app = new App({
+  autoInstall: true // Enable automatic installation (default: true)
+});
+
+// Check if module is available
+if (app.isModuleAvailable('express')) {
+  console.log('Express is available');
+}
+
+// Install module on-the-fly
+await app.installModule('lodash', '4.17.21');
+
+// Require module with auto-installation
+const lodash = await app.requireModule('lodash');
+```
+
+### Required Modules
+
+Veko.js automatically manages these dependencies:
+
+```javascript
+const requiredModules = {
+  'express': '^4.18.2',
+  'ejs': '^3.1.9',
+  'ws': '^8.14.2',
+  'chokidar': '^3.5.3',
+  'chalk': '^4.1.2',
+  'commander': '^11.1.0'
+};
+```
+
+## 🔧 Complete API
+
+### App Class
 
 #### Constructor
 
 ```javascript
 const app = new App({
-  port: 3000,                    // Port d'écoute
-  wsPort: 3008,                  // Port WebSocket (mode dev)
-  viewsDir: 'views',             // Dossier des vues
-  staticDir: 'public',           // Dossier statique
-  routesDir: 'routes',           // Dossier des routes
-  isDev: false,                  // Mode développement
-  watchDirs: ['views', 'routes', 'public'], // Dossiers surveillés
-  errorLog: 'error.log',         // Fichier de log d'erreurs
-  showStack: true,               // Afficher la stack trace
-  plugins: {                     // Configuration des plugins
+  port: 3000,                    // Listening port
+  wsPort: 3008,                  // WebSocket port (dev mode)
+  viewsDir: 'views',             // Views directory
+  staticDir: 'public',           // Static directory
+  routesDir: 'routes',           // Routes directory
+  isDev: false,                  // Development mode
+  watchDirs: ['views', 'routes', 'public'], // Watched directories
+  errorLog: 'error.log',         // Error log file
+  showStack: true,               // Show stack trace
+  autoInstall: true,             // Auto module installation
+  layouts: {                     // Layout configuration
+    enabled: true,
+    defaultLayout: 'main',
+    layoutsDir: 'views/layouts',
+    extension: '.ejs',
+    cache: true
+  },
+  plugins: {                     // Plugin configuration
     enabled: true,
     autoLoad: true,
     pluginsDir: 'plugins'
   },
-  prefetch: {                    // Configuration préchargement
+  prefetch: {                    // Prefetch configuration
     enabled: true,
     maxConcurrent: 3,
     notifyUser: true,
@@ -859,66 +1197,79 @@ const app = new App({
 });
 ```
 
-#### Méthodes principales
+#### Main Methods
 
 ```javascript
-// Chargement et démarrage
-app.loadRoutes(routesDir)        // Charge les routes automatiquement
-app.listen(port)                 // Démarre le serveur
-app.startDev(port)              // Démarre en mode développement
-app.stop()                      // Arrête le serveur
+// Loading and startup
+app.loadRoutes(routesDir)        // Load routes automatically
+app.listen(port)                 // Start server
+app.startDev(port)              // Start in development mode
+app.stop()                      // Stop server
 
-// Middleware et configuration
-app.use(middleware)             // Ajoute un middleware
+// Middleware and configuration
+app.use(middleware)             // Add middleware
 app.setupExpress()              // Configure Express
-app.setupDevMode()              // Active le mode développement
+app.setupDevMode()              // Enable development mode
 
-// Logs ultra beaux
-app.log(type, message, details) // Système de logs avancé
+// Beautiful logging
+app.log(type, message, details) // Advanced logging system
 
-// Gestion dynamique des routes
-app.createRoute(method, path, handler, options)  // Crée une route dynamiquement
-app.deleteRoute(method, path)                    // Supprime une route
-app.updateRoute(method, path, newHandler)        // Met à jour une route
-app.createRouteFile(routePath, handlers, options) // Crée un fichier de route
-app.deleteRouteFile(routePath)                   // Supprime un fichier de route
-app.listRoutes()                                 // Liste toutes les routes
+// Dynamic route management
+app.createRoute(method, path, handler, options)  // Create route dynamically
+app.deleteRoute(method, path)                    // Delete route
+app.updateRoute(method, path, newHandler)        // Update route
+app.createRouteFile(routePath, handlers, options) // Create route file
+app.deleteRouteFile(routePath)                   // Delete route file
+app.listRoutes()                                 // List all routes
 
-// Gestion des routes (interne)
-app.reloadSpecificRoute(filePath)   // Recharge une route spécifique
-app.removeRoute(filePath)           // Supprime une route
-app.filePathToRoute(filePath)       // Convertit chemin → route
+// Layout management
+app.createLayout(name, content)                  // Create layout
+app.deleteLayout(name)                           // Delete layout
+app.listLayouts()                                // List layouts
+app.reloadLayouts()                              // Reload layouts
+app.renderWithCustomLayout(res, view, layout, data) // Render with specific layout
+app.renderWithoutLayout(res, view, data)         // Render without layout
 
-// WebSocket et broadcast
-app.broadcast(data)                 // Diffuse un message WebSocket
-app.sendAvailableRoutes(ws)         // Envoie les routes disponibles
+// Module management
+app.installModule(name, version)                 // Install module
+app.isModuleAvailable(name)                      // Check module availability
+app.requireModule(name, version)                 // Require with auto-install
 
-// Gestion des plugins
-app.loadPlugin(plugin, config)      // Charge un plugin
-app.unloadPlugin(pluginName)        // Décharge un plugin
-app.reloadPlugin(pluginName, config) // Recharge un plugin
-app.listPlugins()                   // Liste les plugins
-app.executeHook(hookName, ...args)  // Exécute un hook
+// Route management (internal)
+app.reloadSpecificRoute(filePath)   // Reload specific route
+app.removeRoute(filePath)           // Remove route
+app.filePathToRoute(filePath)       // Convert path → route
+
+// WebSocket and broadcast
+app.broadcast(data)                 // Broadcast WebSocket message
+app.sendAvailableRoutes(ws)         // Send available routes
+
+// Plugin management
+app.loadPlugin(plugin, config)      // Load plugin
+app.unloadPlugin(pluginName)        // Unload plugin
+app.reloadPlugin(pluginName, config) // Reload plugin
+app.listPlugins()                   // List plugins
+app.executeHook(hookName, ...args)  // Execute hook
 ```
 
-### Fonctions utilitaires
+### Utility Functions
 
 ```javascript
 const { createApp, startDev, start } = require('veko');
 
-// Création rapide d'une app
+// Quick app creation
 const app = createApp({ port: 3000 });
 
-// Démarrage développement
+// Development startup
 startDev({ port: 3000, watchDirs: ['src'] });
 
-// Démarrage production
+// Production startup
 start({ port: 8080 });
 ```
 
-## 🔍 Exemples avancés
+## 🔍 Advanced Examples
 
-### Application complète avec plugins
+### Complete Application with Plugins
 
 ```javascript
 const { App } = require('veko');
@@ -926,6 +1277,10 @@ const { App } = require('veko');
 const app = new App({
   port: 3000,
   isDev: process.env.NODE_ENV === 'development',
+  layouts: {
+    enabled: true,
+    defaultLayout: 'main'
+  },
   plugins: {
     enabled: true,
     autoLoad: true,
@@ -933,7 +1288,7 @@ const app = new App({
   }
 });
 
-// Charger des plugins avec configuration spécifique
+// Load plugins with specific configuration
 await app.loadPlugin('database', {
   uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/myapp'
 });
@@ -944,22 +1299,22 @@ await app.loadPlugin('auth', {
 });
 
 await app.loadPlugin('cache', {
-  stdTTL: 3600 // 1 heure
+  stdTTL: 3600 // 1 hour
 });
 
-// Ajouter des hooks globaux
+// Add global hooks
 app.plugins.addHook('request:start', (req) => {
   app.log('info', `${req.method} ${req.url}`, `IP: ${req.ip}`);
 });
 
 app.plugins.addHook('error:handle', (error, req) => {
-  app.log('error', 'Erreur applicative', `${error.message} - ${req.url}`);
+  app.log('error', 'Application error', `${error.message} - ${req.url}`);
 });
 
 app.loadRoutes().listen();
 ```
 
-### API REST moderne avec gestion d'erreurs
+### Modern REST API with Error Handling
 
 ```javascript
 // routes/api/users.js
@@ -968,7 +1323,7 @@ const users = [];
 module.exports = {
   get: async (req, res) => {
     try {
-      // Utiliser le cache du plugin
+      // Use plugin cache
       const cacheKey = `users:${JSON.stringify(req.query)}`;
       const cached = req.app.cache?.get(cacheKey);
       
@@ -976,7 +1331,7 @@ module.exports = {
         return res.json(cached);
       }
       
-      // Simulation d'une base de données
+      // Database simulation
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const start = (page - 1) * limit;
@@ -994,17 +1349,17 @@ module.exports = {
         }
       };
       
-      // Mettre en cache
+      // Cache result
       req.app.cache?.set(cacheKey, result, 300);
       
       res.json(result);
     } catch (error) {
-      res.status(500).json({ error: 'Erreur serveur' });
+      res.status(500).json({ error: 'Server error' });
     }
   },
   
   post: [
-    // Utiliser le middleware d'auth du plugin
+    // Use auth middleware from plugin
     (req, res, next) => req.app.authMiddleware?.(req, res, next) || next(),
     
     async (req, res) => {
@@ -1013,7 +1368,7 @@ module.exports = {
         
         if (!name || !email) {
           return res.status(400).json({ 
-            error: 'Nom et email requis' 
+            error: 'Name and email required' 
           });
         }
         
@@ -1026,29 +1381,29 @@ module.exports = {
         
         users.push(newUser);
         
-        // Invalider le cache
+        // Invalidate cache
         req.app.cache?.del('users:*');
         
         res.status(201).json({ 
-          message: 'Utilisateur créé',
+          message: 'User created',
           user: newUser 
         });
       } catch (error) {
-        res.status(500).json({ error: 'Erreur serveur' });
+        res.status(500).json({ error: 'Server error' });
       }
     }
   ]
 };
 ```
 
-### Plugin avancé avec CLI
+### Advanced Plugin with CLI
 
 ```javascript
 // plugins/admin.js
 module.exports = {
   name: 'admin',
   version: '2.0.0',
-  description: 'Plugin d\'administration avancé',
+  description: 'Advanced administration plugin',
   dependencies: ['database', 'auth'],
   
   defaultConfig: {
@@ -1057,27 +1412,28 @@ module.exports = {
   },
 
   async load(app, config, context) {
-    // Middleware admin uniquement
+    // Admin-only middleware
     const adminMiddleware = (req, res, next) => {
       if (!req.user || req.user.role !== 'admin') {
-        return res.status(403).json({ error: 'Accès refusé' });
+        return res.status(403).json({ error: 'Access denied' });
       }
       next();
     };
 
-    // Routes d'administration
+    // Administration routes
     context.addRoute('get', `${config.adminPath}/dashboard`, [
       app.authMiddleware,
       adminMiddleware,
       (req, res) => {
         res.render('admin/dashboard', {
+          layout: 'admin',
           stats: context.storage.get('stats', {}),
           plugins: context.listPlugins()
         });
       }
     ]);
 
-    // API de gestion des plugins
+    // Plugin management API
     context.addRoute('post', `${config.adminPath}/plugins/:name/toggle`, [
       app.authMiddleware,
       adminMiddleware,
@@ -1092,19 +1448,19 @@ module.exports = {
       }
     ]);
 
-    // Commandes CLI
+    // CLI commands
     context.addCommand('admin:stats', () => {
-      console.log('=== Statistiques Admin ===');
+      console.log('=== Admin Statistics ===');
       console.log('Plugins:', context.listPlugins().length);
       console.log('Stats:', context.storage.get('stats', {}));
-    }, 'Affiche les statistiques d\'administration');
+    }, 'Display administration statistics');
 
     context.addCommand('admin:reset', () => {
       context.storage.clear();
-      console.log('Données admin réinitialisées');
-    }, 'Remet à zéro les données d\'administration');
+      console.log('Admin data reset');
+    }, 'Reset administration data');
 
-    // Hook pour collecter des stats
+    // Hook to collect stats
     context.hook('request:end', (req, res) => {
       const stats = context.storage.get('stats', { requests: 0, errors: 0 });
       stats.requests++;
@@ -1116,14 +1472,14 @@ module.exports = {
       context.storage.set('stats', stats);
     });
 
-    context.log('success', 'Plugin admin chargé', `Interface: ${config.adminPath}`);
+    context.log('success', 'Admin plugin loaded', `Interface: ${config.adminPath}`);
   }
 };
 ```
 
-## 🚀 Déploiement
+## 🚀 Deployment
 
-### Mode production
+### Production Mode
 
 ```javascript
 // app.js
@@ -1131,9 +1487,14 @@ const { App } = require('veko');
 
 const app = new App({
   port: process.env.PORT || 3000,
-  isDev: false, // Désactive le mode développement
+  isDev: false, // Disable development mode
   errorLog: 'logs/error.log',
-  showStack: false, // Cache les stack traces en production
+  showStack: false, // Hide stack traces in production
+  autoInstall: false, // Disable auto-installation in production
+  layouts: {
+    enabled: true,
+    cache: true // Enable layout caching
+  },
   plugins: {
     enabled: true,
     autoLoad: true,
@@ -1144,7 +1505,7 @@ const app = new App({
 app.loadRoutes().listen();
 ```
 
-### Variables d'environnement
+### Environment Variables
 
 ```bash
 # .env
@@ -1172,26 +1533,26 @@ EXPOSE 3000
 CMD ["node", "app.js"]
 ```
 
-## 📊 Performance et optimisation
+## 📊 Performance and Optimization
 
-### Préchargement intelligent
+### Smart Prefetching
 
 ```javascript
 const app = new App({
   prefetch: {
-    enabled: true,          // Activer le préchargement
-    maxConcurrent: 3,       // Requêtes simultanées max
-    notifyUser: true,       // Notifier l'utilisateur
-    cacheRoutes: true,      // Cache des routes
-    prefetchDelay: 1000     // Délai avant préchargement
+    enabled: true,          // Enable prefetching
+    maxConcurrent: 3,       // Max simultaneous requests
+    notifyUser: true,       // Notify user
+    cacheRoutes: true,      // Route caching
+    prefetchDelay: 1000     // Delay before prefetching
   }
 });
 ```
 
-### Surveillance des performances
+### Performance Monitoring
 
 ```javascript
-// Plugin de monitoring
+// Monitoring plugin
 const monitoringPlugin = {
   name: 'monitoring',
   async load(app, config, context) {
@@ -1203,11 +1564,11 @@ const monitoringPlugin = {
       const duration = Number(process.hrtime.bigint() - req.startTime) / 1000000;
       
       if (duration > 100) {
-        context.log('warning', 'Requête lente détectée', 
+        context.log('warning', 'Slow request detected', 
           `${req.method} ${req.url} - ${duration.toFixed(2)}ms`);
       }
       
-      // Stocker les métriques
+      // Store metrics
       const metrics = context.storage.get('metrics', { slow: 0, total: 0 });
       metrics.total++;
       if (duration > 100) metrics.slow++;
@@ -1219,11 +1580,55 @@ const monitoringPlugin = {
 app.loadPlugin(monitoringPlugin);
 ```
 
-## 🤝 Contribution
+## 🛠️ CLI Commands
 
-Les contributions sont les bienvenues ! 
+### Setup Commands
 
-### Développement local
+```bash
+# Create new project with default template
+veko setup my-app
+
+# Create with specific template
+veko setup --template api --name my-api
+veko setup --template blog --name my-blog  
+veko setup --template admin --name admin-panel
+
+# Setup with options
+veko setup my-app --git --skip-install
+veko setup --name my-app --dir ./projects/my-app
+```
+
+### Development Commands
+
+```bash
+# Start development server
+veko dev
+
+# Start with custom port
+veko dev --port 8080
+
+# Start with custom watch directories
+veko dev --watch "src,views,routes"
+
+# Start with custom entry file
+veko dev --file ./src/server.js
+```
+
+### Build Commands
+
+```bash
+# Build for production
+veko build
+
+# Start production server
+veko start
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! 
+
+### Local Development
 
 ```bash
 git clone https://github.com/username/veko.js.git
@@ -1232,7 +1637,7 @@ npm install
 npm run dev
 ```
 
-### Tests
+### Testing
 
 ```bash
 npm test
@@ -1240,17 +1645,36 @@ npm run test:watch
 npm run test:coverage
 ```
 
-### Créer un plugin
+### Creating a Plugin
 
-1. Créez un fichier dans `plugins/`
-2. Suivez la structure de plugin documentée
-3. Testez en mode développement
-4. Soumettez une PR
+1. Create a file in `plugins/`
+2. Follow the documented plugin structure
+3. Test in development mode
+4. Submit a PR
+
+### Code Style
+
+- Use ES6+ features
+- Follow JSDoc comments
+- Use meaningful variable names
+- Add unit tests for new features
 
 ## 📄 License
 
-MIT License - voir le fichier LICENSE pour plus de détails.
+MIT License - see LICENSE file for details.
 
 ---
 
-**Veko.js** - Framework web ultra moderne pour Node.js avec système de plugins extensible 🚀🔌
+**Veko.js** - Ultra-modern web framework for Node.js with extensible plugin system 🚀🔌
+
+### Quick Links
+
+- [🏠 Home](/)
+- [📚 Documentation](/docs)
+- [🔌 Plugins](/plugins)
+- [🛠️ CLI](/cli)
+- [💡 Examples](/examples)
+- [🐛 Issues](https://github.com/username/veko.js/issues)
+- [💬 Discussions](https://github.com/username/veko.js/discussions)
+
+Built with ❤️ by the Veko.js team
