@@ -6,26 +6,15 @@
   "bin": {
     "veko": "./bin/veko.js"
   },
-  "scripts": {
-    "dev": "node bin/veko.js dev",
-    "build": "node bin/veko.js build",
-    "start": "node bin/veko.js start"
+  "keywords": ["framework", "express", "ejs", "hot-reload", "plugins"],
+  "author": "Votre nom <contact@wiltark.fr>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wiltark/veko.js.git"
   },
-  "dependencies": {
-    "body-parser": "^1.20.2",
-    "chalk": "^4.1.2",
-    "chokidar": "^3.5.3",
-    "commander": "^11.0.0",
-    "compression": "^1.7.4",
-    "cookie-parser": "^1.4.6",
-    "ejs": "^3.1.9",
-    "express": "^4.18.2",
-    "helmet": "^7.0.0",
-    "nodemon": "^3.0.1",
-    "stacktrace-parser": "^0.1.11",
-    "ws": "^8.13.0"
+  "bugs": {
+    "url": "https://github.com/wiltark/veko.js/issues"
   },
-  "devDependencies": {
-    "concurrently": "^8.2.0"
-  }
+  "homepage": "https://github.com/wiltark/veko.js#readme"
 }
