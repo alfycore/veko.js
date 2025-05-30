@@ -1,0 +1,31 @@
+{
+  "name": "veko",
+  "version": "1.0.0",
+  "description": "Framework Express + EJS avec auto-refresh et dev tools",
+  "main": "index.js",
+  "bin": {
+    "veko": "./bin/veko.js"
+  },
+  "scripts": {
+    "dev": "node bin/veko.js dev",
+    "build": "node bin/veko.js build",
+    "start": "node bin/veko.js start"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "chalk": "^4.1.2",
+    "chokidar": "^3.5.3",
+    "commander": "^11.0.0",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "helmet": "^7.0.0",
+    "nodemon": "^3.0.1",
+    "stacktrace-parser": "^0.1.11",
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

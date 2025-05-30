@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="<%= locals.lang || 'en' %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= (locals.lang === 'fr' ? 'Erreur' : 'Error') %> <%= status || 500 %> - Veko.js</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'bounceSlow': 'bounce 2s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                },
+            },
+            plugins: [],
+        }
+    </script>
+    <style>
+        /* Custom styles for animations and special effects */
+        .glow {
+            text-shadow: 0 0 5px rgba(255,255,255,0.7);
+        }
+        
+        .code-highlight {
+            position: relative;
+        }
+        
+        .code-error-line {
+            background: rgba(239, 68, 68, 0.2);
+        }
+        
+        .error-pointer {
+            color: rgb(239, 68, 68);
+            font-weight: bold;
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes gradientBg {
+            0% { background-position: 0% 50% }
+            50% { background-position: 100% 50% }
+            100% { background-position: 0% 50% }
+        }
+        
+        .animated-gradient {
+            background: linear-gradient(270deg, #f87171, #f472b6, #c084fc, #818cf8);
+            background-size: 800% 800%;
+            animation: gradientBg 8s ease infinite;
+        }
+
+        /* Syntax highlighting for HTML/EJS */
+        .syntax-tag { color: #79b8ff; }
+        .syntax-attr { color: #b392f0; }
+        .syntax-string { color: #9ecbff; }
+        .syntax-comment { color: #6a737d; font-style: italic; }
+        .syntax-ejs { color: #f97583; background-color: rgba(249, 117, 131, 0.1); border-radius: 2px; }
+
+        /* Improved error highlighting */
+        .error-highlight {
+            background-color: rgba(255, 0, 0, 0.2);
+            border-radius: 2px;
+            padding: 0 2px;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-900 text-white min-h-screen">
+    <!-- Visual background effect -->
+    <div class="fixed inset-0 opacity-10">
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-from)_0%,_var(--tw-gradient-to)_100%)] from-violet-600/20 to-transparent"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-0 left-0 w-full h-full">
+                <defs>
+                    <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"></path>
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid-pattern)"></rect>
+            </svg>
+        </div>
+    </div>
+
+    <div class="relative min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="py-6 px-4 sm:px-6 lg:px-8 animated-gradient">
+            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center">
+                <div class="flex items-center space-x-3 mb-4 sm:mb-0">
+                    <div class="text-3xl animate-float"><%= errorType?.icon || '❌' %></div>
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight">Veko.js</h1>
+                        <p class="text-sm text-white/70"><%= locals.lang === 'fr' ? 'Framework développement' : 'Development Framework' %></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex space-x-2">
+                        <button onclick="changeLanguage('en')" class="px-2 py-1 rounded-md text-xs <%= locals.lang !== 'fr' ? 'bg-white/20 text-white' : 'text-white/60 hover:text-white' %>">EN</button>
+                        <button onclick="changeLanguage('fr')" class="px-2 py-1 rounded-md text-xs <%= locals.lang === 'fr' ? 'bg-white/20 text-white' : 'text-white/60 hover:text-white' %>">FR</button>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm flex items-center border border-white/20">
+                        <span class="mr-2 h-2 w-2 rounded-full bg-red-500 animate-pulse inline-block"></span>
+                        <span><%= locals.lang === 'fr' ? 'Erreur' : 'Error' %> <%= status || 500 %></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main content -->
+        <main class="flex-grow py-8 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto">
+                <!-- Main error section -->
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden shadow-2xl mb-8">
+                    <div class="p-8">
+                        <h2 class="text-2xl md:text-4xl font-bold mb-2 flex items-center flex-wrap">
+                            <%= locals.lang === 'fr' ? errorTypeName.fr : errorTypeName.en %> 
+                            <span class="bg-white/10 text-white/70 text-sm rounded-full px-3 py-1 ml-3"><%= status || 500 %></span>
+                        </h2>
+                        <p class="mb-6 text-lg text-white/70">
+                            <%= message || (locals.lang === 'fr' ? 'Une erreur inattendue s\'est produite' : 'An unexpected error occurred') %>
+                        </p>
+                        
+                        <!-- Action buttons -->
+                        <div class="flex flex-wrap gap-4 mb-8">
+                            <button onclick="window.history.back()" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-white font-medium transition-all flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                                <%= locals.lang === 'fr' ? 'Retour' : 'Back' %>
+                            </button>
+                            <button onclick="window.location.reload()" class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white font-medium transition-all flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                <%= locals.lang === 'fr' ? 'Réessayer' : 'Retry' %>
+                            </button>
+                            <a href="/" class="px-5 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-white font-medium transition-all flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-14 0l2 2m0 0l7 7 7-7m-14 0l2-2" />
+                                </svg>
+                                <%= locals.lang === 'fr' ? 'Accueil' : 'Home' %>
+                            </a>
+                        </div>
+                    </div>
+
+                    <% if (diagnostics && diagnostics.codeContext) { %>
+                    <!-- Source code section -->
+                    <div class="border-t border-white/10">
+                        <div class="p-5">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-semibold text-white text-lg"><%= locals.lang === 'fr' ? 'Source de l\'erreur' : 'Error source' %></h3>
+                                <span class="bg-white/10 px-3 py-1 rounded-full text-xs text-white/70"><%= locals.lang === 'fr' ? 'Ligne' : 'Line' %> <%= diagnostics.codeContext.line %>, <%= locals.lang === 'fr' ? 'Col' : 'Col' %> <%= diagnostics.codeContext.column %></span>
+                            </div>
+                            <div class="mb-2 text-white/70 text-sm">
+                                <code class="font-mono"><%= diagnostics.codeContext.file %></code>
+                            </div>
+                        </div>
+
+                        <!-- Code with syntax highlighting -->
+                        <div class="overflow-x-auto bg-slate-800 rounded-lg">
+                            <table class="min-w-full">
+                                <tbody class="font-mono text-sm">
+                                    <% diagnostics.codeContext.codeLines.forEach(line => { %>
+                                    <tr class="<%= line.isError ? 'code-error-line' : '' %>">
+                                        <td class="text-right px-4 py-1 select-none text-white/40 border-r border-white/5">
+                                            <%= line.number %>
+                                        </td>
+                                        <td class="px-4 py-1 overflow-x-auto">
+                                            <% if (line.isError && line.content.includes('<') && line.content.includes('>')) { %>
+                                                <%- highlightHtml(line.content, line.highlightColumn) %>
+                                            <% } else if (line.isError && line.highlightColumn) { %>
+                                                <% 
+                                                const beforeError = escapeHtml(line.content.substring(0, line.highlightColumn));
+                                                const atError = escapeHtml(line.content.substring(line.highlightColumn, line.highlightColumn + 1)) || ' ';
+                                                const afterError = escapeHtml(line.content.substring(line.highlightColumn + 1));
+                                                %>
+                                                <span><%= beforeError %></span>
+                                                <span class="bg-red-500/30 text-white px-0.5"><%= atError %></span>
+                                                <span><%= afterError %></span>
+                                            <% } else { %>
+                                                <% if (line.content.includes('<') && line.content.includes('>')) { %>
+                                                    <%- highlightHtml(line.content) %>
+                                                <% } else { %>
+                                                    <%= escapeHtml(line.content) %>
+                                                <% } %>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                    <% if (line.isError) { %>
+                                    <tr>
+                                        <td class="px-4 border-r border-white/5"></td>
+                                        <td class="px-4 py-1">
+                                            <div class="flex" style="margin-left: <%= Math.min(line.highlightColumn, 50) %>px">
+                                                <span class="text-red-500 animate-bounceSlow error-pointer">^</span>
+                                                <span class="text-red-400 ml-2"><%= message %></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <% } %>
+                    
+                    <!-- Stack Trace section if available -->
+                    <% if (showStack && error.stack) { %>
+                    <div class="border-t border-white/10">
+                        <div class="p-5">
+                            <h3 class="font-semibold text-lg mb-3 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                                Stack Trace
+                            </h3>
+                            <div class="bg-slate-800 rounded-lg p-4 overflow-x-auto">
+                                <pre class="font-mono text-sm text-white/70 whitespace-pre-wrap"><%= error.stack %></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+                    
+                    <!-- Environment -->
+                    <% if (diagnostics && diagnostics.platform) { %>
+                    <div class="border-t border-white/10 p-5">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-4 bg-white/5 rounded-lg">
+                                <h4 class="text-sm font-medium text-white/70 mb-1">Node.js</h4>
+                                <p class="font-mono text-sm"><%= diagnostics.platform.node %></p>
+                            </div>
+                            <div class="p-4 bg-white/5 rounded-lg">
+                                <h4 class="text-sm font-medium text-white/70 mb-1"><%= locals.lang === 'fr' ? 'Système' : 'System' %></h4>
+                                <p class="font-mono text-sm"><%= diagnostics.platform.os %></p>
+                            </div>
+                            <div class="p-4 bg-white/5 rounded-lg">
+                                <h4 class="text-sm font-medium text-white/70 mb-1">Timestamp</h4>
+                                <p class="font-mono text-sm"><%= diagnostics.timestamp %></p>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+                
+                <!-- FAQ section -->
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden shadow-lg">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-4"><%= locals.lang === 'fr' ? 'Solutions possibles' : 'Possible solutions' %></h3>
+                        
+                        <div class="space-y-4">
+                            <% if (status === 404) { %>
+                                <div class="p-4 bg-white/5 rounded-lg">
+                                    <h4 class="font-medium mb-2"><%= locals.lang === 'fr' ? 'Vérifier l\'URL' : 'Verify the URL' %></h4>
+                                    <p class="text-white/70"><%= locals.lang === 'fr' ? 'Assurez-vous que l\'URL demandée existe et est correctement écrite.' : 'Make sure the requested URL exists and is correctly typed.' %></p>
+                                </div>
+                                <div class="p-4 bg-white/5 rounded-lg">
+                                    <h4 class="font-medium mb-2"><%= locals.lang === 'fr' ? 'Vérifier les routes' : 'Check routes' %></h4>
+                                    <p class="text-white/70"><%= locals.lang === 'fr' ? 'Assurez-vous que la route est définie dans votre routeur.' : 'Make sure the route is defined in your router.' %></p>
+                                    <pre class="bg-slate-800 p-3 mt-2 rounded font-mono text-sm">router.get('/path', controller.method);</pre>
+                                </div>
+                            <% } else if (status === 500) { %>
+                                <div class="p-4 bg-white/5 rounded-lg">
+                                    <h4 class="font-medium mb-2"><%= locals.lang === 'fr' ? 'Vérifier le code' : 'Check the code' %></h4>
+                                    <p class="text-white/70"><%= locals.lang === 'fr' ? 'L\'erreur est probablement due à un bug dans le code. Consultez le message et la stack trace pour localiser le problème.' : 'The error is likely due to a bug in the code. Check the message and stack trace to locate the problem.' %></p>
+                                </div>
+                                <div class="p-4 bg-white/5 rounded-lg">
+                                    <h4 class="font-medium mb-2"><%= locals.lang === 'fr' ? 'Vérifier les dépendances' : 'Check dependencies' %></h4>
+                                    <p class="text-white/70"><%= locals.lang === 'fr' ? 'Une dépendance manquante ou obsolète pourrait causer ce problème. Essayez de réinstaller les dépendances.' : 'A missing or outdated dependency could cause this issue. Try reinstalling dependencies.' %></p>
+                                    <pre class="bg-slate-800 p-3 mt-2 rounded font-mono text-sm">npm install</pre>
+                                </div>
+                            <% } else { %>
+                                <div class="p-4 bg-white/5 rounded-lg">
+                                    <h4 class="font-medium mb-2"><%= locals.lang === 'fr' ? 'Consulter la documentation' : 'Check the documentation' %></h4>
+                                    <p class="text-white/70"><%= locals.lang === 'fr' ? 'Pour plus d\'informations sur cette erreur et comment la résoudre, consultez la documentation de Veko.js.' : 'For more information about this error and how to solve it, check the Veko.js documentation.' %></p>
+                                </div>
+                            <% } %>
+                            <div class="p-4 bg-white/5 rounded-lg">
+                                <h4 class="font-medium mb-2"><%= locals.lang === 'fr' ? 'Redémarrer le serveur' : 'Restart the server' %></h4>
+                                <p class="text-white/70"><%= locals.lang === 'fr' ? 'Parfois, simplement redémarrer le serveur peut résoudre le problème.' : 'Sometimes, simply restarting the server can solve the problem.' %></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="py-6 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-transparent to-black/20">
+            <div class="max-w-7xl mx-auto text-center text-sm text-white/50">
+                <p>Veko.js Framework • <span class="bg-white/10 px-2 py-1 rounded text-xs"><%= env %></span></p>
+                <p class="mt-2 text-xs">
+                    <%= locals.lang === 'fr' ? 'Pour désactiver cette page d\'erreur détaillée en production, définissez' : 'To disable this detailed error page in production, set' %> <code class="bg-white/10 px-1 rounded">NODE_ENV=production</code>
+                </p>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Floating notification -->
+    <div id="notification-container" class="fixed top-4 right-4 z-50 space-y-4 max-w-sm w-full"></div>
+    
+    <script>
+        // Function to display a notification
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            const colors = {
+                info: 'bg-blue-500',
+                success: 'bg-green-500',
+                warning: 'bg-yellow-500',
+                error: 'bg-red-500'
+            };
+            const icons = {
+                info: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
+                success: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
+                warning: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>',
+                error: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = `transform translate-x-full transition-all duration-500 ${colors[type]} text-white rounded-lg shadow-lg overflow-hidden`;
+            notification.innerHTML = `
+                <div class="flex items-center p-4">
+                    <div class="flex-shrink-0">
+                        ${icons[type]}
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <p class="text-sm font-medium">${message}</p>
+                    </div>
+                    <div class="ml-4 flex-shrink-0 flex">
+                        <button class="inline-flex text-white focus:outline-none focus:text-gray-300">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="bg-white/20 h-1"><div class="bg-white h-1 animate-[shrink_5s_linear]"></div></div>
+            `;
+            
+            container.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            const closeButton = notification.querySelector('button');
+            closeButton.addEventListener('click', () => {
+                notification.style.transform = 'translateX(full)';
+                setTimeout(() => notification.remove(), 500);
+            });
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(full)';
+                setTimeout(() => notification.remove(), 500);
+            }, 5000);
+        }
+
+        // Language switcher
+        function changeLanguage(lang) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('lang', lang);
+            window.location.href = url.toString();
+        }
+    </script>
+    
+    <!-- Auto-refresh script injected automatically -->
+    <%- locals.reloadScript || '' %>
+</body>
+</html>
