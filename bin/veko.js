@@ -2,7 +2,7 @@
 
 const { Command } = require('commander');
 const chalk = require('chalk');
-const DevServer = require('../lib/dev-server');
+const DevServer = require('../lib/dev/dev-server');
 const path = require('path');
 const fs = require('fs');
 const { execSync } = require('child_process');
