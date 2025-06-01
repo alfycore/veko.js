@@ -1,6 +1,6 @@
 {
   "name": "veko",
-  "version": "1.1.0",
+  "version": "1.0.5",
   "description": "Framework Express + EJS avec auto-refresh et dev tools",
   "main": "index.js",
   "bin": {
