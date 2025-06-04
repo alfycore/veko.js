@@ -1,32 +1,53 @@
 {
   "name": "veko",
-  "version": "1.1.0",
-  "description": "Framework Express + EJS avec auto-refresh et dev tools",
+  "version": "1.1.1",
+  "description": "🚀 Ultra-modern Node.js framework with hot reload, plugins, authentication, and advanced security features",
   "main": "index.js",
   "bin": {
-    "veko": "./bin/veko.js"
+    "veko": "./bin/veko.js",
+    "create-veko-app": "./bin/create-veko-app.js"
   },
   "scripts": {
     "dev": "node bin/veko.js dev",
-    "build": "node bin/veko.js build", 
+    "build": "node bin/veko.js build",
     "start": "node bin/veko.js start",
-    "test": "echo \"Tests à venir\" && exit 0",
-    "prepublishOnly": "npm test",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:security": "npm audit && node scripts/security-check.js",
+    "lint": "eslint lib/ bin/ --fix",
+    "lint:check": "eslint lib/ bin/",
+
     "postinstall": "echo '🚀 Veko.js installé avec succès!'",
-    "demo": "node examples/demo.js"
+    "demo": "node examples/demo.js",
+    "verify": "node verify-code.js",
+    "create-app": "node bin/create-veko-app.js",
+    "docs": "jsdoc lib/ -d docs/",
+    "benchmark": "node scripts/benchmark.js",
+    "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls"
   },
   "keywords": [
-    "framework", 
-    "express", 
-    "ejs", 
-    "hot-reload", 
+    "framework",
+    "express",
+    "ejs",
+    "hot-reload",
     "plugins",
     "websocket",
     "dev-server",
     "auto-refresh",
-    "file-watcher"
+    "file-watcher",
+    "authentication",
+    "security",
+    "performance",
+    "modern",
+    "typescript",
+    "cors",
+    "helmet",
+    "rate-limiting",
+    "validation",
+    "layout-engine",
+    "plugin-system"
   ],
-  "author": "Votre nom <contact@wiltark.fr>",
+  "author": "Wiltark <contact@wiltark.fr>",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -35,29 +56,167 @@
   "bugs": {
     "url": "https://github.com/wiltark/veko.js/issues"
   },
-  "homepage": "https://github.com/wiltark/veko.js#readme",
+  "homepage": "https://veko.js.org",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   },
   "dependencies": {
     "express": "^4.18.2",
     "ejs": "^3.1.9",
     "ws": "^8.14.2",
     "chokidar": "^3.5.3",
+    "helmet": "^7.1.0",
+    "cors": "^2.8.5",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
+    "validator": "^13.11.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-github2": "^0.1.12",
+    "passport-facebook": "^3.0.0",
+    "express-session": "^1.17.3",
+    "connect-redis": "^7.1.0",
+    "redis": "^4.6.10",
+    "sqlite3": "^5.1.6",
+    "pg": "^8.11.3",
+    "mysql2": "^3.6.5",
+    "mongoose": "^8.0.3",
+    "sequelize": "^6.35.2",
+    "boxen": "^5.1.2",
     "chalk": "^4.1.2",
-    "commander": "^11.1.0"
+    "commander": "^11.1.0",
+    "figlet": "^1.6.0",
+    "gradient-string": "^2.0.2",
+    "inquirer": "^8.2.6",
+    "nanospinner": "^1.1.0",
+    "ora": "^5.4.1",
+    "dotenv": "^16.3.1",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
+    "body-parser": "^1.20.2",
+    "multer": "^1.4.5-lts.1",
+    "sharp": "^0.32.6",
+    "jimp": "^0.22.10",
+    "nodemailer": "^6.9.7",
+    "node-cron": "^3.0.3",
+    "winston": "^3.11.0",
+    "debug": "^4.3.4",
+    "uuid": "^9.0.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "async": "^3.2.5",
+    "semver": "^7.5.4",
+    "mime-types": "^2.1.35",
+    "fs-extra": "^11.2.0",
+    "archiver": "^6.0.1",
+    "express-useragent": "^1.0.15",
+    "geoip-lite": "^1.4.9",
+    "slugify": "^1.6.6",
+    "html-minifier": "^4.0.0",
+    "clean-css": "^5.3.2",
+    "uglify-js": "^3.17.4"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "eslint": "^8.56.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "jsdoc": "^4.0.2",
+    "coveralls": "^3.1.1",
+    "cross-env": "^7.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.5",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.8",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.1.1"
+  },
+  "optionalDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "pm2": "^5.3.0",
+    "cluster": "^0.7.7"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.0.0"
   },
   "files": [
     "lib/",
     "bin/",
     "views/",
     "error/",
+    "templates/",
+    "scripts/",
     "index.js",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
-  "preferGlobal": true
+  "preferGlobal": true,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "lib/**/*.js",
+      "!lib/**/*.test.js",
+      "!lib/**/node_modules/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    }
+  },
+  "eslintConfig": {
+    "extends": ["standard"],
+    "env": {
+      "node": true,
+      "jest": true
+    },
+    "rules": {
+      "no-console": "warn",
+      "prefer-const": "error",
+      "no-var": "error"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm test"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/wiltark"
+  },
+  "contributors": [
+    {
+      "name": "Wiltark",
+      "email": "contact@wiltark.fr",
+      "url": "https://wiltark.fr"
+    }
+  ]
 }
