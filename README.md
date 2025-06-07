@@ -2,7 +2,7 @@
 
 An **ultra-modern** and **intelligent** web framework for Node.js with Express and EJS, designed for rapid and efficient development with **intelligent hot reload**, **beautiful logging**, **extensible plugin system**, and **revolutionary auto-updater**.
 
-# 🚀 Veko.js v1.1.5
+# 🚀 Veko.js v1.2.0
 
 An **ultra-modern** and **intelligent** web framework for Node.js with Express and EJS, designed for rapid and efficient development with **intelligent hot reload**, **beautiful logging**, **extensible plugin system**, **advanced code verification**, and the **most advanced auto-updater** in the Node.js ecosystem.
 
@@ -30,7 +30,7 @@ An **ultra-modern** and **intelligent** web framework for Node.js with Express a
 
 ## 📋 Changelog
 
-### 🎉 Version 1.1.5 (Latest) - December 2024
+### 🎉 Version 1.2.0 (Latest) - December 2024
 
 #### 🆕 Revolutionary Auto-Updater System
 
