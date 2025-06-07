@@ -1,9 +1,10 @@
 # 🚀 Veko.js
 
-An **ultra-modern** and **intelligent** web framework for Node.js with Express and EJS, designed for rapid and efficient development with **intelligent hot reload**, **beautiful logging**, and **extensible plugin system**.
-# 🚀 Veko.js v1.1.1
+An **ultra-modern** and **intelligent** web framework for Node.js with Express and EJS, designed for rapid and efficient development with **intelligent hot reload**, **beautiful logging**, **extensible plugin system**, and **revolutionary auto-updater**.
 
-An **ultra-modern** and **intelligent** web framework for Node.js with Express and EJS, designed for rapid and efficient development with **intelligent hot reload**, **beautiful logging**, **extensible plugin system**, and **advanced code verification**.
+# 🚀 Veko.js v2.0.0
+
+An **ultra-modern** and **intelligent** web framework for Node.js with Express and EJS, designed for rapid and efficient development with **intelligent hot reload**, **beautiful logging**, **extensible plugin system**, **advanced code verification**, and the **most advanced auto-updater** in the Node.js ecosystem.
 
 ## ✨ Features
 
@@ -21,178 +22,191 @@ An **ultra-modern** and **intelligent** web framework for Node.js with Express a
 - 📊 **HTML Reports** - Beautiful verification reports with interactive dashboard
 - 🔒 **Security Auditing** - Advanced security vulnerability detection
 - 🧮 **Complexity Analysis** - Cyclomatic complexity and performance metrics
+- 🔄 **Revolutionary Auto-Updater** - The most advanced auto-updater in Node.js ecosystem
+- 🛡️ **Security-First Updates** - Automatic critical security updates with rollback protection
+- 💾 **Intelligent Backup System** - Smart backups with one-click rollback
+- 🎯 **Multi-Channel Updates** - Support for stable, beta, and alpha channels
+- 🎨 **Interactive CLI** - Beautiful command-line interface with auto-completion
 
 ## 📋 Changelog
 
-### 🎉 Version 1.1.1 (Latest) - June 4, 2025
+### 🎉 Version 2.0.0 (Latest) - December 2024
 
-#### 🆕 New Features
+#### 🆕 Revolutionary Auto-Updater System
 
-- **🔬 Advanced Code Verification System**
-  - Complete code analysis with 80+ verification points
-  - Cyclomatic complexity analysis with detailed metrics
-  - Security vulnerability detection and reporting
-  - Code duplication finder with similarity analysis
-  - Performance issue detection and optimization suggestions
-  - NPM hooks and package.json validation
-  - File structure and architecture validation
-  - Naming convention consistency checker
+- **🔄 Advanced Auto-Updater**
+  - Automatic version checking with intelligent scheduling
+  - Multi-channel support (stable, beta, alpha, custom registries)
+  - Security-first approach with cryptographic validation
+  - Interactive CLI with beautiful colored interface
+  - Real-time notifications and progress indicators
+  - Seamless integration with existing applications
 
-- **📊 Interactive HTML Reports**
-  - Beautiful web-based verification dashboard
-  - Real-time charts and metrics visualization
-  - Interactive navigation with Alpine.js framework
-  - Dark/light mode toggle with system preference detection
-  - Responsive design with Tailwind CSS
-  - Export functionality for reports (JSON, HTML)
-  - Historical comparison and trend analysis
-  - Detailed issue descriptions with fix suggestions
+- **🔒 Security-First Architecture**
+  - SHA512 integrity verification for all packages
+  - Automatic security updates with priority handling
+  - Rollback protection against failed updates
+  - Vulnerability scanning before installation
+  - Secure communication protocols
+  - Audit trail for all operations
 
-- **🛡️ Enhanced Security Auditing**
-  - Hardcoded secrets and API keys detection
-  - Input validation analysis for XSS/SQL injection
-  - Vulnerable dependency patterns scanning
-  - Authentication and authorization security checks
-  - HTTPS and security headers validation
-  - Password and encryption best practices verification
+- **💾 Smart Backup & Rollback System**
+  - Automatic backup before every update
+  - Configurable backup retention (1-10 backups)
+  - Instant rollback in case of failure
+  - Backup size optimization and integrity verification
+  - Selective file backup with smart exclusions
+  - Emergency rollback functionality
 
-- **🧮 Advanced Code Quality Metrics**
-  - Dependency graph analysis and visualization
-  - Circular dependency detection and resolution
-  - Test coverage analysis integration
-  - Naming consistency verification across codebase
-  - API signature validation and documentation
-  - Code maintainability index calculation
-  - Technical debt assessment and prioritization
+- **🎨 Interactive CLI Experience**
+  - Beautiful colored interface with emojis and animations
+  - Auto-completion for all commands
+  - Interactive configuration wizard
+  - Real-time progress bars and status indicators
+  - Comprehensive help system with examples
+  - Menu-driven navigation
 
-- **⚡ Performance Enhancements**
-  - Optimized plugin loading system with lazy loading
-  - Improved layout caching with intelligent invalidation
-  - Enhanced WebSocket connection management
-  - Faster hot reload with differential updates
-  - Memory usage optimization for large projects
-  - Reduced startup time for development mode
+- **📊 Advanced Monitoring & Statistics**
+  - Update history tracking with detailed logs
+  - Performance metrics and success rates
+  - Rollback statistics and failure analysis
+  - Update channel analytics
+  - System health monitoring
+  - Historical trend analysis
 
-#### 🔧 Improvements
-
-- **🔌 Plugin System Enhancements**
-  - Better error handling with detailed stack traces
-  - Plugin dependency resolution improvements
-  - Hot plugin reloading without server restart
-  - Enhanced plugin API with more hooks
-  - Plugin configuration validation
-  - Automatic plugin health checks
-
-- **🎨 Layout System Improvements**
-  - Better caching strategy for development mode
-  - Support for nested layouts and inheritance
-  - Enhanced section management with priorities
-  - Template compilation optimization
-  - Better error reporting for layout issues
-
-- **🌐 WebSocket & Hot Reload**
-  - Improved connection stability and recovery
-  - Better handling of network interruptions
-  - Enhanced client-side reconnection logic
-  - Optimized message broadcasting
-  - Support for multiple client connections
-
-- **📝 CLI Experience**
-  - More descriptive command outputs with progress bars
-  - Better error messages with actionable suggestions
-  - Enhanced project setup with more templates
-  - Improved validation for command arguments
-  - Colored output with better formatting
-
-#### 🐛 Bug Fixes
-
-- **🔧 Core Fixes**
-  - Fixed plugin loading race conditions causing crashes
-  - Corrected layout caching issues in development mode
-  - Resolved WebSocket reconnection problems
-  - Fixed dynamic route creation edge cases
-  - Corrected memory leaks in file watchers
-  - Fixed path resolution issues on Windows
-
-- **🎨 UI/UX Fixes**
-  - Fixed responsive layout issues in verification reports
-  - Corrected dark mode toggle persistence
-  - Fixed chart rendering on mobile devices
-  - Resolved CSS conflicts with custom stylesheets
-
-- **⚡ Performance Fixes**
-  - Fixed memory usage spikes during hot reload
-  - Corrected plugin unloading cleanup
-  - Fixed file watcher performance on large directories
-  - Resolved route caching inconsistencies
-
-#### 🔒 Security Updates
-
-- Updated all dependencies to latest secure versions
-- Enhanced input sanitization in verification system
-- Improved error handling to prevent information leakage
-- Added rate limiting for CLI commands
-- Strengthened plugin sandboxing
-
-#### 📚 Documentation & Examples
-
-- **📖 Enhanced Documentation**
-  - Added comprehensive code verification guide
-  - Enhanced plugin development documentation with examples
-  - Improved CLI usage examples and tutorials
-  - Added security best practices section
-  - Created troubleshooting guide for common issues
-
-- **💡 New Examples**
-  - Advanced plugin examples with real-world use cases
-  - Complete project templates for different architectures
-  - Integration examples with popular databases
-  - Performance optimization examples
-  - Security implementation examples
-
-#### 🛠️ Developer Experience
-
-- **🔍 Better Debugging**
-  - Enhanced error messages with context
-  - Better stack trace formatting
-  - Improved logging with request correlation IDs
-  - Debug mode with detailed operation logs
-
-- **⚙️ Configuration**
-  - More flexible configuration options
-  - Environment-specific configuration support
-  - Configuration validation with helpful error messages
-  - Hot configuration reloading in development
-
-#### 🎯 Breaking Changes
-
-> **Note**: This version maintains backward compatibility with v1.1.0
-
-- Deprecated old verification API (still supported with warnings)
-- Changed default cache behavior for layouts (can be reverted in config)
-- Modified plugin hook execution order for better performance
-
-#### 🚀 Migration Guide
-
-For users upgrading from v1.1.0:
+#### 🔄 Auto-Updater Quick Start
 
 ```bash
-# Update package
-npm update veko
+# Interactive auto-updater (recommended)
+npx veko-update
 
-# Run new verification system
-veko verify
+# Quick commands
+npx veko-update check        # Check for updates
+npx veko-update update       # Update now
+npx veko-update config       # Configure settings
+npx veko-update status       # Show current status
+npx veko-update rollback     # Rollback to previous version
+npx veko-update stats        # Show detailed statistics
 
-# Update plugin configurations if needed
-# Check deprecation warnings in console
+# Background daemon mode
+npx veko-update daemon       # Start background monitoring
+npx veko-update stop         # Stop background daemon
+
+# First-time activation
+npx veko-update activate     # Guided setup wizard
 ```
 
-#### 📊 Performance Benchmarks
+#### 🔧 Auto-Updater Integration
 
-- **🚀 50% faster** plugin loading
-- **⚡ 30% reduction** in memory usage
-- **🔄 75% faster** hot reload cycles
-- **📱 40% better** mobile responsiveness in reports
+```javascript
+const { App } = require('veko');
+
+const app = new App({
+  // Auto-updater configuration (optional - works with defaults)
+  autoUpdater: {
+    enabled: true,              // Enable auto-updater system
+    checkOnStart: true,         // Check for updates on app startup
+    autoUpdate: false,          // Manual approval required (recommended)
+    updateChannel: 'stable',    // stable | beta | alpha
+    securityUpdates: true,      // Auto-install critical security updates
+    showNotifications: true,    // Show beautiful update notifications
+    backupCount: 5,            // Number of backups to retain
+    checkInterval: 3600000,    // Check every hour (milliseconds)
+    rollbackOnFailure: true,   // Auto-rollback on update failure
+    progressBar: true,         // Show progress indicators
+    customRegistry: null       // Custom npm registry (optional)
+  }
+});
+
+// Auto-updater works transparently in background
+app.loadRoutes().listen();
+```
+
+#### 🌐 RESTful Auto-Updater API
+
+Built-in API endpoints for remote management:
+
+```javascript
+// Check for updates programmatically
+const updateInfo = await app.checkForUpdates();
+console.log(updateInfo); // { hasUpdate: true, currentVersion: '1.0.0', latestVersion: '2.0.0' }
+
+// Perform update
+if (updateInfo.hasUpdate) {
+  const success = await app.performUpdate(updateInfo);
+  console.log('Update successful:', success);
+}
+
+// Rollback if needed
+await app.rollbackUpdate();
+
+// Get auto-updater status
+const status = app.getAutoUpdaterInfo();
+console.log(status); // { active: true, currentVersion: '2.0.0', config: {...}, stats: {...} }
+```
+
+#### 🛡️ RESTful Endpoints
+
+```bash
+# Check for updates via HTTP
+GET http://localhost:3000/_veko/updates/check
+
+# Trigger update via HTTP
+POST http://localhost:3000/_veko/updates/perform
+
+# Get statistics via HTTP
+GET http://localhost:3000/_veko/updates/stats
+
+# Perform rollback via HTTP
+POST http://localhost:3000/_veko/updates/rollback
+```
+
+#### 🎯 Update Channels
+
+**Stable Channel (Production)**
+```bash
+npx veko-update config
+# Select "Update Channel" -> "stable"
+```
+- ✅ Production-ready releases
+- ✅ Thoroughly tested and stable
+- ✅ Backward compatibility guaranteed
+- ✅ Recommended for production environments
+
+**Beta Channel (Testing)**
+```bash
+npx veko-update config
+# Select "Update Channel" -> "beta"
+```
+- ✅ Pre-release versions with new features
+- ✅ Stability testing phase
+- ⚠️ May contain minor issues
+- 🎯 Perfect for testing environments
+
+**Alpha Channel (Development)**
+```bash
+npx veko-update config
+# Select "Update Channel" -> "alpha"
+```
+- ✅ Cutting-edge features and improvements
+- ✅ Immediate access to latest developments
+- ⚠️ Experimental features included
+- 🚧 Development and testing use only
+
+#### 📊 Statistics Dashboard
+
+```bash
+npx veko-update stats
+```
+
+Comprehensive statistics including:
+- 📈 Total updates performed
+- ✅ Success/failure rates
+- 🔄 Rollback history and frequency
+- 📢 Update channel distribution
+- ⚡ Performance metrics and timing
+- 🔒 Security update history
+- 📅 Last check/update timestamps
 
 ### 📜 Previous Versions
 
@@ -1758,6 +1772,7 @@ const app = new App({
 // Monitoring plugin
 const monitoringPlugin = {
   name: 'monitoring',
+  
   async load(app, config, context) {
     context.hook('request:start', (req) => {
       req.startTime = process.hrtime.bigint();
@@ -1868,12 +1883,24 @@ MIT License - see LICENSE file for details.
 
 ---
 
-**Veko.js** - Ultra-modern web framework for Node.js with extensible plugin system 🚀🔌
+**Veko.js v2.0** - Ultra-modern web framework with the most advanced auto-updater in the Node.js ecosystem 🚀🔄
+
+### Quick Auto-Updater Commands
+
+```bash
+npx veko-update           # 🎨 Interactive menu
+npx veko-update check     # 🔍 Check for updates  
+npx veko-update update    # ⚡ Update now
+npx veko-update status    # 📊 Show status
+npx veko-update daemon    # 👾 Background mode
+npx veko-update --help    # ❓ Full help
+```
 
 ### Quick Links
 
 - [🏠 Home](/)
 - [📚 Documentation](/docs)
+- [🔄 Auto-Updater Guide](/docs/auto-updater)
 - [🔌 Plugins](/plugins)
 - [🛠️ CLI](/cli)
 - [💡 Examples](/examples)
@@ -1881,3 +1908,5 @@ MIT License - see LICENSE file for details.
 - [💬 Discussions](https://github.com/username/veko.js/discussions)
 
 Built with ❤️ by the Veko.js team
+
+**Experience the future of Node.js development with Veko.js 2.0! 🚀✨**
