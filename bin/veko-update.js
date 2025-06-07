@@ -13,9 +13,39 @@ let AutoUpdater = null;
 try {
     AutoUpdater = require('../lib/core/auto-updater');
     
-    // Vérification que l'auto-updater a la méthode handleCLI
-    if (!AutoUpdater || typeof AutoUpdater.handleCLI !== 'function') {
-        throw new Error('Module auto-updater incomplet ou corrompu');
+    // Vérification que l'auto-updater a toutes les méthodes nécessaires
+    const requiredMethods = ['handleCLI', 'getCurrentVersion', 'checkForUpdates', 'log'];
+    const missingMethods = requiredMethods.filter(method => typeof AutoUpdater[method] !== 'function');
+    
+    if (missingMethods.length > 0) {
+        console.error(`❌ L'auto-updater est incomplet ou corrompu. Méthodes manquantes: ${missingMethods.join(', ')}`);
+        console.error('Tentative de réparation...');
+        
+        // Correction pour méthodes manquantes
+        if (typeof AutoUpdater.getCurrentVersion !== 'function') {
+            AutoUpdater.getCurrentVersion = function() {
+                try {
+                    const packageJsonPath = path.join(process.cwd(), 'package.json');
+                    if (!fs.existsSync(packageJsonPath)) return null;
+                    
+                    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+                    const vekoVersion = packageJson.dependencies?.veko || 
+                                       packageJson.devDependencies?.veko || 
+                                       packageJson.peerDependencies?.veko;
+                                       
+                    return vekoVersion?.replace(/[\^~>=<]/g, '') || null;
+                } catch (error) {
+                    console.warn(`[Auto-updater] Erreur lors de la lecture de package.json: ${error.message}`);
+                    return null;
+                }
+            };
+        }
+        
+        if (typeof AutoUpdater.log !== 'function') {
+            AutoUpdater.log = function(level, message) {
+                console.log(`[${level.toUpperCase()}] ${message}`);
+            };
+        }
     }
 } catch (error) {
     console.error(`Erreur de chargement de l'auto-updater: ${error.message}`);
@@ -32,14 +62,8 @@ async function main() {
             throw new Error("L'auto-updater n'est pas disponible");
         }
 
-        // Vérifier la présence de npm
-        try {
-            await AutoUpdater.ensureNpm();
-        } catch (error) {
-            console.error(`❌ ${error.message}`);
-            console.error("L'auto-updater a besoin de npm pour fonctionner correctement.");
-            console.error("Veuillez vous assurer que npm est installé et disponible dans votre PATH.");
-            process.exit(1);
+        if (typeof AutoUpdater.handleCLI !== 'function') {
+            throw new Error("La méthode handleCLI est manquante dans l'auto-updater");
         }
 
         // Passer tous les arguments à handleCLI
@@ -54,12 +78,9 @@ async function main() {
             console.error('2. Ou exécutez: npm install -g veko pour une installation globale');
         } else {
             console.log('\nPour réparer automatiquement l\'auto-updater, essayez:');
-            console.log('npx veko update fix');
+            console.log('npm install veko@latest');
         }
         
-        if (process.env.DEBUG) {
-            console.error(error.stack);
-        }
         process.exit(1);
     }
 }
@@ -78,9 +99,6 @@ process.on('uncaughtException', (error) => {
         console.error('Réinstallez veko avec: npm install veko@latest');
     }
     
-    if (process.env.DEBUG) {
-        console.error(error.stack);
-    }
     process.exit(1);
 });
 
@@ -89,8 +107,5 @@ main().then(result => {
     process.exit(result ? 0 : 1);
 }).catch((error) => {
     console.error(`❌ Erreur fatale: ${error.message}`);
-    if (process.env.DEBUG) {
-        console.error(error.stack);
-    }
     process.exit(1);
 });
