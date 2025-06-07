@@ -4,6 +4,17 @@ const { Command } = require('commander');
 const chalk = require('chalk');
 const SetupWizard = require('./commands/setup');
 const DevServer = require('../lib/dev/dev-server');
+const path = require('path');
+const fs = require('fs');
+
+// Version du package
+const packageJson = require('../package.json');
+const version = packageJson.version;
+
+// Ajouter le chemin vers les modules lib
+const libPath = path.join(__dirname, '..', 'lib');
+process.env.NODE_PATH = `${process.env.NODE_PATH || ''}:${libPath}`;
+require('module')._initPaths();
 
 const program = new Command();
 
@@ -138,4 +149,40 @@ program
     }
   });
 
-program.parse();
+// Ajout de la commande update qui servira de passerelle vers veko-update
+program
+  .command('update')
+  .description('Gestionnaire de mise à jour Veko')
+  .allowUnknownOption(true)
+  .action(() => {
+    // Exécuter veko-update avec les mêmes arguments
+    const updateBin = path.join(__dirname, 'veko-update.js');
+    if (fs.existsSync(updateBin)) {
+      const { execSync } = require('child_process');
+      try {
+        execSync(`node "${updateBin}" ${process.argv.slice(3).join(' ')}`, { 
+          stdio: 'inherit' 
+        });
+      } catch (error) {
+        console.error('Erreur lors du lancement de l\'auto-updater');
+        process.exit(1);
+      }
+    } else {
+      console.error('L\'auto-updater n\'est pas disponible');
+      process.exit(1);
+    }
+  });
+
+program.parse(process.argv);
+
+if (!process.argv.slice(2).length) {
+  console.log('\n🚀 Veko.js v' + version + ' - Ultra-modern Node.js framework\n');
+  console.log('Available commands:');
+  console.log('  dev      Start development server with hot reload');
+  console.log('  setup    Set up a new Veko.js project');
+  console.log('  verify   Verify code quality and security');
+  console.log('  update   Gestionnaire de mise à jour Veko');
+  console.log('\nRun `veko <command> --help` for more information on specific commands.');
+  console.log('\nDocumentation: https://veko.js.org');
+  process.exit(0);
+}

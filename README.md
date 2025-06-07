@@ -77,23 +77,17 @@ An **ultra-modern** and **intelligent** web framework for Node.js with Express a
 #### 🔄 Auto-Updater Quick Start
 
 ```bash
-# Interactive auto-updater (recommended)
-npx veko-update
+# Installation globale recommandée
+npm install -g veko
 
-# Quick commands
-npx veko-update check        # Check for updates
-npx veko-update update       # Update now
-npx veko-update config       # Configure settings
-npx veko-update status       # Show current status
-npx veko-update rollback     # Rollback to previous version
-npx veko-update stats        # Show detailed statistics
+# Commandes disponibles
+veko update              # Lancer le gestionnaire de mises à jour interactif
+veko update check        # Vérifier les mises à jour
+veko update config       # Configurer l'auto-updater
+veko update fix          # Réparer l'auto-updater en cas de problème
 
-# Background daemon mode
-npx veko-update daemon       # Start background monitoring
-npx veko-update stop         # Stop background daemon
-
-# First-time activation
-npx veko-update activate     # Guided setup wizard
+# Alternative sans installation globale
+npx veko update          # Utiliser veko update sans installation globale
 ```
 
 #### 🔧 Auto-Updater Integration
@@ -1888,12 +1882,12 @@ MIT License - see LICENSE file for details.
 ### Quick Auto-Updater Commands
 
 ```bash
-npx veko-update           # 🎨 Interactive menu
-npx veko-update check     # 🔍 Check for updates  
-npx veko-update update    # ⚡ Update now
-npx veko-update status    # 📊 Show status
-npx veko-update daemon    # 👾 Background mode
-npx veko-update --help    # ❓ Full help
+veko update              # 🎨 Menu interactif
+veko update check        # 🔍 Vérification des mises à jour  
+veko update update       # ⚡ Mettre à jour maintenant
+veko update status       # 📊 Afficher le statut
+veko update daemon       # 👾 Mode arrière-plan
+veko update --help       # ❓ Aide complète
 ```
 
 ### Quick Links

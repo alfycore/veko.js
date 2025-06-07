@@ -3,6 +3,18 @@
 const path = require('path');
 const fs = require('fs');
 
+// Message d'installation si l'utilisateur essaie d'utiliser npx veko-update
+if (process.argv[1].includes('npx')) {
+  console.log('\n🚀 Veko Auto-Updater\n');
+  console.log('Il semble que vous utilisez npx pour exécuter cet outil.');
+  console.log('Pour une meilleure expérience, installez veko globalement :\n');
+  console.log('  npm install -g veko');
+  console.log('\nPuis utilisez la commande :\n');
+  console.log('  veko update\n');
+  console.log('Ou si vous préférez ne pas installer globalement :\n');
+  console.log('  npx veko update\n');
+}
+
 // Ajouter le chemin vers les modules lib
 const libPath = path.join(__dirname, '..', 'lib');
 process.env.NODE_PATH = `${process.env.NODE_PATH || ''}:${libPath}`;

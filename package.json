@@ -1,11 +1,12 @@
 {
   "name": "veko",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "🚀 Ultra-modern Node.js framework with hot reload, plugins, authentication, and advanced security features",
   "main": "index.js",
   "bin": {
     "veko": "./bin/veko.js",
-    "create-veko-app": "./bin/create-veko-app.js"
+    "create-veko-app": "./bin/create-veko-app.js",
+    "veko-update": "./bin/veko-update.js"
   },
   "scripts": {
     "dev": "node bin/veko.js dev",
