@@ -90,30 +90,66 @@ veko update fix          # Réparer l'auto-updater en cas de problème
 npx veko update          # Utiliser veko update sans installation globale
 ```
 
+#### 🔄 Auto-Updater Simplifié
+
+L'auto-updater de Veko a été simplifié pour plus de stabilité et d'efficacité. Il se concentre maintenant sur les commandes essentielles et évite les interfaces interactives qui pourraient interférer avec le fonctionnement de l'application.
+
+```bash
+# Vérifier les mises à jour
+veko update check
+
+# Installer une mise à jour
+veko update update
+
+# Afficher la configuration
+veko update config
+
+# Modifier un paramètre de configuration
+veko update config autoUpdate true
+
+# Afficher les statistiques
+veko update stats
+
+# Restaurer une version précédente
+veko update rollback
+
+# Réparer l'auto-updater
+veko update fix
+
+# Afficher l'aide et les commandes disponibles
+veko update help
+```
+
+#### 🔧 Auto-Updater Robuste
+
+L'auto-updater a été conçu pour être stable et ne jamais interférer avec le fonctionnement de l'application principale. Il offre :
+
+- ✅ **Installation non-bloquante** - Aucun risque de ralentissement de votre application
+- ✅ **Mises à jour automatisées** - Programmez des vérifications régulières
+- ✅ **Gestion des erreurs avancée** - Restauration automatique en cas d'échec
+- ✅ **Système de backup** - Avant toute mise à jour
+- ✅ **Configuration simple** - Via la ligne de commande
+
 #### 🔧 Auto-Updater Integration
 
 ```javascript
 const { App } = require('veko');
 
 const app = new App({
-  // Auto-updater configuration (optional - works with defaults)
+  // Auto-updater configuration optimisée
   autoUpdater: {
-    enabled: true,              // Enable auto-updater system
-    checkOnStart: true,         // Check for updates on app startup
-    autoUpdate: false,          // Manual approval required (recommended)
+    enabled: true,              // Activer l'auto-updater
+    checkOnStart: true,         // Vérifier au démarrage
+    autoUpdate: false,          // Mode manuel (recommandé)
     updateChannel: 'stable',    // stable | beta | alpha
-    securityUpdates: true,      // Auto-install critical security updates
-    showNotifications: true,    // Show beautiful update notifications
-    backupCount: 5,            // Number of backups to retain
-    checkInterval: 3600000,    // Check every hour (milliseconds)
-    rollbackOnFailure: true,   // Auto-rollback on update failure
-    progressBar: true,         // Show progress indicators
-    customRegistry: null       // Custom npm registry (optional)
+    securityUpdates: true,      // Auto-installer les mises à jour de sécurité
+    backupCount: 5,            // Nombre de backups à conserver
+    checkInterval: 3600000,    // Vérifier chaque heure (en millisecondes)
+    rollbackOnFailure: true    // Restauration automatique en cas d'échec
   }
 });
 
-// Auto-updater works transparently in background
-app.loadRoutes().listen();
+app.listen();
 ```
 
 #### 🌐 RESTful Auto-Updater API
