@@ -8,10 +8,15 @@ const libPath = path.join(__dirname, '..', 'lib');
 process.env.NODE_PATH = `${process.env.NODE_PATH || ''}:${libPath}`;
 require('module')._initPaths();
 
-// Importer l'auto-updater avec gestion des erreurs
+// Importer l'auto-updater avec gestion des erreurs robuste
 let AutoUpdater = null;
 try {
     AutoUpdater = require('../lib/core/auto-updater');
+    
+    // Vérification que l'auto-updater a la méthode handleCLI
+    if (!AutoUpdater || typeof AutoUpdater.handleCLI !== 'function') {
+        throw new Error('Module auto-updater incomplet ou corrompu');
+    }
 } catch (error) {
     console.error(`Erreur de chargement de l'auto-updater: ${error.message}`);
     console.error('Veko fonctionnera sans auto-updater');
@@ -42,9 +47,15 @@ async function main() {
     } catch (error) {
         console.error(`❌ Erreur: ${error.message}`);
         
-        // Suggérer la commande de réparation
-        console.log('\nPour réparer automatiquement l\'auto-updater, essayez:');
-        console.log('npx veko update fix');
+        // Suggérer des solutions
+        if (error.message.includes('not a function')) {
+            console.error('\nL\'auto-updater semble être corrompu. Pour le réparer:');
+            console.error('1. Réinstallez veko: npm install veko@latest');
+            console.error('2. Ou exécutez: npm install -g veko pour une installation globale');
+        } else {
+            console.log('\nPour réparer automatiquement l\'auto-updater, essayez:');
+            console.log('npx veko update fix');
+        }
         
         if (process.env.DEBUG) {
             console.error(error.stack);
@@ -62,9 +73,9 @@ process.on('SIGINT', () => {
 process.on('uncaughtException', (error) => {
     console.error('❌ Erreur non gérée:', error.message);
     
-    if (error.message && error.message.includes('ENOENT') && error.message.includes('npm')) {
-        console.error('\nErreur lors du lancement de l\'auto-updater');
-        console.error('Vérifiez que npm est correctement installé et disponible dans votre PATH');
+    if (error.message && error.message.includes('not a function')) {
+        console.error('\nL\'auto-updater est corrompu ou incompatible.');
+        console.error('Réinstallez veko avec: npm install veko@latest');
     }
     
     if (process.env.DEBUG) {
