@@ -40,44 +40,85 @@ async function main() {
             throw new Error("L'auto-updater n'est pas disponible");
         }
 
-        // Détecter si nous sommes dans un environnement non-interactif
-        const isNonInteractive = !process.stdin.isTTY;
-        if (isNonInteractive && !command) {
-            console.log('[Auto-updater] Environnement non-interactif détecté sans commande spécifiée');
-            console.log('Exécution automatique de "check" en mode non-interactif');
-            await AutoUpdater.checkForUpdates(false);
-            return;
+        // Détecter si nous sommes dans un environnement non-interactif ou CI
+        const isNonInteractive = !process.stdin.isTTY || process.env.CI === 'true';
+        
+        // Définir un timeout global pour éviter les blocages
+        const commandTimeout = setTimeout(() => {
+            console.error("❌ Timeout - La commande prend trop de temps à s'exécuter");
+            process.exit(1);
+        }, 60000); // 1 minute maximum
+        
+        // Ajouter un gestionnaire SIGINT pour le Ctrl+C
+        const sigintHandler = () => {
+            console.log("\n👋 Opération annulée par l'utilisateur");
+            clearTimeout(commandTimeout);
+            process.exit(0);
+        };
+        process.on('SIGINT', sigintHandler);
+
+        try {
+            switch (command) {
+                case undefined:
+                case 'menu':
+                    // Menu interactif par défaut avec détection d'environnement
+                    if (isNonInteractive) {
+                        console.log('[Auto-updater] Environnement non-interactif détecté');
+                        console.log('Exécution automatique de "check" en mode non-interactif');
+                        await AutoUpdater.checkForUpdates(false);
+                    } else {
+                        await AutoUpdater.interactive();
+                    }
+                    break;
+                    
+                case 'check':
+                    console.log('🔍 Vérification des mises à jour...');
+                    const updateInfo = await AutoUpdater.checkForUpdates(false);
+                    // Résultat déjà affiché par la fonction checkForUpdates
+                    break;
+
+                case 'update':
+                    console.log('🚀 Mise à jour en cours...');
+                    const success = await AutoUpdater.checkAndUpdate();
+                    if (success) {
+                        console.log('✅ Mise à jour terminée avec succès!');
+                    } else {
+                        console.log('❌ Échec de la mise à jour.');
+                        process.exit(1);
+                    }
+                    break;
+
+                case 'status':
+                    await AutoUpdater.displayStats();
+                    break;
+
+                case 'fix':
+                    console.log('🔧 Tentative de réparation de l\'auto-updater...');
+                    await fixAutoUpdater();
+                    break;
+
+                // ...autres commandes existantes...
+                
+                default:
+                    if (typeof AutoUpdater.handleCLI === 'function') {
+                        await AutoUpdater.handleCLI(args);
+                    } else {
+                        console.log(`❌ Commande inconnue: ${command}`);
+                        showHelp();
+                        process.exit(1);
+                    }
+            }
+        } finally {
+            // Nettoyage
+            clearTimeout(commandTimeout);
+            process.removeListener('SIGINT', sigintHandler);
+            
+            // Fermeture propre des interfaces et connexions
+            if (AutoUpdater && typeof AutoUpdater.closeReadline === 'function') {
+                AutoUpdater.closeReadline();
+            }
         }
-
-        switch (command) {
-            // ...existing code...
-
-            case undefined:
-            case 'menu':
-                // Menu interactif par défaut avec détection d'environnement
-                if (isNonInteractive) {
-                    console.log('[Auto-updater] Environnement non-interactif détecté');
-                    console.log('Exécution automatique de "check" en mode non-interactif');
-                    await AutoUpdater.checkForUpdates(false);
-                } else {
-                    await AutoUpdater.interactive();
-                }
-                break;
-
-            case 'fix':
-                console.log('🔧 Tentative de réparation de l\'auto-updater...');
-                await fixAutoUpdater();
-                break;
-
-            default:
-                if (typeof AutoUpdater.handleCLI === 'function') {
-                    await AutoUpdater.handleCLI(args);
-                } else {
-                    console.log(`❌ Commande inconnue: ${command}`);
-                    showHelp();
-                    process.exit(1);
-                }
-        }
+        
     } catch (error) {
         console.error(`❌ Erreur: ${error.message}`);
         
