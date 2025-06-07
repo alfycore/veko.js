@@ -40,13 +40,28 @@ async function main() {
             throw new Error("L'auto-updater n'est pas disponible");
         }
 
+        // Détecter si nous sommes dans un environnement non-interactif
+        const isNonInteractive = !process.stdin.isTTY;
+        if (isNonInteractive && !command) {
+            console.log('[Auto-updater] Environnement non-interactif détecté sans commande spécifiée');
+            console.log('Exécution automatique de "check" en mode non-interactif');
+            await AutoUpdater.checkForUpdates(false);
+            return;
+        }
+
         switch (command) {
             // ...existing code...
 
             case undefined:
             case 'menu':
-                // Menu interactif par défaut
-                await AutoUpdater.interactive();
+                // Menu interactif par défaut avec détection d'environnement
+                if (isNonInteractive) {
+                    console.log('[Auto-updater] Environnement non-interactif détecté');
+                    console.log('Exécution automatique de "check" en mode non-interactif');
+                    await AutoUpdater.checkForUpdates(false);
+                } else {
+                    await AutoUpdater.interactive();
+                }
                 break;
 
             case 'fix':
@@ -68,7 +83,7 @@ async function main() {
         
         // Suggérer la commande de réparation
         console.log('\nPour réparer automatiquement l\'auto-updater, essayez:');
-        console.log('npx veko-update fix');
+        console.log('npx veko update fix');
         
         if (process.env.DEBUG) {
             console.error(error.stack);

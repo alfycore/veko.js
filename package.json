@@ -1,6 +1,6 @@
 {
   "name": "veko",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "🚀 Ultra-modern Node.js framework with hot reload, plugins, authentication, and advanced security features",
   "main": "index.js",
   "bin": {
