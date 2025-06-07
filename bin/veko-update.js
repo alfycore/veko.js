@@ -27,6 +27,16 @@ async function main() {
             throw new Error("L'auto-updater n'est pas disponible");
         }
 
+        // Vérifier la présence de npm
+        try {
+            await AutoUpdater.ensureNpm();
+        } catch (error) {
+            console.error(`❌ ${error.message}`);
+            console.error("L'auto-updater a besoin de npm pour fonctionner correctement.");
+            console.error("Veuillez vous assurer que npm est installé et disponible dans votre PATH.");
+            process.exit(1);
+        }
+
         // Passer tous les arguments à handleCLI
         return await AutoUpdater.handleCLI(args);
     } catch (error) {
@@ -51,6 +61,12 @@ process.on('SIGINT', () => {
 // Gestion des erreurs non capturées
 process.on('uncaughtException', (error) => {
     console.error('❌ Erreur non gérée:', error.message);
+    
+    if (error.message && error.message.includes('ENOENT') && error.message.includes('npm')) {
+        console.error('\nErreur lors du lancement de l\'auto-updater');
+        console.error('Vérifiez que npm est correctement installé et disponible dans votre PATH');
+    }
+    
     if (process.env.DEBUG) {
         console.error(error.stack);
     }
