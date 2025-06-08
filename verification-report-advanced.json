@@ -1,0 +1,1168 @@
+{
+  "metadata": {
+    "timestamp": "2025-06-04T19:53:59.171Z",
+    "version": "2.0.0",
+    "duration": 732,
+    "platform": "win32",
+    "nodeVersion": "v22.15.1"
+  },
+  "stats": {
+    "files": 13,
+    "lines": 0,
+    "functions": 0,
+    "classes": 0,
+    "tests": 0,
+    "coverage": 0,
+    "complexity": 64,
+    "duplicates": 232,
+    "vulnerabilities": 0
+  },
+  "issues": {
+    "errors": [],
+    "warnings": [
+      "Architecture optionnelle manquante: public",
+      "Architecture optionnelle manquante: config",
+      "Architecture optionnelle manquante: data",
+      "Architecture optionnelle manquante: plugins",
+      "Architecture optionnelle manquante: tests",
+      "Architecture optionnelle manquante: docs",
+      "Architecture optionnelle manquante: assets",
+      "Fichier optionnel manquant: LICENSE",
+      "Fichier optionnel manquant: .npmignore",
+      "⚠ veko.js: Parsing des arguments manquante",
+      "Commande optionnelle manquante: init",
+      "Commande optionnelle manquante: help",
+      "Permissions d'exécution manquantes",
+      "Section usage manquante dans README",
+      "Complexité élevée dans bin\\commands\\setup.js: 38",
+      "Complexité élevée dans lib\\app.js: 48",
+      "Complexité élevée dans lib\\core\\auth-manager.js: 179",
+      "Complexité élevée dans lib\\dev\\dev-server.js: 40",
+      "Complexité élevée dans lib\\layout\\layout-manager.js: 131",
+      "Complexité élevée dans lib\\plugin-manager.js: 266",
+      "Complexité élevée dans lib\\routing\\route-manager.js: 185",
+      "Complexité élevée dans verify-code.js: 203",
+      "8 fichiers avec complexité élevée",
+      "Code dupliqué trouvé (2 occurrences): async generateTemplateFiles() {\r\n    const Templat...",
+      "Code dupliqué trouvé (2 occurrences): const templateChoices = Array.from(this.templates....",
+      "Code dupliqué trouvé (2 occurrences): const stylingAnswers = await inquirer.prompt(styli...",
+      "Code dupliqué trouvé (2 occurrences): const chalk = require('chalk');\r\nconst { Command }...",
+      "Code dupliqué trouvé (2 occurrences): const { Command } = require('commander');\r\nconst c...",
+      "Code dupliqué trouvé (2 occurrences): class App {\r\n  constructor(options = {}) {\r\n    //...",
+      "Code dupliqué trouvé (2 occurrences): if (rules.required && (!value || value.toString()....",
+      "Code dupliqué trouvé (2 occurrences): if (!this.config.session.secret || this.config.ses...",
+      "Code dupliqué trouvé (2 occurrences): const dbDir = path.dirname(dbPath);\r\n    if (!fs.e...",
+      "Code dupliqué trouvé (2 occurrences): username: {\r\n        required: true,\r\n        type...",
+      "Code dupliqué trouvé (2 occurrences): password: {\r\n        required: true,\r\n        type...",
+      "Code dupliqué trouvé (2 occurrences): if (!validation.isValid) {\r\n          return res.s...",
+      "Code dupliqué trouvé (2 occurrences): return res.status(400).json({\r\n            success...",
+      "Code dupliqué trouvé (2 occurrences): success: false,\r\n            message: validation.e...",
+      "Code dupliqué trouvé (2 occurrences): }\r\n\r\n        const { username, password } = req.bo...",
+      "Code dupliqué trouvé (2 occurrences): const user = await this.authenticateUser(cleanUser...",
+      "Code dupliqué trouvé (2 occurrences): if (user) {\r\n          await this.resetLoginAttemp...",
+      "Code dupliqué trouvé (2 occurrences): if (user) {\r\n          await this.resetLoginAttemp...",
+      "Code dupliqué trouvé (2 occurrences): await this.resetLoginAttempts(user.id);\r\n         ...",
+      "Code dupliqué trouvé (2 occurrences): if (this.config.security.sessionRotation) {\r\n     ...",
+      "Code dupliqué trouvé (2 occurrences): req.session.user = {\r\n            id: user.id,\r\n  ...",
+      "Code dupliqué trouvé (2 occurrences): req.session.user = {\r\n            id: user.id,\r\n  ...",
+      "Code dupliqué trouvé (2 occurrences): id: user.id,\r\n            username: user.username,...",
+      "Code dupliqué trouvé (2 occurrences): email: user.email,\r\n            role: user.role\r\n ...",
+      "Code dupliqué trouvé (2 occurrences): },\r\n      password: {\r\n        required: true,\r\n  ...",
+      "Code dupliqué trouvé (2 occurrences): }\r\n        \r\n        const cleanUsername = this.sa...",
+      "Code dupliqué trouvé (4 occurrences): const cleanUsername = this.sanitizeInput(username)...",
+      "Code dupliqué trouvé (2 occurrences): const cleanEmail = this.sanitizeInput(email);\r\n   ...",
+      "Code dupliqué trouvé (2 occurrences): const user = await this.createUser(cleanUsername, ...",
+      "Code dupliqué trouvé (2 occurrences): const user = await this.createUser(cleanUsername, ...",
+      "Code dupliqué trouvé (2 occurrences): req.session.user = {\r\n          id: user.id,\r\n    ...",
+      "Code dupliqué trouvé (2 occurrences): req.session.user = {\r\n          id: user.id,\r\n    ...",
+      "Code dupliqué trouvé (2 occurrences): id: user.id,\r\n          username: user.username,\r\n...",
+      "Code dupliqué trouvé (2 occurrences): username: {\r\n        required: true,\r\n        type...",
+      "Code dupliqué trouvé (2 occurrences): const { username, password } = req.body;\r\n        ...",
+      "Code dupliqué trouvé (2 occurrences): const user = await this.authenticateUser(cleanUser...",
+      "Code dupliqué trouvé (2 occurrences): const passwordValidation = this.validatePassword(p...",
+      "Code dupliqué trouvé (2 occurrences): if (!isValidPassword) {\r\n        await this.increm...",
+      "Code dupliqué trouvé (2 occurrences): validateRegistrationData({ username, email, passwo...",
+      "Code dupliqué trouvé (2 occurrences): const passwordValidation = this.validatePassword(p...",
+      "Code dupliqué trouvé (2 occurrences): if (now > attempts.resetTime) {\r\n      this.rateLi...",
+      "Code dupliqué trouvé (2 occurrences): async resetLoginAttempts(userId) {\r\n    const quer...",
+      "Code dupliqué trouvé (2 occurrences): if (this.config.database.type === 'mysql') {\r\n    ...",
+      "Code dupliqué trouvé (2 occurrences): if (this.config.database.type === 'mysql') {\r\n    ...",
+      "Code dupliqué trouvé (2 occurrences): await this.db.execute(query, [userId]);\r\n    } els...",
+      "Code dupliqué trouvé (2 occurrences): } else {\r\n      await new Promise((resolve, reject...",
+      "Code dupliqué trouvé (2 occurrences): await new Promise((resolve, reject) => {\r\n        ...",
+      "Code dupliqué trouvé (2 occurrences): this.db.run(query, [userId], (err) => {\r\n         ...",
+      "Code dupliqué trouvé (2 occurrences): async updateLastLogin(userId) {\r\n    const query =...",
+      "Code dupliqué trouvé (2 occurrences): red: '\\x1b[31m',\r\n  green: '\\x1b[32m',\r\n  yellow: ...",
+      "Code dupliqué trouvé (2 occurrences): green: '\\x1b[32m',\r\n  yellow: '\\x1b[33m',\r\n  blue:...",
+      "Code dupliqué trouvé (2 occurrences): class Logger {\r\n  log(type, message, details = '')...",
+      "Code dupliqué trouvé (2 occurrences): this.wss = new WebSocket.Server({ port: this.optio...",
+      "Code dupliqué trouvé (2 occurrences): ws.send(JSON.stringify({ \r\n        type: 'connecte...",
+      "Code dupliqué trouvé (2 occurrences): const watchPaths = [\r\n      ...this.options.watchD...",
+      "Code dupliqué trouvé (2 occurrences): watcher.on('add', (filePath) => {\r\n          this....",
+      "Code dupliqué trouvé (2 occurrences): watcher.on('unlink', (filePath) => {\r\n          th...",
+      "Code dupliqué trouvé (2 occurrences): isRouteFile(filePath) {\r\n    const routesPath = pa...",
+      "Code dupliqué trouvé (2 occurrences): isViewFile(filePath) {\r\n    const viewsPath = path...",
+      "Code dupliqué trouvé (2 occurrences): isLayoutFile(filePath) {\r\n    const layoutsPath = ...",
+      "Code dupliqué trouvé (2 occurrences): this.removeRouteFromExpress(filePath);\r\n      \r\n  ...",
+      "Code dupliqué trouvé (2 occurrences): let logType = 'info';\r\n        if (status >= 400) ...",
+      "Code dupliqué trouvé (2 occurrences): if (options && typeof options !== 'object') {\r\n   ...",
+      "Code dupliqué trouvé (2 occurrences): title: (title) => {\r\n        res.locals.title = th...",
+      "Code dupliqué trouvé (2 occurrences): await fs.promises.writeFile(layoutPath, layoutCont...",
+      "Code dupliqué trouvé (2 occurrences): async loadTypeScriptPlugin(pluginPath) {\r\n    if (...",
+      "Code dupliqué trouvé (2 occurrences): if (this.options.autoLoad) {\r\n      this.loadAllPl...",
+      "Code dupliqué trouvé (2 occurrences): if (this.options.autoLoad) {\r\n      this.loadAllPl...",
+      "Code dupliqué trouvé (2 occurrences): this.loadAllPlugins().catch(error => {\r\n        th...",
+      "Code dupliqué trouvé (2 occurrences): setInterval(() => {\r\n      this.collectMetrics();\r...",
+      "Code dupliqué trouvé (2 occurrences): this.watchers.set('files', watcher);\r\n  }\r\n\r\n  // ...",
+      "Code dupliqué trouvé (2 occurrences): async loadPlugin(plugin, config = {}) {\r\n    let p...",
+      "Code dupliqué trouvé (2 occurrences): try {\r\n      let pluginModule;\r\n\r\n      if (typeof...",
+      "Code dupliqué trouvé (2 occurrences): if (this.loadingQueue.has(pluginName)) {\r\n        ...",
+      "Code dupliqué trouvé (2 occurrences): } else {\r\n        pluginModule = plugin;\r\n        ...",
+      "Code dupliqué trouvé (2 occurrences): pluginModule = plugin;\r\n        pluginName = plugi...",
+      "Code dupliqué trouvé (2 occurrences): if (this.plugins.has(pluginName)) {\r\n        this....",
+      "Code dupliqué trouvé (2 occurrences): this.log('warning', 'Plugin déjà chargé', pluginNa...",
+      "Code dupliqué trouvé (2 occurrences): const pluginInstance = {\r\n        name: pluginName...",
+      "Code dupliqué trouvé (2 occurrences): name: pluginName,\r\n        version: pluginModule.v...",
+      "Code dupliqué trouvé (2 occurrences): config: { ...pluginModule.defaultConfig, ...config...",
+      "Code dupliqué trouvé (2 occurrences): this.plugins.set(pluginName, pluginInstance);\r\n   ...",
+      "Code dupliqué trouvé (2 occurrences): this.loadOrder.push(pluginName);\r\n      this.loadi...",
+      "Code dupliqué trouvé (2 occurrences): this.loadingQueue.delete(pluginName);\r\n\r\n      thi...",
+      "Code dupliqué trouvé (2 occurrences): this.log('success', 'Plugin chargé', `${pluginName...",
+      "Code dupliqué trouvé (2 occurrences): this.log('success', 'Plugin chargé', `${pluginName...",
+      "Code dupliqué trouvé (2 occurrences): this.emit('plugin:loaded', pluginName, pluginInsta...",
+      "Code dupliqué trouvé (2 occurrences): await this.executeHook('plugin:load', pluginName, ...",
+      "Code dupliqué trouvé (2 occurrences): return this;\r\n    } catch (error) {\r\n      if (plu...",
+      "Code dupliqué trouvé (2 occurrences): return this;\r\n    } catch (error) {\r\n      if (plu...",
+      "Code dupliqué trouvé (2 occurrences): } catch (error) {\r\n      if (pluginName) {\r\n      ...",
+      "Code dupliqué trouvé (2 occurrences): if (pluginName) {\r\n        this.loadingQueue.delet...",
+      "Code dupliqué trouvé (2 occurrences): this.loadingQueue.delete(pluginName);\r\n        thi...",
+      "Code dupliqué trouvé (2 occurrences): this.errorCount.set(pluginName, (this.errorCount.g...",
+      "Code dupliqué trouvé (2 occurrences): }\r\n      this.log('error', 'Erreur lors du chargem...",
+      "Code dupliqué trouvé (2 occurrences): this.log('error', 'Erreur lors du chargement du pl...",
+      "Code dupliqué trouvé (2 occurrences): if (!pluginModule || typeof pluginModule !== 'obje...",
+      "Code dupliqué trouvé (2 occurrences): throw new Error(`Plugin \"${pluginName}\" doit expor...",
+      "Code dupliqué trouvé (2 occurrences): }\r\n\r\n    if (!pluginModule.load || typeof pluginMo...",
+      "Code dupliqué trouvé (2 occurrences): if (!pluginModule.load || typeof pluginModule.load...",
+      "Code dupliqué trouvé (2 occurrences): if (!pluginModule.load || typeof pluginModule.load...",
+      "Code dupliqué trouvé (2 occurrences): if (missing.length > 0) {\r\n        throw new Error...",
+      "Code dupliqué trouvé (2 occurrences): if (missingPeers.length > 0) {\r\n        this.log('...",
+      "Code dupliqué trouvé (2 occurrences): const plugin = this.plugins.get(pluginName);\r\n    ...",
+      "Code dupliqué trouvé (2 occurrences): setTimeout(() => {\r\n      this.log('info', `Profil...",
+      "Code dupliqué trouvé (2 occurrences): const pluginTemplate = templates[template];\r\n    i...",
+      "Code dupliqué trouvé (2 occurrences): const dir = path.dirname(outputPath);\r\n    if (!fs...",
+      "Code dupliqué trouvé (2 occurrences): async restorePlugins(backupPath) {\r\n    if (!fs.ex...",
+      "Code dupliqué trouvé (2 occurrences): this.log('success', 'Plugins restaurés', `${sorted...",
+      "Code dupliqué trouvé (2 occurrences): getPluginNameFromFile(filePath) {\r\n    const plugi...",
+      "Code dupliqué trouvé (2 occurrences): collectMetrics() {\r\n    for (const [name, plugin] ...",
+      "Code dupliqué trouvé (2 occurrences): this.loadingQueue.add(pluginName);\r\n        \r\n    ...",
+      "Code dupliqué trouvé (2 occurrences): if (!plugin) {\r\n        this.log('warning', 'Plugi...",
+      "Code dupliqué trouvé (2 occurrences): const config = { ...plugin.config, ...newConfig };...",
+      "Code dupliqué trouvé (2 occurrences): if (pluginFiles.length === 0) {\r\n      this.log('i...",
+      "Code dupliqué trouvé (2 occurrences): if (results.errors.length > 0) {\r\n      this.log('...",
+      "Code dupliqué trouvé (2 occurrences): validatePlugin(pluginModule, pluginName) {\r\n    if...",
+      "Code dupliqué trouvé (2 occurrences): async checkDependencies(plugin) {\r\n    if (!plugin...",
+      "Code dupliqué trouvé (2 occurrences): if (missing.length > 0) {\r\n      throw new Error(`...",
+      "Code dupliqué trouvé (2 occurrences): addPluginMiddleware(middleware, pluginName) {\r\n   ...",
+      "Code dupliqué trouvé (2 occurrences): addPluginRoute(method, path, handler, pluginName) ...",
+      "Code dupliqué trouvé (2 occurrences): if (this.app && this.app.createRoute) {\r\n      thi...",
+      "Code dupliqué trouvé (2 occurrences): addPluginCommand(name, handler, description, plugi...",
+      "Code dupliqué trouvé (2 occurrences): const style = logStyles[type] || logStyles.info;\r\n...",
+      "Code dupliqué trouvé (2 occurrences): const normalizedMethod = method.toLowerCase();\r\n  ...",
+      "Code dupliqué trouvé (2 occurrences): const result = { method: normalizedMethod, path: t...",
+      "Code dupliqué trouvé (2 occurrences): const limit = this.rateLimitCache.get(clientId);\r\n...",
+      "Code dupliqué trouvé (2 occurrences): try {\r\n      // Validation sécurisée des entrées\r\n...",
+      "Code dupliqué trouvé (2 occurrences): const validated = this.validateRouteInput(method, ...",
+      "Code dupliqué trouvé (2 occurrences): method = validated.method;\r\n      path = validated...",
+      "Code dupliqué trouvé (2 occurrences): path = validated.path;\r\n      handler = validated....",
+      "Code dupliqué trouvé (2 occurrences): handler = validated.handler;\r\n\r\n      // Vérifie l...",
+      "Code dupliqué trouvé (2 occurrences): if (this.dynamicRoutes.size >= this.maxDynamicRout...",
+      "Code dupliqué trouvé (2 occurrences): throw new Error('Trop de tentatives de création de...",
+      "Code dupliqué trouvé (2 occurrences): }\r\n\r\n      // Hook de sécurité avant création\r\n   ...",
+      "Code dupliqué trouvé (2 occurrences): if (this.app.plugins) {\r\n        await this.app.pl...",
+      "Code dupliqué trouvé (2 occurrences): await this.app.plugins.executeHook('route:security...",
+      "Code dupliqué trouvé (2 occurrences): }\r\n\r\n      if (this.routeExists(method, path)) {\r\n...",
+      "Code dupliqué trouvé (4 occurrences): if (this.routeExists(method, path)) {\r\n        thi...",
+      "Code dupliqué trouvé (2 occurrences): this.app.logger.log('warning', 'Route already exis...",
+      "Code dupliqué trouvé (2 occurrences): if (Array.isArray(secureHandler)) {\r\n        this....",
+      "Code dupliqué trouvé (2 occurrences): if (Array.isArray(secureHandler)) {\r\n        this....",
+      "Code dupliqué trouvé (2 occurrences): this.app.app[method](path, ...secureHandler);\r\n   ...",
+      "Code dupliqué trouvé (2 occurrences): } else {\r\n        this.app.app[method](path, secur...",
+      "Code dupliqué trouvé (2 occurrences): this.app.app[method](path, secureHandler);\r\n      ...",
+      "Code dupliqué trouvé (2 occurrences): }\r\n\r\n      const routeKey = `${method}:${path}`;\r\n...",
+      "Code dupliqué trouvé (2 occurrences): const routeKey = `${method}:${path}`;\r\n      this....",
+      "Code dupliqué trouvé (2 occurrences): const routeKey = `${method}:${path}`;\r\n      this....",
+      "Code dupliqué trouvé (2 occurrences): this.dynamicRoutes.set(routeKey, {\r\n        method...",
+      "Code dupliqué trouvé (2 occurrences): method,\r\n        path,\r\n        handler: secureHan...",
+      "Code dupliqué trouvé (2 occurrences): });\r\n\r\n      this.app.logger.log('create', 'Route ...",
+      "Code dupliqué trouvé (2 occurrences): this.app.logger.log('create', 'Route created dynam...",
+      "Code dupliqué trouvé (2 occurrences): this.app.logger.log('create', 'Route created dynam...",
+      "Code dupliqué trouvé (2 occurrences): if (this.app.plugins) {\r\n        await this.app.pl...",
+      "Code dupliqué trouvé (2 occurrences): if (this.app.plugins) {\r\n        await this.app.pl...",
+      "Code dupliqué trouvé (2 occurrences): await this.app.plugins.executeHook('route:created'...",
+      "Code dupliqué trouvé (2 occurrences): }\r\n      \r\n      if (this.app.options.isDev && thi...",
+      "Code dupliqué trouvé (2 occurrences): if (this.app.options.isDev && this.app.devServer) ...",
+      "Code dupliqué trouvé (2 occurrences): if (this.app.options.isDev && this.app.devServer) ...",
+      "Code dupliqué trouvé (2 occurrences): this.app.devServer.broadcast({\r\n          type: 'r...",
+      "Code dupliqué trouvé (2 occurrences): type: 'route-created',\r\n          method: method.t...",
+      "Code dupliqué trouvé (3 occurrences): method: method.toUpperCase(),\r\n          path,\r\n  ...",
+      "Code dupliqué trouvé (2 occurrences): }\r\n\r\n      return this.app;\r\n    } catch (error) {...",
+      "Code dupliqué trouvé (2 occurrences): };\r\n\r\n    if (Array.isArray(handler)) {\r\n      ret...",
+      "Code dupliqué trouvé (2 occurrences): if (Array.isArray(handler)) {\r\n      return handle...",
+      "Code dupliqué trouvé (2 occurrences): if (Array.isArray(handler)) {\r\n      return handle...",
+      "Code dupliqué trouvé (2 occurrences): return handler.map(h => wrapHandler(h));\r\n    } el...",
+      "Code dupliqué trouvé (2 occurrences): const keys = Object.keys(obj);\r\n    if (keys.lengt...",
+      "Code dupliqué trouvé (3 occurrences): if (typeof value === 'string') {\r\n        if (valu...",
+      "Code dupliqué trouvé (2 occurrences): if (cleaned > 0) {\r\n      this.app.logger.log('mai...",
+      "Code dupliqué trouvé (2 occurrences): async deleteRoute(method, path) {\r\n    try {\r\n    ...",
+      "Code dupliqué trouvé (2 occurrences): if (!this.dynamicRoutes.has(routeKey) && !this.rou...",
+      "Code dupliqué trouvé (2 occurrences): this.removeRouteFromRouter(method, path);\r\n      t...",
+      "Code dupliqué trouvé (2 occurrences): async updateRoute(method, path, newHandler) {\r\n   ...",
+      "Code dupliqué trouvé (2 occurrences): this.app.app._router.stack = this.app.app._router....",
+      "Code dupliqué trouvé (2 occurrences): const relativePath = path.relative(basePath, fileP...",
+      "Code dupliqué trouvé (2 occurrences): } catch (error) {\r\n      this.app.logger.log('erro...",
+      "Code dupliqué trouvé (2 occurrences): fs.writeFileSync(indexViewPath, defaultViewContent...",
+      "Code dupliqué trouvé (2 occurrences): analyzeDirectoryStructure(dirs, category) {\r\n    d...",
+      "Code dupliqué trouvé (2 occurrences): getDirectoryTree(dirPath, depth = 0) {\r\n    let fi...",
+      "Code dupliqué trouvé (2 occurrences): return { files, subdirs, depth: maxDepth };\r\n  }\r\n...",
+      "Code dupliqué trouvé (2 occurrences): } catch (error) {\r\n      this.errors.push(`Erreur ...",
+      "Code dupliqué trouvé (2 occurrences): analyzeDependencyGraph() {\r\n    console.log('🕸️  ...",
+      "Code dupliqué trouvé (2 occurrences): jsFiles.forEach(file => {\r\n      const deps = this...",
+      "Code dupliqué trouvé (2 occurrences): this.detectCircularDependencies();\r\n    this.analy...",
+      "Code dupliqué trouvé (2 occurrences): extractDependencies(filePath) {\r\n    try {\r\n      ...",
+      "Code dupliqué trouvé (2 occurrences): module: match[1],\r\n          isLocal: match[1].sta...",
+      "Code dupliqué trouvé (2 occurrences): isLocal: match[1].startsWith('.'),\r\n          line...",
+      "Code dupliqué trouvé (2 occurrences): detectCircularDependencies() {\r\n    const visited ...",
+      "Code dupliqué trouvé (2 occurrences): dfsForCycles(file, visited, recursionStack, cycles...",
+      "Code dupliqué trouvé (2 occurrences): return resolved + '.js'; // Fallback\r\n  }\r\n\r\n  // ...",
+      "Code dupliqué trouvé (2 occurrences): this.codeMetrics.set(file, {\r\n        ...this.code...",
+      "Code dupliqué trouvé (2 occurrences): patterns.forEach((pattern, index) => {\r\n        co...",
+      "Code dupliqué trouvé (2 occurrences): jsFiles.forEach(file => {\r\n      const blocks = th...",
+      "Code dupliqué trouvé (2 occurrences): analyzePerformance() {\r\n    console.log('⚡ Analyse...",
+      "Code dupliqué trouvé (2 occurrences): } catch (error) {\r\n      this.warnings.push(`Erreu...",
+      "Code dupliqué trouvé (2 occurrences): ];\r\n    \r\n    jsFiles.forEach(file => {\r\n      try...",
+      "Code dupliqué trouvé (2 occurrences): if (this.security.length === 0) {\r\n      this.info...",
+      "Code dupliqué trouvé (2 occurrences): while ((match = routePattern.exec(content)) !== nu...",
+      "Code dupliqué trouvé (2 occurrences): if (validationIssues === 0) {\r\n      this.info.pus...",
+      "Code dupliqué trouvé (2 occurrences): if (testFiles.length === 0) {\r\n      this.warnings...",
+      "Code dupliqué trouvé (2 occurrences): const fullPath = path.join(currentDir, item);\r\n   ...",
+      "Code dupliqué trouvé (2 occurrences): } catch (error) {\r\n      this.warnings.push(`Erreu...",
+      "Code dupliqué trouvé (2 occurrences): if (variableStyle !== 'camelCase' && variables.len...",
+      "Code dupliqué trouvé (2 occurrences): if (classStyle !== 'PascalCase' && classes.length ...",
+      "Code dupliqué trouvé (2 occurrences): return Object.keys(styles).reduce((a, b) => styles...",
+      "Code dupliqué trouvé (2 occurrences): console.log(`🎯 SCORE GLOBAL: ${score}% (${grade})...",
+      "Code dupliqué trouvé (2 occurrences): const total = this.errors.length + this.warnings.l...",
+      "Code dupliqué trouvé (2 occurrences): console.log('\\n📋 Rapports générés:');\r\n    consol...",
+      "Code dupliqué trouvé (2 occurrences): <!-- Header avec score global -->\r\n            <di...",
+      "Code dupliqué trouvé (2 occurrences): <!-- Métriques rapides -->\r\n            <div class...",
+      "Code dupliqué trouvé (2 occurrences): <div class=\"flex items-center space-x-3 p-3 bg-gre...",
+      "Code dupliqué trouvé (2 occurrences): <i class=\"fas fa-check text-green-500\"></i>\r\n     ...",
+      "Code dupliqué trouvé (2 occurrences): <span class=\"text-green-800 text-sm\">${success}</s...",
+      "Code dupliqué trouvé (2 occurrences): generateIssuesList(issues, type) {\r\n    if (issues...",
+      "Code dupliqué trouvé (2 occurrences): verifyPackageIntegrity() {\r\n    console.log('🔍 Vé...",
+      "Code dupliqué trouvé (2 occurrences): checkVulnerabilities() {\r\n    console.log('🛡️  Vé...",
+      "Code dupliqué trouvé (2 occurrences): verifySyntax() {\r\n    console.log('✅ Vérification ...",
+      "Code dupliqué trouvé (2 occurrences): verifyBestPractices() {\r\n    console.log('📋 Vérif...",
+      "Code dupliqué trouvé (2 occurrences): checkAuthSecurity() {\r\n    console.log('🔐 Vérific...",
+      "Code dupliqué trouvé (2 occurrences): analyzeCoverage() {\r\n    console.log('📊 Analyse d...",
+      "Code dupliqué trouvé (2 occurrences): checkTestQuality() {\r\n    console.log('🎯 Vérifica...",
+      "Code dupliqué trouvé (2 occurrences): checkAPIConsistency() {\r\n    console.log('🔗 Vérif...",
+      "Code dupliqué trouvé (2 occurrences): validateConfiguration() {\r\n    console.log('⚙️  Va...",
+      "Code dupliqué trouvé (2 occurrences): checkDocumentationSync() {\r\n    console.log('📖 Vé...",
+      "Code dupliqué trouvé (2 occurrences): verifyModuleExports() {\r\n    console.log('📤 Vérif...",
+      "Code dupliqué trouvé (2 occurrences): checkConfigConsistency() {\r\n    console.log('⚙️  V...",
+      "Code dupliqué trouvé (2 occurrences): validateAPISignatures() {\r\n    console.log('✍️  Va...",
+      "Code dupliqué trouvé (2 occurrences): analyzeDepthComplexity() {\r\n    console.log('🔍 An...",
+      "Code dupliqué trouvé (2 occurrences): findUnusedDependencies() {\r\n    console.log('🗑️  ...",
+      "Code dupliqué trouvé (2 occurrences): if (!fs.existsSync('package.json')) {\r\n      this....",
+      "Code dupliqué trouvé (2 occurrences): const presentHooks = lifecycleHooks.filter(hook =>...",
+      "232 blocs de code dupliqué détectés",
+      "quick-setup.js: console.log en production (impact performance) (6 occurrences)",
+      "setup-executor.js: console.log en production (impact performance) (1 occurrences)",
+      "setup.js: console.log en production (impact performance) (24 occurrences)",
+      "create-veko-app.js: console.log en production (impact performance) (11 occurrences)",
+      "veko.js: console.log en production (impact performance) (3 occurrences)",
+      "auth-example.js: console.log en production (impact performance) (4 occurrences)",
+      "app.js: console.log en production (impact performance) (3 occurrences)",
+      "auth-manager.js: console.log en production (impact performance) (19 occurrences)",
+      "logger.js: console.log en production (impact performance) (1 occurrences)",
+      "module-installer.js: console.log en production (impact performance) (7 occurrences)",
+      "dev-server.js: console.log en production (impact performance) (5 occurrences)",
+      "plugin-manager.js: console.log en production (impact performance) (8 occurrences)",
+      "route-manager.js: console.log en production (impact performance) (1 occurrences)",
+      "main.js: console.log en production (impact performance) (1 occurrences)",
+      "verify-code.js: Boucle avec .length dans la condition (optimisable) (1 occurrences)",
+      "verify-code.js: console.log en production (impact performance) (77 occurrences)",
+      "Aucun fichier de test trouvé"
+    ],
+    "security": [
+      "🚨 auth-example.js: Mot de passe en dur détecté",
+      "⚠️ Route get sans validation d'entrée dans auth-manager.js",
+      "🚨 verify-code.js: Utilisation dangereuse d'eval() (1x)",
+      "🚨 auth-example.js: Mot de passe en dur détecté",
+      "⚠️ Route get sans validation d'entrée dans auth-manager.js"
+    ],
+    "performance": [
+      "Phase Structure: 543ms",
+      "Phase Dépendances: 17ms",
+      "setup.js: Concaténation de strings avec + (préférer template literals) (2 occurrences)",
+      "app.js: Concaténation de strings avec + (préférer template literals) (2 occurrences)",
+      "layout-manager.js: Utilisation de setInterval (vérifier les fuites mémoire) (1 occurrences)",
+      "plugin-manager.js: Utilisation de setInterval (vérifier les fuites mémoire) (1 occurrences)",
+      "plugin-manager.js: RegExp dynamique (coûteux si répété) (1 occurrences)",
+      "route-manager.js: Utilisation de setInterval (vérifier les fuites mémoire) (1 occurrences)",
+      "verify-code.js: Utilisation de setInterval (vérifier les fuites mémoire) (1 occurrences)",
+      "verify-code.js: Concaténation de strings avec + (préférer template literals) (5 occurrences)",
+      "verify-code.js: RegExp dynamique (coûteux si répété) (1 occurrences)",
+      "Phase Code Quality: 94ms",
+      "Phase Sécurité: 27ms",
+      "Phase Tests: 1ms",
+      "Phase Cohérence: 9ms"
+    ]
+  },
+  "successes": [
+    "✓ Architecture core: lib/core",
+    "📂 Structure lib/core: 3 fichiers, 0 sous-dossiers",
+    "✓ Architecture routing: lib/routing",
+    "📂 Structure lib/routing: 1 fichiers, 0 sous-dossiers",
+    "✓ Architecture development: lib/dev",
+    "📂 Structure lib/dev: 1 fichiers, 0 sous-dossiers",
+    "✓ Architecture layout: lib/layout",
+    "📂 Structure lib/layout: 1 fichiers, 0 sous-dossiers",
+    "✓ Architecture views: error",
+    "📂 Structure error: 1 fichiers, 0 sous-dossiers",
+    "✓ Architecture examples: examples",
+    "📂 Structure examples: 1 fichiers, 0 sous-dossiers",
+    "✓ Architecture scripts: bin",
+    "📂 Structure bin: 5 fichiers, 1 sous-dossiers",
+    "✓ Fichier package.json présent",
+    "✓ Fichier README.md présent",
+    "✓ Fichier .gitignore présent",
+    "✓ Shebang correct",
+    "✓ veko.js: CLI parser importé (1x)",
+    "✓ veko.js: Version définie (1x)",
+    "✓ veko.js: Commandes définies (1x)",
+    "✓ veko.js: Gestion des codes de sortie (1x)",
+    "✓ Commande 'dev' définie",
+    "✓ Commande 'build' définie",
+    "✓ Commande 'start' définie",
+    "✓ Gestion d'erreurs présente dans le binaire",
+    "✓ Binaire exécutable avec --help",
+    "✓ Documentation d'usage présente",
+    "✓ Section installation dans README",
+    "✓ Section api dans README",
+    "✓ Section example dans README",
+    "✓ Exemples trouvés",
+    "✓ 12 dépendances de production",
+    "✓ 1 dépendances de développement",
+    "✓ Script start défini",
+    "✓ Script test défini",
+    "✓ Script build défini",
+    "✓ Intégrité du package vérifiée",
+    "✓ Aucune dépendance circulaire détectée",
+    "✓ Profondeur de complexité analysée",
+    "✓ Dépendances inutilisées vérifiées",
+    "✓ Vérification des vulnérabilités terminée",
+    "✓ Syntaxe JavaScript validée",
+    "✓ Bonnes pratiques appliquées",
+    "✓ Sécurité d'authentification vérifiée",
+    "✓ Sécurité d'authentification vérifiée",
+    "✓ Couverture de code analysée",
+    "✓ Qualité des tests vérifiée",
+    "✓ Cohérence de nommage respectée",
+    "✓ Exports de modules vérifiés",
+    "✓ Cohérence de configuration vérifiée",
+    "✓ Signatures API validées",
+    "✓ Cohérence API vérifiée",
+    "✓ Configuration validée",
+    "✓ Documentation synchronisée",
+    "✓ Hooks npm trouvés: postinstall, prepublishOnly, test, start",
+    "✓ Hook postinstall: message d'installation",
+    "✓ Hook prepublishOnly: tests avant publication"
+  ],
+  "metrics": {
+    "codeMetrics": {
+      "bin\\commands\\quick-setup.js": {
+        "complexity": {
+          "total": 6,
+          "details": {
+            "if": 4,
+            "logical": 1
+          }
+        }
+      },
+      "bin\\commands\\setup-executor.js": {
+        "complexity": {
+          "total": 17,
+          "details": {
+            "if": 7,
+            "for": 2,
+            "catch": 3,
+            "logical": 1,
+            "throw": 3
+          }
+        }
+      },
+      "bin\\commands\\setup.js": {
+        "complexity": {
+          "total": 38,
+          "details": {
+            "if": 16,
+            "catch": 4,
+            "ternary": 6,
+            "logical": 10,
+            "throw": 1
+          }
+        }
+      },
+      "bin\\create-veko-app.js": {
+        "complexity": {
+          "total": 9,
+          "details": {
+            "if": 5,
+            "else-if": 1,
+            "catch": 1,
+            "logical": 1
+          }
+        }
+      },
+      "bin\\veko.js": {
+        "complexity": {
+          "total": 13,
+          "details": {
+            "if": 3,
+            "else-if": 1,
+            "catch": 2,
+            "ternary": 1,
+            "logical": 5
+          }
+        }
+      },
+      "examples\\auth-example.js": {
+        "complexity": {
+          "total": 2,
+          "details": {
+            "catch": 1
+          }
+        }
+      },
+      "index.js": {
+        "complexity": {
+          "total": 3,
+          "details": {
+            "logical": 2
+          }
+        }
+      },
+      "index.test.js": {
+        "complexity": {
+          "total": 1,
+          "details": {}
+        }
+      },
+      "lib\\app.js": {
+        "complexity": {
+          "total": 48,
+          "details": {
+            "if": 20,
+            "for": 1,
+            "catch": 1,
+            "ternary": 1,
+            "logical": 21,
+            "throw": 3
+          }
+        }
+      },
+      "lib\\core\\auth-manager.js": {
+        "complexity": {
+          "total": 179,
+          "details": {
+            "if": 101,
+            "else-if": 2,
+            "for": 5,
+            "catch": 8,
+            "ternary": 8,
+            "logical": 49,
+            "throw": 5
+          }
+        }
+      },
+      "lib\\core\\logger.js": {
+        "complexity": {
+          "total": 2,
+          "details": {
+            "logical": 1
+          }
+        }
+      },
+      "lib\\core\\module-installer.js": {
+        "complexity": {
+          "total": 8,
+          "details": {
+            "if": 3,
+            "for": 2,
+            "catch": 2
+          }
+        }
+      },
+      "lib\\dev\\dev-server.js": {
+        "complexity": {
+          "total": 40,
+          "details": {
+            "if": 20,
+            "else-if": 3,
+            "switch": 1,
+            "case": 3,
+            "catch": 3,
+            "logical": 9
+          }
+        }
+      },
+      "lib\\layout\\layout-manager.js": {
+        "complexity": {
+          "total": 131,
+          "details": {
+            "if": 58,
+            "else-if": 1,
+            "for": 2,
+            "catch": 9,
+            "ternary": 2,
+            "logical": 48,
+            "throw": 10
+          }
+        }
+      },
+      "lib\\plugin-manager.js": {
+        "complexity": {
+          "total": 266,
+          "details": {
+            "if": 113,
+            "else-if": 2,
+            "while": 1,
+            "for": 18,
+            "catch": 29,
+            "ternary": 7,
+            "logical": 61,
+            "throw": 34
+          }
+        }
+      },
+      "lib\\routing\\route-manager.js": {
+        "complexity": {
+          "total": 185,
+          "details": {
+            "if": 95,
+            "else-if": 4,
+            "for": 5,
+            "switch": 1,
+            "case": 2,
+            "catch": 10,
+            "logical": 42,
+            "throw": 25
+          }
+        }
+      },
+      "templates\\public\\js\\main.js": {
+        "complexity": {
+          "total": 1,
+          "details": {}
+        }
+      },
+      "verify-code.js": {
+        "complexity": {
+          "total": 203,
+          "details": {
+            "if": 100,
+            "else-if": 11,
+            "while": 5,
+            "for": 5,
+            "switch": 1,
+            "case": 4,
+            "catch": 17,
+            "ternary": 40,
+            "logical": 18,
+            "throw": 1
+          }
+        }
+      }
+    },
+    "duplicateBlocks": 232,
+    "dependencyGraph": {
+      "bin\\commands\\quick-setup.js": [
+        {
+          "type": "require",
+          "module": "chalk",
+          "isLocal": false,
+          "line": 1
+        },
+        {
+          "type": "require",
+          "module": "inquirer",
+          "isLocal": false,
+          "line": 2
+        },
+        {
+          "type": "require",
+          "module": "nanospinner",
+          "isLocal": false,
+          "line": 3
+        },
+        {
+          "type": "require",
+          "module": "./setup-executor",
+          "isLocal": true,
+          "line": 98
+        }
+      ],
+      "bin\\commands\\setup-executor.js": [
+        {
+          "type": "require",
+          "module": "nanospinner",
+          "isLocal": false,
+          "line": 1
+        },
+        {
+          "type": "require",
+          "module": "chalk",
+          "isLocal": false,
+          "line": 2
+        },
+        {
+          "type": "require",
+          "module": "fs",
+          "isLocal": false,
+          "line": 3
+        },
+        {
+          "type": "require",
+          "module": "path",
+          "isLocal": false,
+          "line": 4
+        },
+        {
+          "type": "require",
+          "module": "child_process",
+          "isLocal": false,
+          "line": 5
+        },
+        {
+          "type": "require",
+          "module": "./template-generator",
+          "isLocal": true,
+          "line": 137
+        },
+        {
+          "type": "require",
+          "module": "./feature-configurer",
+          "isLocal": true,
+          "line": 154
+        },
+        {
+          "type": "require",
+          "module": "./auth-setup",
+          "isLocal": true,
+          "line": 161
+        },
+        {
+          "type": "require",
+          "module": "./database-setup",
+          "isLocal": true,
+          "line": 168
+        }
+      ],
+      "bin\\commands\\setup.js": [
+        {
+          "type": "require",
+          "module": "chalk",
+          "isLocal": false,
+          "line": 1
+        },
+        {
+          "type": "require",
+          "module": "inquirer",
+          "isLocal": false,
+          "line": 2
+        },
+        {
+          "type": "require",
+          "module": "ora",
+          "isLocal": false,
+          "line": 3
+        },
+        {
+          "type": "require",
+          "module": "boxen",
+          "isLocal": false,
+          "line": 4
+        },
+        {
+          "type": "require",
+          "module": "figlet",
+          "isLocal": false,
+          "line": 5
+        },
+        {
+          "type": "require",
+          "module": "gradient-string",
+          "isLocal": false,
+          "line": 6
+        },
+        {
+          "type": "require",
+          "module": "nanospinner",
+          "isLocal": false,
+          "line": 7
+        },
+        {
+          "type": "require",
+          "module": "path",
+          "isLocal": false,
+          "line": 8
+        },
+        {
+          "type": "require",
+          "module": "fs",
+          "isLocal": false,
+          "line": 9
+        },
+        {
+          "type": "require",
+          "module": "./setup-executor",
+          "isLocal": true,
+          "line": 565
+        },
+        {
+          "type": "require",
+          "module": "fs",
+          "isLocal": false,
+          "line": 629
+        }
+      ],
+      "bin\\create-veko-app.js": [
+        {
+          "type": "require",
+          "module": "chalk",
+          "isLocal": false,
+          "line": 3
+        },
+        {
+          "type": "require",
+          "module": "commander",
+          "isLocal": false,
+          "line": 4
+        },
+        {
+          "type": "require",
+          "module": "./commands/setup",
+          "isLocal": true,
+          "line": 5
+        },
+        {
+          "type": "require",
+          "module": "./commands/quick-setup",
+          "isLocal": true,
+          "line": 6
+        },
+        {
+          "type": "require",
+          "module": "inquirer",
+          "isLocal": false,
+          "line": 37
+        }
+      ],
+      "bin\\veko.js": [
+        {
+          "type": "require",
+          "module": "commander",
+          "isLocal": false,
+          "line": 3
+        },
+        {
+          "type": "require",
+          "module": "chalk",
+          "isLocal": false,
+          "line": 4
+        },
+        {
+          "type": "require",
+          "module": "./commands/setup",
+          "isLocal": true,
+          "line": 5
+        },
+        {
+          "type": "require",
+          "module": "../lib/dev/dev-server",
+          "isLocal": true,
+          "line": 6
+        },
+        {
+          "type": "require",
+          "module": "./commands/setup-executor",
+          "isLocal": true,
+          "line": 84
+        },
+        {
+          "type": "require",
+          "module": "./commands/quick-setup",
+          "isLocal": true,
+          "line": 108
+        },
+        {
+          "type": "require",
+          "module": "./commands/template-list",
+          "isLocal": true,
+          "line": 118
+        },
+        {
+          "type": "require",
+          "module": "./commands/plugin-manager-cli",
+          "isLocal": true,
+          "line": 129
+        }
+      ],
+      "examples\\auth-example.js": [
+        {
+          "type": "require",
+          "module": "../index",
+          "isLocal": true,
+          "line": 1
+        }
+      ],
+      "index.js": [
+        {
+          "type": "require",
+          "module": "./lib/app",
+          "isLocal": true,
+          "line": 1
+        }
+      ],
+      "index.test.js": [],
+      "lib\\app.js": [
+        {
+          "type": "require",
+          "module": "express",
+          "isLocal": false,
+          "line": 1
+        },
+        {
+          "type": "require",
+          "module": "path",
+          "isLocal": false,
+          "line": 2
+        },
+        {
+          "type": "require",
+          "module": "fs",
+          "isLocal": false,
+          "line": 3
+        },
+        {
+          "type": "require",
+          "module": "helmet",
+          "isLocal": false,
+          "line": 4
+        },
+        {
+          "type": "require",
+          "module": "express-rate-limit",
+          "isLocal": false,
+          "line": 5
+        },
+        {
+          "type": "require",
+          "module": "validator",
+          "isLocal": false,
+          "line": 6
+        },
+        {
+          "type": "require",
+          "module": "./core/module-installer",
+          "isLocal": true,
+          "line": 8
+        },
+        {
+          "type": "require",
+          "module": "./core/logger",
+          "isLocal": true,
+          "line": 9
+        },
+        {
+          "type": "require",
+          "module": "./layout/layout-manager",
+          "isLocal": true,
+          "line": 10
+        },
+        {
+          "type": "require",
+          "module": "./routing/route-manager",
+          "isLocal": true,
+          "line": 11
+        },
+        {
+          "type": "require",
+          "module": "./dev/dev-server",
+          "isLocal": true,
+          "line": 12
+        },
+        {
+          "type": "require",
+          "module": "./plugin-manager",
+          "isLocal": true,
+          "line": 13
+        },
+        {
+          "type": "require",
+          "module": "./core/auth-manager",
+          "isLocal": true,
+          "line": 14
+        }
+      ],
+      "lib\\core\\auth-manager.js": [
+        {
+          "type": "require",
+          "module": "path",
+          "isLocal": false,
+          "line": 1
+        },
+        {
+          "type": "require",
+          "module": "fs",
+          "isLocal": false,
+          "line": 2
+        },
+        {
+          "type": "require",
+          "module": "crypto",
+          "isLocal": false,
+          "line": 3
+        },
+        {
+          "type": "require",
+          "module": "mysql2/promise",
+          "isLocal": false,
+          "line": 257
+        },
+        {
+          "type": "require",
+          "module": "sqlite3",
+          "isLocal": false,
+          "line": 272
+        },
+        {
+          "type": "require",
+          "module": "express-session",
+          "isLocal": false,
+          "line": 354
+        },
+        {
+          "type": "require",
+          "module": "helmet",
+          "isLocal": false,
+          "line": 377
+        },
+        {
+          "type": "require",
+          "module": "express-rate-limit",
+          "isLocal": false,
+          "line": 378
+        },
+        {
+          "type": "require",
+          "module": "bcryptjs",
+          "isLocal": false,
+          "line": 985
+        },
+        {
+          "type": "require",
+          "module": "bcryptjs",
+          "isLocal": false,
+          "line": 1037
+        }
+      ],
+      "lib\\core\\logger.js": [],
+      "lib\\core\\module-installer.js": [
+        {
+          "type": "require",
+          "module": "path",
+          "isLocal": false,
+          "line": 1
+        },
+        {
+          "type": "require",
+          "module": "fs",
+          "isLocal": false,
+          "line": 2
+        },
+        {
+          "type": "require",
+          "module": "child_process",
+          "isLocal": false,
+          "line": 3
+        }
+      ],
+      "lib\\dev\\dev-server.js": [
+        {
+          "type": "require",
+          "module": "path",
+          "isLocal": false,
+          "line": 1
+        },
+        {
+          "type": "require",
+          "module": "fs",
+          "isLocal": false,
+          "line": 2
+        },
+        {
+          "type": "require",
+          "module": "chokidar",
+          "isLocal": false,
+          "line": 7
+        },
+        {
+          "type": "require",
+          "module": "ws",
+          "isLocal": false,
+          "line": 8
+        }
+      ],
+      "lib\\layout\\layout-manager.js": [
+        {
+          "type": "require",
+          "module": "path",
+          "isLocal": false,
+          "line": 1
+        },
+        {
+          "type": "require",
+          "module": "fs",
+          "isLocal": false,
+          "line": 2
+        },
+        {
+          "type": "require",
+          "module": "ejs",
+          "isLocal": false,
+          "line": 213
+        }
+      ],
+      "lib\\plugin-manager.js": [
+        {
+          "type": "require",
+          "module": "path",
+          "isLocal": false,
+          "line": 1
+        },
+        {
+          "type": "require",
+          "module": "fs",
+          "isLocal": false,
+          "line": 2
+        },
+        {
+          "type": "require",
+          "module": "events",
+          "isLocal": false,
+          "line": 3
+        },
+        {
+          "type": "require",
+          "module": "ts-node",
+          "isLocal": false,
+          "line": 73
+        },
+        {
+          "type": "require",
+          "module": "typescript",
+          "isLocal": false,
+          "line": 105
+        },
+        {
+          "type": "require",
+          "module": "util",
+          "isLocal": false,
+          "line": 194
+        },
+        {
+          "type": "require",
+          "module": "chokidar",
+          "isLocal": false,
+          "line": 216
+        },
+        {
+          "type": "require",
+          "module": "${pluginPath}.js",
+          "isLocal": false,
+          "line": 952
+        }
+      ],
+      "lib\\routing\\route-manager.js": [
+        {
+          "type": "require",
+          "module": "path",
+          "isLocal": false,
+          "line": 1
+        },
+        {
+          "type": "require",
+          "module": "fs",
+          "isLocal": false,
+          "line": 2
+        },
+        {
+          "type": "require",
+          "module": "validator",
+          "isLocal": false,
+          "line": 3
+        },
+        {
+          "type": "require",
+          "module": "crypto",
+          "isLocal": false,
+          "line": 4
+        }
+      ],
+      "templates\\public\\js\\main.js": [],
+      "verify-code.js": [
+        {
+          "type": "require",
+          "module": "fs",
+          "isLocal": false,
+          "line": 1
+        },
+        {
+          "type": "require",
+          "module": "path",
+          "isLocal": false,
+          "line": 2
+        },
+        {
+          "type": "require",
+          "module": "child_process",
+          "isLocal": false,
+          "line": 3
+        },
+        {
+          "type": "require",
+          "module": "crypto",
+          "isLocal": false,
+          "line": 4
+        },
+        {
+          "type": "require",
+          "module": "os",
+          "isLocal": false,
+          "line": 5
+        }
+      ]
+    }
+  },
+  "score": 36,
+  "recommendations": [
+    {
+      "priority": "high",
+      "category": "security",
+      "message": "Traiter les vulnérabilités de sécurité",
+      "count": 5
+    }
+  ]
+}
