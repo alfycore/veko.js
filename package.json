@@ -1,0 +1,24 @@
+{
+  "name": "veko",
+  "version": "1.0.0",
+  "description": "Framework HTTP ultra-complet inspiré d'Express sans dépendances externes",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/test.js",
+    "start": "node example.js"
+  },
+  "keywords": [
+    "http",
+    "framework",
+    "express",
+    "lightweight",
+    "nodejs",
+    "router",
+    "middleware"
+  ],
+  "author": "Veko Framework",
+  "license": "MIT",
+  "engines": {
+    "node": ">=12.0.0"
+  }
+}
