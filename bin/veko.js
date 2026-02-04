@@ -86,23 +86,76 @@ program
     }
     console.log();
     
-    const configPath = path.join(process.cwd(), 'veko.config.js');
-    let config = {};
-    if (fs.existsSync(configPath)) {
-      config = require(configPath);
+    // Look for the entry file in the project
+    const entryFiles = [
+      'index.js',
+      'index.ts', 
+      'src/index.js',
+      'src/index.ts',
+      'app.js',
+      'server.js'
+    ];
+    
+    let entryFile = null;
+    for (const file of entryFiles) {
+      const fullPath = path.join(process.cwd(), file);
+      if (fs.existsSync(fullPath)) {
+        entryFile = fullPath;
+        break;
+      }
+    }
+    
+    if (!entryFile) {
+      console.log(chalk.red('  ✗ No entry file found'));
+      console.log(chalk.gray('    Expected: index.js, src/index.js, app.js, or server.js'));
+      return;
     }
     
     try {
-      const DevServer = require('../lib/dev/dev-server');
-      const devServer = new DevServer({
-        port: parseInt(options.port),
-        host: options.hostname,
-        ...config
-      });
-      await devServer.start();
+      // Set dev mode environment
+      process.env.NODE_ENV = 'development';
+      process.env.VEKO_DEV = 'true';
+      process.env.PORT = options.port;
+      
+      // Make veko resolvable from the project by adding our parent dir to module paths
+      const vekoPath = path.resolve(__dirname, '..');
+      const Module = require('module');
+      const originalResolveLookupPaths = Module._resolveLookupPaths;
+      Module._resolveLookupPaths = function(request, parent) {
+        const result = originalResolveLookupPaths(request, parent);
+        if (request === 'veko' && result && Array.isArray(result)) {
+          result.push(vekoPath);
+        }
+        return result;
+      };
+      
+      // Also add to require.main.paths for compatibility
+      if (require.main && require.main.paths) {
+        require.main.paths.push(vekoPath);
+      }
+      
+      // Check if TypeScript
+      if (entryFile.endsWith('.ts')) {
+        try {
+          require('ts-node/register');
+        } catch (e) {
+          console.log(chalk.yellow('  ⚠ TypeScript detected but ts-node not installed'));
+          console.log(chalk.gray('    Run: npm install -D ts-node typescript'));
+        }
+      }
+      
+      // Load and run the app
+      require(entryFile);
+      
+      console.log(chalk.green('  ✓ Server started successfully'));
+      console.log();
+      
     } catch (err) {
       console.log(chalk.red('  ✗ Failed to start dev server'));
       console.log(chalk.gray(`    ${err.message}`));
+      if (process.env.DEBUG) {
+        console.log(chalk.gray(err.stack));
+      }
     }
   });
 

@@ -1,6 +1,6 @@
 {
   "name": "veko",
-  "version": "1.2.5",
+  "version": "1.2.11",
   "description": "🚀 Ultra-modern Node.js framework with hot reload, plugins, authentication, React SSR/CSR support, and advanced security features",
   "main": "index.js",
   "bin": {
@@ -68,7 +68,7 @@
     "npm": ">=8.0.0"
   },
   "dependencies": {
-    "archiver": "^6.0.1",
+    "archiver": "^7.0.0",
     "async": "^3.2.5",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
@@ -84,7 +84,7 @@
     "debug": "^4.3.4",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
-    "express": "^4.18.2",
+    "express": "^5.0.0",
     "express-rate-limit": "^7.1.5",
     "express-session": "^1.17.3",
     "express-useragent": "^1.0.15",
@@ -101,8 +101,10 @@
     "lodash": "^4.17.21",
     "mime-types": "^2.1.35",
     "moment": "^2.29.4",
-    "mongoose": "^8.0.3",
-    "multer": "^1.4.5-lts.1",
+    "mongoose": "^8.9.0",
+    "glob": "^11.0.0",
+    "rimraf": "^6.0.0",
+    "multer": "^2.0.0",
     "mysql2": "^3.6.5",
     "nanospinner": "^1.1.0",
     "node-cron": "^3.0.3",
@@ -117,7 +119,7 @@
     "redis": "^4.6.10",
     "semver": "^7.5.4",
     "sequelize": "^6.35.2",
-    "sharp": "^0.32.6",
+    "sharp": "^0.33.5",
     "slugify": "^1.6.6",
     "sqlite3": "^5.1.6",
     "uglify-js": "^3.17.4",
