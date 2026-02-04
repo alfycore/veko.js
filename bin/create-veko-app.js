@@ -1,75 +1,65 @@
 #!/usr/bin/env node
 
-const chalk = require('chalk');
-const { Command } = require('commander');
-const SetupWizard = require('./commands/setup');
-const QuickSetup = require('./commands/quick-setup');
+/**
+ * create-veko-app
+ * Quick way to create a Veko.js application
+ */
 
-const program = new Command();
+const CreateApp = require('./commands/create-app');
 
-program
-  .name('create-veko-app')
-  .description('Create a new Veko.js application')
-  .version('1.1.0')
-  .argument('[project-name]', 'Name of the project')
-  .option('--template <template>', 'Template to use')
-  .option('--quick', 'Quick setup with minimal questions')
-  .option('--wizard', 'Full interactive wizard')
-  .action(async (projectName, options) => {
-    console.log(chalk.blue.bold('🚀 Create Veko App\n'));
-
-    if (!projectName) {
-      console.log(chalk.red('❌ Project name is required'));
-      console.log(chalk.gray('Usage: npx create-veko-app my-app'));
-      process.exit(1);
-    }
-
-    try {
-      if (options.wizard) {
-        const wizard = new SetupWizard();
-        wizard.config.projectName = projectName;
-        await wizard.start();
-      } else if (options.quick || options.template) {
-        const quickSetup = new QuickSetup(projectName, options);
-        await quickSetup.start();
-      } else {
-        // Default: ask user preference
-        const { setupType } = await require('inquirer').prompt([{
-          type: 'list',
-          name: 'setupType',
-          message: '🎯 How would you like to set up your project?',
-          choices: [
-            { name: '⚡ Quick - Essential options only', value: 'quick' },
-            { name: '🧙‍♂️ Wizard - Full interactive setup', value: 'wizard' }
-          ]
-        }]);
-
-        if (setupType === 'wizard') {
-          const wizard = new SetupWizard();
-          wizard.config.projectName = projectName;
-          await wizard.start();
-        } else {
-          const quickSetup = new QuickSetup(projectName, options);
-          await quickSetup.start();
-        }
+async function main() {
+  const args = process.argv.slice(2);
+  
+  // Parse arguments manually for simplicity
+  let projectName = null;
+  const options = {};
+  
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    
+    if (arg.startsWith('--')) {
+      const key = arg.slice(2);
+      if (key === 'typescript' || key === 'ts') {
+        options.typescript = true;
+      } else if (key === 'javascript' || key === 'js') {
+        options.javascript = true;
+      } else if (key === 'tailwind') {
+        options.tailwind = true;
+      } else if (key === 'eslint') {
+        options.eslint = true;
+      } else if (key === 'react') {
+        options.react = true;
+      } else if (key === 'api') {
+        options.api = true;
+      } else if (key === 'src-dir') {
+        options.srcDir = true;
+      } else if (key === 'use-npm') {
+        options.useNpm = true;
+      } else if (key === 'use-yarn') {
+        options.useYarn = true;
+      } else if (key === 'use-pnpm') {
+        options.usePnpm = true;
+      } else if (key === 'skip-install') {
+        options.skipInstall = true;
+      } else if (key === 'yes' || key === 'y') {
+        options.yes = true;
+      } else if (key.startsWith('example=')) {
+        options.example = key.split('=')[1];
       }
-    } catch (error) {
-      console.error(chalk.red('\n❌ Setup failed:'), error.message);
-      process.exit(1);
+    } else if (arg.startsWith('-')) {
+      const key = arg.slice(1);
+      if (key === 'e' && args[i + 1]) {
+        options.example = args[++i];
+      } else if (key === 'y') {
+        options.yes = true;
+      }
+    } else if (!projectName) {
+      projectName = arg;
     }
-  });
-
-// Show help if no arguments
-if (process.argv.length <= 2) {
-  console.log(chalk.blue.bold('🚀 Create Veko App\n'));
-  console.log(chalk.white('Usage:'));
-  console.log(chalk.gray('  npx create-veko-app my-app'));
-  console.log(chalk.gray('  npx create-veko-app my-app --template api'));
-  console.log(chalk.gray('  npx create-veko-app my-app --wizard'));
-  console.log(chalk.gray('  npx create-veko-app my-app --quick'));
-  console.log(chalk.white('\nTemplates:'));
-  console.log(chalk.gray('  default, api, blog, admin, ecommerce, portfolio\n'));
-  process.exit(0);
+  }
+  
+  const creator = new CreateApp();
+  await creator.run(projectName, options);
 }
 
-program.parse();
+main().catch(console.error);
