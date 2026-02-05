@@ -1,11 +1,10 @@
 {
   "name": "veko",
-  "version": "1.2.18",
+  "version": "1.2.21",
   "description": "🚀 Ultra-lightweight Node.js framework with ZERO dependencies - VSV components, hot reload, SSR",
   "main": "index.js",
   "bin": {
-    "veko": "./bin/veko.js",
-    "create-veko-app": "./bin/create-veko-app.js"
+    "veko": "./bin/veko.js"
   },
   "scripts": {
     "dev": "node bin/veko.js dev",
@@ -48,8 +47,6 @@
   "files": [
     "lib/",
     "bin/",
-    "error/",
-    "templates/",
     "index.js",
     "README.md"
   ],

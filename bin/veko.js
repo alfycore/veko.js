@@ -1,401 +1,273 @@
 #!/usr/bin/env node
 
 /**
- * Veko.js CLI
- * Modern CLI inspired by create-next-app
+ * Veko.js CLI - Zero Dependencies
  */
 
-const { Command } = require('commander');
-const chalk = require('chalk');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
+const { spawn } = require('child_process');
 
-const packageJson = require('../package.json');
-const version = packageJson.version;
-
-const program = new Command();
-
-// Gradient text helper
-const gradient = (text) => {
-  const colors = [chalk.cyan, chalk.blue, chalk.magenta];
-  return text.split('').map((char, i) => colors[i % colors.length](char)).join('');
+// Colors (ANSI)
+const colors = {
+  reset: '\x1b[0m',
+  cyan: '\x1b[36m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  red: '\x1b[31m',
+  gray: '\x1b[90m',
+  bold: '\x1b[1m'
 };
 
-// ASCII Art Logo
-const showLogo = () => {
+const c = (color, text) => `${colors[color]}${text}${colors.reset}`;
+
+// Get version
+let version = '1.2.18';
+try {
+  const pkg = require('../package.json');
+  version = pkg.version;
+} catch {}
+
+// Logo
+function showLogo() {
   console.log();
-  console.log(chalk.cyan('  ██╗   ██╗███████╗██╗  ██╗ ██████╗ '));
-  console.log(chalk.cyan('  ██║   ██║██╔════╝██║ ██╔╝██╔═══██╗'));
-  console.log(chalk.cyan('  ██║   ██║█████╗  █████╔╝ ██║   ██║'));
-  console.log(chalk.cyan('  ╚██╗ ██╔╝██╔══╝  ██╔═██╗ ██║   ██║'));
-  console.log(chalk.cyan('   ╚████╔╝ ███████╗██║  ██╗╚██████╔╝'));
-  console.log(chalk.cyan('    ╚═══╝  ╚══════╝╚═╝  ╚═╝ ╚═════╝ '));
+  console.log(c('cyan', '  ██╗   ██╗███████╗██╗  ██╗ ██████╗ '));
+  console.log(c('cyan', '  ██║   ██║██╔════╝██║ ██╔╝██╔═══██╗'));
+  console.log(c('cyan', '  ██║   ██║█████╗  █████╔╝ ██║   ██║'));
+  console.log(c('cyan', '  ╚██╗ ██╔╝██╔══╝  ██╔═██╗ ██║   ██║'));
+  console.log(c('cyan', '   ╚████╔╝ ███████╗██║  ██╗╚██████╔╝'));
+  console.log(c('cyan', '    ╚═══╝  ╚══════╝╚═╝  ╚═╝ ╚═════╝ '));
   console.log();
-  console.log(chalk.gray('  The modern Node.js framework'));
-  console.log(chalk.gray(`  Version ${version}`));
+  console.log(c('gray', `  Zero-dependency Node.js framework v${version}`));
   console.log();
-};
+}
 
-program
-  .name('veko')
-  .description('The modern Node.js framework')
-  .version(version, '-v, --version', 'Display version number');
-
-// ============= CREATE COMMAND (Default) =============
-program
-  .argument('[project-directory]', 'Project directory name')
-  .option('--ts, --typescript', 'Initialize as a TypeScript project')
-  .option('--js, --javascript', 'Initialize as a JavaScript project (default)')
-  .option('--tailwind', 'Initialize with Tailwind CSS')
-  .option('--eslint', 'Initialize with ESLint')
-  .option('--react', 'Initialize with React SSR support')
-  .option('--api', 'Initialize as API-only project')
-  .option('--src-dir', 'Initialize inside a `src/` directory')
-  .option('--use-npm', 'Use npm as package manager')
-  .option('--use-yarn', 'Use yarn as package manager')
-  .option('--use-pnpm', 'Use pnpm as package manager')
-  .option('-e, --example <name>', 'Use a specific template')
-  .option('--skip-install', 'Skip installing dependencies')
-  .option('-y, --yes', 'Use default options')
-  .action(async (projectDirectory, options) => {
-    // If no args, show help
-    if (!projectDirectory && Object.keys(options).length === 0) {
-      showLogo();
-      program.outputHelp();
-      return;
-    }
-    
-    const CreateApp = require('./commands/create-app');
-    const creator = new CreateApp();
-    await creator.run(projectDirectory, options);
-  });
-
-// ============= DEV COMMAND =============
-program
-  .command('dev')
-  .description('Start the development server')
-  .option('-p, --port <port>', 'Specify port', '3000')
-  .option('-H, --hostname <hostname>', 'Specify hostname', 'localhost')
-  .option('--turbo', 'Start in turbo mode (experimental)')
-  .action(async (options) => {
-    console.log();
-    console.log(chalk.cyan('  ▲ Veko.js ') + chalk.gray(version));
-    console.log(chalk.gray('  - Local:        ') + chalk.cyan(`http://${options.hostname}:${options.port}`));
-    if (options.turbo) {
-      console.log(chalk.gray('  - Mode:         ') + chalk.yellow('Turbo ⚡'));
-    }
-    console.log();
-    
-    // Look for the entry file in the project
-    const entryFiles = [
-      'index.js',
-      'index.ts', 
-      'src/index.js',
-      'src/index.ts',
-      'app.js',
-      'server.js'
-    ];
-    
-    let entryFile = null;
-    for (const file of entryFiles) {
-      const fullPath = path.join(process.cwd(), file);
-      if (fs.existsSync(fullPath)) {
-        entryFile = fullPath;
-        break;
-      }
-    }
-    
-    if (!entryFile) {
-      console.log(chalk.red('  ✗ No entry file found'));
-      console.log(chalk.gray('    Expected: index.js, src/index.js, app.js, or server.js'));
-      return;
-    }
-    
-    try {
-      // Set dev mode environment
-      process.env.NODE_ENV = 'development';
-      process.env.VEKO_DEV = 'true';
-      process.env.PORT = options.port;
-      
-      // Make veko resolvable from the project by adding our parent dir to module paths
-      const vekoPath = path.resolve(__dirname, '..');
-      const Module = require('module');
-      const originalResolveLookupPaths = Module._resolveLookupPaths;
-      Module._resolveLookupPaths = function(request, parent) {
-        const result = originalResolveLookupPaths(request, parent);
-        if (request === 'veko' && result && Array.isArray(result)) {
-          result.push(vekoPath);
-        }
-        return result;
-      };
-      
-      // Also add to require.main.paths for compatibility
-      if (require.main && require.main.paths) {
-        require.main.paths.push(vekoPath);
-      }
-      
-      // Check if TypeScript
-      if (entryFile.endsWith('.ts')) {
-        try {
-          require('ts-node/register');
-        } catch (e) {
-          console.log(chalk.yellow('  ⚠ TypeScript detected but ts-node not installed'));
-          console.log(chalk.gray('    Run: npm install -D ts-node typescript'));
-        }
-      }
-      
-      // Load and run the app
-      require(entryFile);
-      
-      console.log(chalk.green('  ✓ Server started successfully'));
-      console.log();
-      
-    } catch (err) {
-      console.log(chalk.red('  ✗ Failed to start dev server'));
-      console.log(chalk.gray(`    ${err.message}`));
-      if (process.env.DEBUG) {
-        console.log(chalk.gray(err.stack));
-      }
-    }
-  });
-
-// ============= BUILD COMMAND =============
-program
-  .command('build')
-  .description('Build the application for production')
-  .option('--analyze', 'Analyze bundle size')
-  .action(async (options) => {
-    console.log();
-    console.log(chalk.cyan('  ▲ Veko.js ') + chalk.gray(version));
-    console.log();
-    console.log(chalk.white('   Creating an optimized production build...'));
-    console.log();
-    
-    const startTime = Date.now();
-    const spinner = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-    let i = 0;
-    
-    const steps = [
-      { name: 'Compiling', status: 'done' },
-      { name: 'Collecting page data', status: 'done' },
-      { name: 'Generating static pages', status: 'done' },
-      { name: 'Optimizing assets', status: 'done' },
-      { name: 'Finalizing', status: 'done' }
-    ];
-    
-    for (const step of steps) {
-      process.stdout.write(chalk.gray(`   ${step.name}...`));
-      await new Promise(r => setTimeout(r, 300 + Math.random() * 300));
-      process.stdout.clearLine(0);
-      process.stdout.cursorTo(0);
-      console.log(chalk.green('   ✓ ') + chalk.white(step.name));
-    }
-    
-    const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-    console.log();
-    console.log(chalk.green(`   ✓ `) + chalk.white(`Compiled successfully in ${duration}s`));
-    console.log();
-    
-    // Show route summary
-    console.log(chalk.bold.white('   Route (pages)                      Size     First Load JS'));
-    console.log(chalk.gray('   ─────────────────────────────────────────────────────────'));
-    console.log(chalk.white('   ○ /                                 ') + chalk.gray('2.1 kB   ') + chalk.green('89 kB'));
-    console.log(chalk.white('   ○ /api/*                            ') + chalk.gray('0 B      ') + chalk.green('87 kB'));
-    console.log();
-    console.log(chalk.gray('   ○  (Static)  prerendered as static content'));
-    console.log();
-  });
-
-// ============= START COMMAND =============
-program
-  .command('start')
-  .description('Start the production server')
-  .option('-p, --port <port>', 'Specify port', '3000')
-  .option('-H, --hostname <hostname>', 'Specify hostname', '0.0.0.0')
-  .action(async (options) => {
-    console.log();
-    console.log(chalk.cyan('  ▲ Veko.js ') + chalk.gray(version));
-    console.log(chalk.gray('  - Local:        ') + chalk.cyan(`http://localhost:${options.port}`));
-    console.log(chalk.gray('  - Network:      ') + chalk.cyan(`http://${options.hostname}:${options.port}`));
-    console.log();
-    console.log(chalk.green('  ✓ Ready'));
-    console.log();
-    
-    try {
-      const App = require('../lib/app');
-      const app = new App({ port: parseInt(options.port) });
-      await app.start();
-    } catch (err) {
-      console.log(chalk.red('  ✗ Failed to start server'));
-      console.log(chalk.gray(`    ${err.message}`));
-    }
-  });
-
-// ============= INFO COMMAND =============
-program
-  .command('info')
-  .description('Print relevant details about the current system')
-  .action(async () => {
-    showLogo();
-    
-    console.log(chalk.bold.white('  Operating System:'));
-    console.log(chalk.gray('    Platform:  ') + process.platform);
-    console.log(chalk.gray('    Arch:      ') + process.arch);
-    console.log(chalk.gray('    Version:   ') + require('os').release());
-    console.log();
-    
-    console.log(chalk.bold.white('  Binaries:'));
-    console.log(chalk.gray('    Node:      ') + process.version);
-    try {
-      const npmV = require('child_process').execSync('npm -v', { encoding: 'utf8' }).trim();
-      console.log(chalk.gray('    npm:       ') + npmV);
-    } catch (e) {}
-    try {
-      const yarnV = require('child_process').execSync('yarn -v', { encoding: 'utf8' }).trim();
-      console.log(chalk.gray('    Yarn:      ') + yarnV);
-    } catch (e) {}
-    try {
-      const pnpmV = require('child_process').execSync('pnpm -v', { encoding: 'utf8' }).trim();
-      console.log(chalk.gray('    pnpm:      ') + pnpmV);
-    } catch (e) {}
-    console.log();
-    
-    console.log(chalk.bold.white('  Relevant Packages:'));
-    console.log(chalk.gray('    veko:      ') + version);
-    
-    // Check local packages
-    const pkgPath = path.join(process.cwd(), 'package.json');
-    if (fs.existsSync(pkgPath)) {
-      const pkg = require(pkgPath);
-      const deps = { ...pkg.dependencies, ...pkg.devDependencies };
-      if (deps.react) console.log(chalk.gray('    react:     ') + deps.react);
-      if (deps.express) console.log(chalk.gray('    express:   ') + deps.express);
-      if (deps.typescript) console.log(chalk.gray('    typescript:') + deps.typescript);
-    }
-    console.log();
-  });
-
-// ============= LINT COMMAND =============
-program
-  .command('lint')
-  .description('Run ESLint')
-  .option('--fix', 'Automatically fix problems')
-  .option('--strict', 'Use strict configuration')
-  .action(async (options) => {
-    console.log();
-    console.log(chalk.cyan('  ▲ Veko.js ') + chalk.gray(version));
-    console.log();
-    
-    try {
-      const { execSync } = require('child_process');
-      const fix = options.fix ? '--fix' : '';
-      console.log(chalk.white('   Linting and checking validity of types...'));
-      console.log();
-      execSync(`npx eslint . ${fix} --ext .js,.jsx,.ts,.tsx`, { stdio: 'inherit' });
-      console.log();
-      console.log(chalk.green('   ✓ ') + chalk.white('No ESLint warnings or errors'));
-    } catch (error) {
-      // ESLint already outputs errors
-    }
-    console.log();
-  });
-
-// ============= TEMPLATES COMMAND =============
-program
-  .command('templates')
-  .alias('examples')
-  .description('List available templates')
-  .action(() => {
-    console.log();
-    console.log(chalk.cyan('  ▲ Veko.js ') + chalk.gray(version));
-    console.log();
-    console.log(chalk.bold.white('  Available Templates:'));
-    console.log();
-    
-    const templates = [
-      { name: 'default', desc: 'Default starter template', tags: ['recommended'] },
-      { name: 'typescript', desc: 'TypeScript starter', tags: ['ts'] },
-      { name: 'react', desc: 'React SSR with hooks', tags: ['react', 'ssr'] },
-      { name: 'react-typescript', desc: 'React SSR with TypeScript', tags: ['react', 'ts'] },
-      { name: 'api', desc: 'API-only template', tags: ['api', 'rest'] },
-      { name: 'api-typescript', desc: 'API with TypeScript', tags: ['api', 'ts'] },
-      { name: 'full', desc: 'Full-featured with auth & plugins', tags: ['auth', 'plugins'] },
-      { name: 'tailwind', desc: 'With Tailwind CSS configured', tags: ['css'] },
-      { name: 'blog', desc: 'Blog template with markdown', tags: ['blog', 'md'] },
-      { name: 'ecommerce', desc: 'E-commerce starter', tags: ['shop', 'stripe'] },
-      { name: 'dashboard', desc: 'Admin dashboard template', tags: ['admin', 'charts'] },
-      { name: 'realtime', desc: 'WebSocket real-time app', tags: ['ws', 'socket.io'] },
-    ];
-    
-    templates.forEach(t => {
-      const tags = t.tags.map(tag => chalk.gray(`[${tag}]`)).join(' ');
-      const rec = t.tags.includes('recommended') ? chalk.green(' ★') : '';
-      console.log(chalk.white(`   ${t.name}${rec}`));
-      console.log(chalk.gray(`      ${t.desc}`));
-      console.log(`      ${tags}`);
-      console.log();
-    });
-    
-    console.log(chalk.gray('  Usage:'));
-    console.log(chalk.cyan('    npx veko my-app --example <template-name>'));
-    console.log(chalk.cyan('    npx create-veko-app my-app -e react'));
-    console.log();
-  });
-
-// ============= UPDATE COMMAND =============
-program
-  .command('update')
-  .alias('upgrade')
-  .description('Update Veko.js to the latest version')
-  .action(async () => {
-    console.log();
-    console.log(chalk.cyan('  ▲ Veko.js ') + chalk.gray(version));
-    console.log();
-    
-    try {
-      const { execSync } = require('child_process');
-      console.log(chalk.white('   Checking for updates...'));
-      
-      const latest = execSync('npm view veko version', { encoding: 'utf8' }).trim();
-      
-      if (latest === version) {
-        console.log();
-        console.log(chalk.green('   ✓ ') + chalk.white(`Already on latest version (${version})`));
-      } else {
-        console.log();
-        console.log(chalk.yellow(`   ⚠ New version available: ${latest}`));
-        console.log();
-        console.log(chalk.white('   Updating...'));
-        execSync('npm install -g veko@latest', { stdio: 'inherit' });
-        console.log();
-        console.log(chalk.green('   ✓ ') + chalk.white(`Updated to version ${latest}`));
-      }
-    } catch (error) {
-      console.log(chalk.red('   ✗ Failed to check for updates'));
-    }
-    console.log();
-  });
-
-// ============= HELP STYLING =============
-program.configureHelp({
-  sortSubcommands: true,
-  subcommandTerm: (cmd) => chalk.cyan(cmd.name()) + (cmd.alias() ? chalk.gray(`, ${cmd.alias()}`) : '')
-});
-
-program.addHelpText('before', () => {
+// Help
+function showHelp() {
   showLogo();
-  return '';
+  console.log(c('bold', 'Usage:'));
+  console.log('  veko <command> [options]');
+  console.log();
+  console.log(c('bold', 'Commands:'));
+  console.log('  init [name]     Create a new Veko project');
+  console.log('  dev             Start development server');
+  console.log('  start           Start production server');
+  console.log('  build           Build for production');
+  console.log();
+  console.log(c('bold', 'Options:'));
+  console.log('  -v, --version   Show version');
+  console.log('  -h, --help      Show this help');
+  console.log();
+  console.log(c('bold', 'Examples:'));
+  console.log(c('gray', '  $ veko init my-app'));
+  console.log(c('gray', '  $ veko dev'));
+  console.log(c('gray', '  $ veko start'));
+  console.log();
+}
+
+// Parse args
+const args = process.argv.slice(2);
+const command = args[0];
+
+// Version
+if (args.includes('-v') || args.includes('--version')) {
+  console.log(version);
+  process.exit(0);
+}
+
+// Help
+if (!command || args.includes('-h') || args.includes('--help')) {
+  showHelp();
+  process.exit(0);
+}
+
+// Commands
+switch (command) {
+  case 'init':
+    initProject(args[1]);
+    break;
+  case 'dev':
+    runDev();
+    break;
+  case 'start':
+    runStart();
+    break;
+  case 'build':
+    runBuild();
+    break;
+  default:
+    console.log(c('red', `Unknown command: ${command}`));
+    showHelp();
+    process.exit(1);
+}
+
+// Init project
+function initProject(name) {
+  const projectName = name || 'veko-app';
+  const projectPath = path.join(process.cwd(), projectName);
+  
+  console.log();
+  console.log(c('cyan', `Creating ${projectName}...`));
+  
+  // Create directory
+  if (!fs.existsSync(projectPath)) {
+    fs.mkdirSync(projectPath, { recursive: true });
+  }
+  
+  // Create package.json
+  const pkg = {
+    name: projectName,
+    version: '1.0.0',
+    type: 'module',
+    scripts: {
+      dev: 'node index.js',
+      start: 'NODE_ENV=production node index.js'
+    },
+    dependencies: {
+      veko: `^${version}`
+    }
+  };
+  fs.writeFileSync(path.join(projectPath, 'package.json'), JSON.stringify(pkg, null, 2));
+  
+  // Create index.js
+  const indexJs = `const { createApp } = require('veko');
+
+const app = createApp({ port: 3000 });
+
+// Home route
+app.get('/', (req, res) => {
+  res.html(\`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Veko App</title>
+      <style>
+        body { font-family: system-ui; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .container { text-align: center; color: white; }
+        h1 { font-size: 3rem; margin-bottom: 0.5rem; }
+        p { opacity: 0.8; }
+        code { background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 4px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>🚀 Welcome to Veko</h1>
+        <p>Zero-dependency Node.js framework</p>
+        <p><code>Edit index.js to get started</code></p>
+      </div>
+    </body>
+    </html>
+  \`);
 });
 
-program.addHelpText('after', `
-${chalk.bold('Examples:')}
-  ${chalk.gray('$')} npx veko my-app
-  ${chalk.gray('$')} npx veko my-app --typescript
-  ${chalk.gray('$')} npx veko my-app --react --tailwind
-  ${chalk.gray('$')} npx veko my-app -e blog
+// API route example
+app.get('/api/hello', (req, res) => {
+  res.json({ message: 'Hello from Veko!', time: new Date().toISOString() });
+});
 
-${chalk.bold('Documentation:')}
-  ${chalk.cyan('https://vekojs.dev/docs')}
-`);
+app.listen(3000, () => {
+  console.log('\\x1b[32m✓\\x1b[0m Server running at http://localhost:3000');
+});
+`;
+  fs.writeFileSync(path.join(projectPath, 'index.js'), indexJs);
+  
+  // Create public folder
+  fs.mkdirSync(path.join(projectPath, 'public'), { recursive: true });
+  fs.writeFileSync(path.join(projectPath, 'public', '.gitkeep'), '');
+  
+  // Create components folder for VSV
+  fs.mkdirSync(path.join(projectPath, 'components'), { recursive: true });
+  
+  // Create example VSV component
+  const homeVsv = `export default function Home(props) {
+  const [count, setCount] = $state(0);
+  
+  return (
+    <div class="container">
+      <h1>Welcome to Veko</h1>
+      <p>Count: {count()}</p>
+      <button @click={() => setCount(c => c + 1)}>Increment</button>
+    </div>
+  );
+}
+`;
+  fs.writeFileSync(path.join(projectPath, 'components', 'Home.jsv'), homeVsv);
+  
+  console.log(c('green', '✓') + ' Created project structure');
+  console.log();
+  console.log(c('bold', 'Next steps:'));
+  console.log(c('gray', `  cd ${projectName}`));
+  console.log(c('gray', '  npm install'));
+  console.log(c('gray', '  npm run dev'));
+  console.log();
+}
 
-program.parse(process.argv);
+// Dev server
+function runDev() {
+  console.log();
+  console.log(c('cyan', '▲ Veko.js ') + c('gray', version));
+  
+  const entryFiles = ['index.js', 'src/index.js', 'app.js', 'server.js'];
+  let entry = null;
+  
+  for (const file of entryFiles) {
+    if (fs.existsSync(path.join(process.cwd(), file))) {
+      entry = file;
+      break;
+    }
+  }
+  
+  if (!entry) {
+    console.log(c('red', '✗ No entry file found (index.js, app.js, server.js)'));
+    process.exit(1);
+  }
+  
+  console.log(c('gray', `  Starting ${entry}...`));
+  console.log();
+  
+  const child = spawn('node', [entry], { 
+    cwd: process.cwd(), 
+    stdio: 'inherit',
+    env: { ...process.env, NODE_ENV: 'development' }
+  });
+  
+  child.on('error', (err) => {
+    console.error(c('red', `Error: ${err.message}`));
+  });
+}
+
+// Production start
+function runStart() {
+  console.log();
+  console.log(c('cyan', '▲ Veko.js ') + c('gray', version) + c('green', ' (production)'));
+  
+  const entryFiles = ['index.js', 'src/index.js', 'app.js', 'server.js'];
+  let entry = null;
+  
+  for (const file of entryFiles) {
+    if (fs.existsSync(path.join(process.cwd(), file))) {
+      entry = file;
+      break;
+    }
+  }
+  
+  if (!entry) {
+    console.log(c('red', '✗ No entry file found'));
+    process.exit(1);
+  }
+  
+  const child = spawn('node', [entry], { 
+    cwd: process.cwd(), 
+    stdio: 'inherit',
+    env: { ...process.env, NODE_ENV: 'production' }
+  });
+}
+
+// Build
+function runBuild() {
+  console.log();
+  console.log(c('cyan', '▲ Veko.js Build'));
+  console.log(c('gray', '  No build step needed - Veko runs natively!'));
+  console.log(c('green', '✓ Ready for production'));
+  console.log();
+}
