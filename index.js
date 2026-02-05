@@ -1,7 +1,7 @@
 /**
  * VekoJS - Ultra-modern Node.js framework
  * @module veko
- * @version 1.2.4
+ * @version 1.2.14
  */
 
 const App = require('./lib/app');
@@ -12,6 +12,14 @@ try {
   ReactSupport = require('./lib/react');
 } catch (error) {
   // React support non installé
+}
+
+// Import VSV support
+let VSVSupport = null;
+try {
+  VSVSupport = require('./lib/vsv');
+} catch (error) {
+  // VSV support error
 }
 
 // Export principal
@@ -45,6 +53,17 @@ module.exports = {
   
   // Support React
   React: ReactSupport,
+  
+  // Support VSV (Veko Server Views)
+  VSV: VSVSupport,
+  
+  // Créer une app VSV
+  createVSVApp: async (options = {}) => {
+    const app = new App(options);
+    await app.enableVSV(options.vsv);
+    app.loadRoutes();
+    return app;
+  },
   
   // Créer une app React SSR
   createReactApp: async (options = {}) => {
