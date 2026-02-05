@@ -5,7 +5,7 @@
 <h1 align="center">🚀 Veko.js</h1>
 
 <p align="center">
-  <strong>Framework Node.js ultra-moderne avec support React SSR, hot reload intelligent et sécurité avancée</strong>
+  <strong>Framework Node.js ultra-moderne avec VSV (Veko Server Views), hot reload intelligent et sécurité avancée</strong>
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
   <a href="#-installation">Installation</a> •
   <a href="#-démarrage-rapide">Démarrage</a> •
   <a href="#-fonctionnalités">Fonctionnalités</a> •
-  <a href="#-react-ssr">React SSR</a> •
+  <a href="#-vsv-components">VSV Components</a> •
   <a href="#-documentation">Documentation</a>
 </p>
 
@@ -29,13 +29,13 @@
 
 | Fonctionnalité | Description |
 |----------------|-------------|
-| ⚛️ **React SSR/CSR/Hybrid** | Support complet de React avec Server-Side Rendering, Client-Side Rendering et mode Hybride |
+| ⚛️ **VSV Components** | Veko Server Views - Composants JSX-like avec SSR natif, zéro dépendance externe |
 | 🔥 **Hot Reload Intelligent** | Rechargement sélectif des routes modifiées sans redémarrage |
 | 🔒 **Sécurité Avancée** | Helmet, rate limiting, validation XSS, protection CSRF |
 | 🔌 **Système de Plugins** | Architecture extensible avec hooks et API complète |
 | 🔐 **Authentification** | JWT, sessions, OAuth (Google, GitHub, Facebook) |
 | 📁 **Auto-loading** | Routes, vues et middlewares auto-configurés |
-| 🎨 **Layouts EJS** | Système de templates puissant avec sections |
+| 🎨 **Layouts VSV** | Système de templates puissant avec sections |
 | 📦 **Auto-installation** | Gestion automatique des dépendances |
 | 🔄 **Auto-updater** | Mises à jour automatiques avec rollback |
 
@@ -75,24 +75,25 @@ app.createRoute('GET', '/', (req, res) => {
 app.listen();
 ```
 
-### Application React SSR
+### Application avec VSV Components
 
 ```javascript
-const { createReactApp } = require('veko');
+const { createVSVApp } = require('veko');
 
 async function main() {
-  const app = await createReactApp({
+  const app = await createVSVApp({
     port: 3000,
-    react: {
-      mode: 'hybrid',      // 'ssr', 'csr', ou 'hybrid'
+    vsv: {
       componentsDir: 'components',
-      hydration: true
+      pagesDir: 'pages',
+      ssr: true,
+      hydrate: true
     }
   });
 
-  // Route React avec SSR
-  app.reactRoute('/', 'HomePage', {
-    getInitialProps: async ({ req }) => {
+  // Route VSV avec SSR
+  app.vsvRoute('/', 'Home', {
+    getProps: async (req) => {
       return { user: req.user, title: 'Accueil' };
     }
   });
@@ -103,18 +104,45 @@ async function main() {
 main();
 ```
 
-## ⚛️ React SSR
+## ⚛️ VSV Components
 
-Veko.js offre un support complet de React avec plusieurs modes de rendu :
+Veko.js offre VSV (Veko Server Views), un système de composants moderne avec syntaxe JSX, zéro dépendance externe et SSR natif.
 
-### Modes de Rendu
+### Syntaxe VSV (.jsv / .tsv)
 
-| Mode | Description | Utilisation |
-|------|-------------|-------------|
-| **SSR** | Server-Side Rendering | SEO optimal, premier affichage rapide |
-| **CSR** | Client-Side Rendering | Applications interactives |
-| **Hybrid** | SSR + Hydratation | Meilleur des deux mondes |
-| **Streaming** | Streaming SSR | Grands composants, TTFB optimal |
+```jsx
+// components/Counter.jsv
+export default function Counter(props) {
+  const [count, setCount] = $state(0);
+  
+  return (
+    <div class="counter">
+      <h1>{props.title}</h1>
+      <p>Count: {count()}</p>
+      <button @click={() => setCount(c => c + 1)}>+</button>
+      <button @click={() => setCount(c => c - 1)}>-</button>
+    </div>
+  );
+}
+```
+
+### Directives Réactives
+
+| Directive | Description | Exemple |
+|-----------|-------------|---------|
+| `$state` | État réactif | `const [val, setVal] = $state(0)` |
+| `$computed` | Valeur dérivée | `const double = $computed(() => val() * 2)` |
+| `$effect` | Effets de bord | `$effect(() => console.log(val()))` |
+| `$ref` | Référence DOM | `const el = $ref(null)` |
+| `$memo` | Mémoïsation | `const cached = $memo(() => heavy())` |
+
+### Événements
+
+```jsx
+<button @click={handleClick}>Click</button>
+<input @change={handleChange} />
+<form @submit={handleSubmit}>...</form>
+```
 
 ### Exemple Complet
 
@@ -123,61 +151,21 @@ const { createApp } = require('veko');
 
 const app = createApp({ port: 3000 });
 
-// Activer React
-await app.enableReact({
-  mode: 'hybrid',
+// Activer VSV
+await app.enableVSV({
   componentsDir: 'components',
-  hmr: true  // Hot Module Replacement
+  pagesDir: 'pages'
 });
 
-// Enregistrer un composant
-await app.registerComponent('Dashboard', './components/Dashboard.jsx');
-
-// Route React
-app.reactRoute('/dashboard', 'Dashboard', {
-  mode: 'ssr',
-  getInitialProps: async ({ req, params }) => {
-    const data = await fetchDashboardData(params.id);
+// Route VSV
+app.vsvRoute('/dashboard', 'Dashboard', {
+  getProps: async (req) => {
+    const data = await fetchDashboardData(req.params.id);
     return { data };
   }
 });
 
 app.listen();
-```
-
-### Hooks React Veko
-
-```jsx
-import { useAPI, useAuth, useForm } from 'veko/react/hooks';
-
-function MyComponent() {
-  // Appels API avec cache
-  const { data, loading, error } = useAPI('/api/users');
-  
-  // Authentification
-  const { user, login, logout } = useAuth();
-  
-  // Formulaires
-  const { values, errors, handleChange, handleSubmit } = useForm({
-    initialValues: { email: '', password: '' },
-    validate: (values) => {
-      const errors = {};
-      if (!values.email) errors.email = 'Email requis';
-      return errors;
-    },
-    onSubmit: async (values) => {
-      await login(values);
-    }
-  });
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <input name="email" value={values.email} onChange={handleChange} />
-      {errors.email && <span>{errors.email}</span>}
-      <button type="submit" disabled={loading}>Connexion</button>
-    </form>
-  );
-}
 ```
 
 ## 🔐 Authentification

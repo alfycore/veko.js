@@ -1,18 +1,10 @@
 /**
- * VekoJS - Ultra-modern Node.js framework
+ * VekoJS - Zero Dependencies Framework
  * @module veko
- * @version 1.2.14
+ * @version 1.2.18
  */
 
 const App = require('./lib/app');
-
-// Import React support si disponible
-let ReactSupport = null;
-try {
-  ReactSupport = require('./lib/react');
-} catch (error) {
-  // React support non installé
-}
 
 // Import VSV support
 let VSVSupport = null;
@@ -26,74 +18,44 @@ try {
 module.exports = {
   App,
   
-  // Méthodes de création simplifiées
+  // Create a new app
   createApp: (options = {}) => new App(options),
   
-  // Démarrer en mode développement
+  // Start in development mode
   startDev: (options = {}) => {
     const app = new App({
       ...options,
       isDev: true
     });
-    
-    app.loadRoutes();
     return app.listen(options.port || 3000);
   },
   
-  // Démarrer en mode production
+  // Start in production mode
   start: (options = {}) => {
     const app = new App({
       ...options,
       isDev: false
     });
-    
-    app.loadRoutes();
     return app.listen(options.port || 3000);
   },
   
-  // Support React
-  React: ReactSupport,
-  
-  // Support VSV (Veko Server Views)
+  // VSV Support
   VSV: VSVSupport,
   
-  // Créer une app VSV
+  // Create a VSV app
   createVSVApp: async (options = {}) => {
     const app = new App(options);
-    await app.enableVSV(options.vsv);
-    app.loadRoutes();
+    await app.enableVSV(options.vsv || options);
     return app;
   },
   
-  // Créer une app React SSR
-  createReactApp: async (options = {}) => {
+  // Start a VSV app in development mode
+  startVSVDev: async (options = {}) => {
     const app = new App({
       ...options,
-      react: {
-        enabled: true,
-        ...options.react
-      }
+      isDev: true
     });
-    
-    await app.enableReact(options.react);
-    app.loadRoutes();
-    return app;
-  },
-  
-  // Démarrer une app React en mode développement
-  startReactDev: async (options = {}) => {
-    const app = new App({
-      ...options,
-      isDev: true,
-      react: {
-        enabled: true,
-        hmr: true,
-        ...options.react
-      }
-    });
-    
-    await app.enableReact(options.react);
-    app.loadRoutes();
+    await app.enableVSV(options.vsv || options);
     return app.listen(options.port || 3000);
   }
 };

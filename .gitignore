@@ -6,5 +6,5 @@ test/
 .gitignore
 README.dev.md
 test.bat
-docs/
+
 examples/
