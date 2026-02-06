@@ -8,8 +8,10 @@ const App = require('./lib/app');
 
 // Import VSV support
 let VSVSupport = null;
+let VekoPHP = null;
 try {
   VSVSupport = require('./lib/vsv');
+  VekoPHP = require('./lib/vsv/php');
 } catch (error) {
   // VSV support error
 }
@@ -41,6 +43,7 @@ module.exports = {
   
   // VSV Support
   VSV: VSVSupport,
+  VekoPHP: VekoPHP,
   
   // Create a VSV app
   createVSVApp: async (options = {}) => {
