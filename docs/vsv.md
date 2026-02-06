@@ -250,6 +250,187 @@ app.vsvRoute('/', 'Home', {
 });
 ```
 
+## Importer des Assets
+
+Comme dans React, vous pouvez importer des fichiers CSS, images, fonts et scripts directement dans vos composants VSV.
+
+### Importer du CSS
+
+```jsx
+// components/Home.jsv
+import './styles/home.css';
+
+export default function Home({ title }) {
+  return <h1 class="home-title">{title}</h1>;
+}
+```
+
+Le CSS est automatiquement injecté dans la page HTML via une balise `<link>`.
+
+### Importer des Images
+
+```jsx
+// components/Header.jsv
+import logo from './images/logo.png';
+import avatar from '../images/avatar.jpg';
+
+export default function Header() {
+  return (
+    <header class="header">
+      <img src={logo} alt="Logo" />
+      <img src={avatar} alt="Avatar" class="avatar" />
+    </header>
+  );
+}
+```
+
+L'import est résolu en une URL servie par `/_vsv/assets/<hash>.<ext>` avec cache immutable.
+
+### Importer du JavaScript
+
+```jsx
+// components/Page.jsv
+import './scripts/analytics.js';
+
+export default function Page() {
+  return <div>Content</div>;
+}
+```
+
+Le script est injecté automatiquement dans la page.
+
+### Formats Supportés
+
+| Type | Extensions |
+|------|-----------|
+| CSS | `.css`, `.scss`, `.sass`, `.less` |
+| Images | `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`, `.ico`, `.webp`, `.avif` |
+| Fonts | `.woff`, `.woff2`, `.ttf`, `.eot`, `.otf` |
+| Scripts | `.js`, `.mjs` |
+
+### Fonctionnement
+
+1. Le compilateur extrait les imports d'assets du code source
+2. Les fichiers sont lus et hashés (MD5) pour le cache-busting
+3. Les variables d'import (ex: `logo`) sont remplacées par l'URL du fichier
+4. Les fichiers sont servis via `/_vsv/assets/<hash>.<ext>` avec header `Cache-Control: immutable`
+5. Les balises `<link>` (CSS) et `<script>` (JS) sont injectées automatiquement dans le HTML
+
+---
+
+## Tailwind CSS Intégré
+
+Veko.js inclut un moteur Tailwind CSS intégré sans aucune dépendance. Il scanne les composants et génère uniquement le CSS des classes utilisées.
+
+### Activation
+
+```javascript
+const app = await createVSVApp({
+  port: 3000,
+  tailwind: true
+});
+```
+
+### Utilisation
+
+```jsx
+// components/Card.jsv
+export default function Card({ title, description }) {
+  return (
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
+      <div class="p-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-2">{title}</h2>
+        <p class="text-gray-500">{description}</p>
+      </div>
+    </div>
+  );
+}
+```
+
+### Configuration
+
+```javascript
+const app = await createVSVApp({
+  tailwind: {
+    prefix: '',           // Préfixe de classe (ex: 'tw-')
+    darkMode: 'class',    // 'class' ou 'media'
+    theme: {
+      colors: {
+        brand: { 500: '#6366f1', 600: '#4f46e5' }
+      },
+      spacing: {
+        '128': '32rem'
+      }
+    }
+  }
+});
+```
+
+### Directive @apply
+
+```css
+/* styles/global.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.btn-primary {
+  @apply px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition;
+}
+
+.card {
+  @apply bg-white rounded-lg shadow-md p-6;
+}
+```
+
+### Variantes Responsives
+
+```jsx
+<div class="flex flex-col md:flex-row lg:grid lg:grid-cols-3 gap-4">
+  <div class="w-full md:w-1/2 lg:w-auto">...</div>
+</div>
+```
+
+Breakpoints : `sm:` (640px), `md:` (768px), `lg:` (1024px), `xl:` (1280px), `2xl:` (1536px)
+
+### Dark Mode
+
+```jsx
+<div class="bg-white dark:bg-gray-900 text-black dark:text-white">
+  <h1 class="text-gray-900 dark:text-gray-100">Hello</h1>
+</div>
+```
+
+### Variantes d'État
+
+```jsx
+<button class="bg-blue-500 hover:bg-blue-600 focus:ring-2 active:scale-95 disabled:opacity-50 transition">
+  Click me
+</button>
+```
+
+États supportés : `hover:`, `focus:`, `active:`, `visited:`, `disabled:`, `first:`, `last:`, `odd:`, `even:`, `focus-within:`, `focus-visible:`, `placeholder:`, `group-hover:`
+
+### Classes Supportées
+
+| Catégorie | Exemples |
+|-----------|----------|
+| Display | `flex`, `grid`, `block`, `hidden`, `inline-flex` |
+| Flexbox | `flex-col`, `items-center`, `justify-between`, `flex-1` |
+| Grid | `grid-cols-3`, `gap-4`, `col-span-2` |
+| Spacing | `p-4`, `mx-auto`, `mt-8`, `space-x-2` |
+| Sizing | `w-full`, `h-screen`, `max-w-7xl`, `min-h-screen` |
+| Typography | `text-xl`, `font-bold`, `text-gray-500`, `uppercase`, `truncate` |
+| Background | `bg-white`, `bg-blue-500` |
+| Border | `border`, `rounded-lg`, `border-gray-200`, `divide-y` |
+| Shadow | `shadow`, `shadow-lg`, `shadow-xl` |
+| Transform | `scale-75`, `rotate-45`, `translate-x-4` |
+| Transition | `transition`, `duration-300`, `ease-in-out` |
+| Layout | `container`, `aspect-video`, `columns-3` |
+| Interactivity | `cursor-pointer`, `select-none`, `pointer-events-none` |
+
+---
+
 ## Composants Programmatiques
 
 ```javascript
@@ -306,7 +487,8 @@ await app.enableVSV({
   ssr: true,                   // SSR activé
   hydrate: true,               // Hydratation activée
   minify: true,                // Minification
-  precompile: true             // Précompiler au démarrage
+  precompile: true,            // Précompiler au démarrage
+  tailwind: true               // Tailwind CSS intégré
 });
 ```
 
@@ -371,7 +553,13 @@ my-app/
 ├── components/
 │   ├── Button.jsv
 │   ├── Card.jsv
-│   └── Nav.jsv
+│   ├── Nav.jsv
+│   ├── styles/
+│   │   ├── global.css
+│   │   └── card.css
+│   └── images/
+│       ├── logo.png
+│       └── hero.jpg
 ├── pages/
 │   ├── Home.jsv
 │   ├── About.jsv

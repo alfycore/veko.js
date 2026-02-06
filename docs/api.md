@@ -1,691 +1,578 @@
-# 📚 API Reference - Veko.js
+﻿# API Reference - Veko.js
 
-Référence complète de l'API Veko.js.
+Reference complete de l API Veko.js - Zero dependances.
 
-## Table des Matières
+## Table des Matieres
 
 - [App](#app)
-- [RouteManager](#routemanager)
-- [LayoutManager](#layoutmanager)
-- [AuthManager](#authmanager)
-- [PluginManager](#pluginmanager)
-- [ReactManager](#reactmanager)
-- [DevServer](#devserver)
+- [Router](#router)
+- [VSV](#vsv)
+- [VekoTailwind](#vekotailwind)
+- [VekoPHP](#vekophp)
 - [Logger](#logger)
+- [Types TypeScript](#types-typescript)
 
 ---
 
 ## App
 
-Classe principale de l'application Veko.
+Classe principale de l application Veko. Serveur HTTP pur Node.js (aucune dependance).
 
-### Création
+### Creation
 
 ```javascript
 const { createApp, App } = require('veko');
 
-// Méthode raccourcie
+// Methode raccourcie
 const app = createApp(options);
 
 // Ou instanciation directe
 const app = new App(options);
+
+// Avec VSV + Tailwind
+const app = await createVSVApp(options);
 ```
 
 ### Options
 
-```typescript
-interface AppOptions {
+```javascript
+{
   // Serveur
-  port?: number;              // Port du serveur (défaut: 3000)
-  wsPort?: number;            // Port WebSocket (défaut: 3008)
-  isDev?: boolean;            // Mode développement
-  
-  // Répertoires
-  viewsDir?: string;          // Dossier des vues (défaut: 'views')
-  staticDir?: string;         // Dossier statique (défaut: 'public')
-  routesDir?: string;         // Dossier des routes (défaut: 'routes')
-  
-  // Sécurité
-  security?: {
-    helmet?: boolean;         // Activer Helmet (défaut: true)
-    rateLimit?: {
-      windowMs?: number;      // Fenêtre en ms
-      max?: number;           // Requêtes max
-    };
-    cors?: {
-      origin?: string | string[];
-      credentials?: boolean;
-    };
-  };
-  
-  // Layouts
-  layouts?: {
-    enabled?: boolean;
-    layoutsDir?: string;
-    defaultLayout?: string;
-    extension?: string;
-  };
-  
-  // Plugins
-  plugins?: {
-    enabled?: boolean;
-    autoLoad?: boolean;
-    pluginsDir?: string;
-  };
-  
-  // React
-  react?: {
-    enabled?: boolean;
-    mode?: 'ssr' | 'csr' | 'hybrid' | 'streaming';
-    componentsDir?: string;
-    hydration?: boolean;
-    hmr?: boolean;
-  };
-  
-  // Auto-updater
-  autoUpdater?: {
-    enabled?: boolean;
-    checkOnStart?: boolean;
-    autoUpdate?: boolean;
-  };
+  port: 3000,              // Port du serveur
+  host: '0.0.0.0',        // Adresse d ecoute
+  isDev: false,            // Mode developpement
+
+  // Repertoires
+  staticDir: 'public',    // Dossier fichiers statiques
+
+  // Rate Limiting (integre)
+  rateLimit: {
+    windowMs: 15 * 60 * 1000,  // 15 minutes
+    max: 100                    // Requetes max par fenetre
+  },
+
+  // VSV (via createVSVApp)
+  componentsDir: 'components',
+  pagesDir: 'pages',
+  cacheDir: '.veko/vsv-cache',
+  ssr: true,
+  hydrate: true,
+  minify: true,
+  precompile: true,
+  tailwind: true           // Active Tailwind CSS integre
 }
 ```
 
-### Méthodes
-
-#### `listen(port?, callback?)`
-
-Démarre le serveur HTTP.
+### Methodes HTTP
 
 ```javascript
-app.listen(3000, () => {
-  console.log('Serveur démarré');
+app.get(path, ...handlers)
+app.post(path, ...handlers)
+app.put(path, ...handlers)
+app.delete(path, ...handlers)
+app.patch(path, ...handlers)
+app.all(path, ...handlers)
+```
+
+Exemple :
+```javascript
+app.get('/api/users', async (req, res) => {
+  res.json({ users: [] });
+});
+
+app.post('/api/users', async (req, res) => {
+  const { name, email } = req.body;
+  res.status(201).json({ user: { name, email } });
+});
+
+// Route avec parametres
+app.get('/users/:id', (req, res) => {
+  res.json({ userId: req.params.id });
 });
 ```
 
-#### `startDev(port?)`
-
-Démarre en mode développement avec hot reload.
+### Middleware
 
 ```javascript
-app.startDev(3000);
+app.use(handler)           // Middleware global
+app.use(path, handler)     // Middleware sur un chemin
 ```
 
-#### `stop()`
-
-Arrête le serveur proprement.
-
 ```javascript
-await app.stop();
-```
-
-#### `use(middleware)`
-
-Ajoute un middleware Express.
-
-```javascript
-app.use(express.json());
-app.use(cors());
-```
-
-#### `createRoute(method, path, ...handlers)`
-
-Crée une nouvelle route.
-
-```javascript
-app.createRoute('GET', '/users', (req, res) => {
-  res.json([]);
+// Middleware global
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.pathname}`);
+  next();
 });
 
-// Avec middleware
-app.createRoute('POST', '/users', 
-  validateBody,
-  app.requireAuth(),
-  createUserHandler
-);
+// Middleware API
+app.use('/api', (req, res, next) => {
+  if (!req.headers.authorization) {
+    res.status(401).json({ error: 'Non autorise' });
+    return;
+  }
+  next();
+});
 ```
 
-#### `deleteRoute(method, path)`
-
-Supprime une route existante.
+### Objet Request (req)
 
 ```javascript
-app.deleteRoute('GET', '/old-route');
+req.method       // GET, POST, etc.
+req.pathname     // /users/123
+req.query        // { page: '1', limit: '10' }
+req.params       // { id: '123' } (parametres de route)
+req.body         // Corps de la requete (POST/PUT/PATCH)
+req.cookies      // { session: 'abc' }
+req.headers      // En-tetes HTTP
 ```
 
-#### `loadRoutes(routesDir?)`
-
-Charge les routes depuis un dossier.
+### Objet Response (res)
 
 ```javascript
-app.loadRoutes('./routes');
+res.json(data)                          // Reponse JSON
+res.html(htmlString)                    // Reponse HTML
+res.send(data)                          // Auto (string -> text, object -> JSON)
+res.redirect(url, statusCode?)          // Redirection (302 par defaut)
+res.status(code)                        // Setter status (chainable)
+res.setCookie(name, value, options)     // Definir un cookie
+res.setHeader(name, value)              // Definir un en-tete
 ```
 
-#### `listRoutes()`
+Options cookie :
+```javascript
+res.setCookie('session', 'token123', {
+  maxAge: 86400,
+  path: '/',
+  httpOnly: true,
+  secure: true,
+  sameSite: 'Strict'
+});
+```
 
-Liste toutes les routes enregistrées.
+### VSV Methods
 
 ```javascript
-const routes = app.listRoutes();
-// [{ method: 'GET', path: '/', ... }, ...]
+// Activer VSV
+await app.enableVSV(options)
+
+// Route VSV (rendu composant avec SSR)
+app.vsvRoute(path, component, {
+  title: 'Page Title',
+  props: { static: 'data' },
+  getProps: async (req) => ({ dynamic: 'data' }),
+  seo: {
+    description: 'Meta description',
+    keywords: ['mot', 'cle'],
+    og: { title: 'OG Title', image: 'url' },
+    twitter: { card: 'summary_large_image' },
+    jsonLd: { '@type': 'WebPage' }
+  },
+  hydrate: true,
+  ssr: true
+})
+
+// Render manuel
+const html = await app.renderVSV(component, props, options)
+```
+
+### PHP-like Template Methods
+
+```javascript
+// Route PHP template
+app.phpRoute(path, template, {
+  title: 'Page',
+  data: { key: 'value' },
+  getData: async (req, res) => ({ users: [] })
+})
+
+// Render template string
+const html = await app.renderPHP(templateString, data, req, res)
+
+// Globals PHP
+app.phpGlobal('siteName', 'Mon Site')
+
+// Custom function
+app.phpFunction('formatDate', (d) => new Date(d).toLocaleDateString())
+```
+
+### Serveur
+
+```javascript
+// Demarrer
+app.listen(port?, callback?)
+
+// Fermer
+app.close()
+```
+
+### Events
+
+App herite de EventEmitter :
+
+```javascript
+app.on('listening', (port) => {
+  console.log(`Server on port ${port}`);
+});
 ```
 
 ---
 
-## RouteManager
+## Router
 
-Gestion des routes de l'application.
+Le router interne supporte les parametres dynamiques et les middleware par chemin.
 
-### Méthodes
+### Parametres
 
-#### `createRoute(method, path, handler, options?)`
+```javascript
+app.get('/users/:id', (req, res) => {
+  // req.params.id
+});
 
-```typescript
-interface RouteOptions {
-  name?: string;              // Nom de la route
-  middleware?: Function[];    // Middlewares
-  rateLimit?: {
-    max?: number;
-    windowMs?: number;
-  };
-  cache?: {
-    enabled?: boolean;
-    maxAge?: number;
-  };
-  validation?: {
-    body?: object;
-    params?: object;
-    query?: object;
-  };
+app.get('/posts/:year/:month', (req, res) => {
+  // req.params.year, req.params.month
+});
+```
+
+### Wildcard
+
+```javascript
+app.get('/api/*', (req, res) => {
+  // Catch-all API route
+});
+```
+
+---
+
+## VSV
+
+Le systeme VSV gere la compilation et le rendu des composants .jsv/.tsv.
+
+### Options VSV
+
+```javascript
+await app.enableVSV({
+  componentsDir: 'components',   // Dossier composants
+  pagesDir: 'pages',            // Dossier pages
+  cacheDir: '.veko/vsv-cache',  // Cache compilation
+  ssr: true,                    // SSR active
+  hydrate: true,                // Hydratation client
+  minify: true,                 // Minification
+  precompile: true,             // Precompiler au demarrage
+  tailwind: true                // Tailwind CSS integre
+});
+```
+
+### Composant VSV (.jsv)
+
+```jsx
+import './styles.css';
+import logo from './logo.png';
+
+export default function Home({ title }) {
+  const [count, setCount] = $state(0);
+
+  return (
+    <div class="home">
+      <img src={logo} alt="Logo" />
+      <h1>{title}</h1>
+      <button $click={() => setCount(c => c + 1)}>
+        Clicks: {count()}
+      </button>
+    </div>
+  );
 }
 ```
 
+### API Reactive
+
+| Hook | Usage |
+|------|-------|
+| `$state(initial)` | Etat reactif, retourne `[getter, setter]` |
+| `$computed(fn)` | Valeur calculee |
+| `$effect(fn, deps)` | Effet de bord |
+| `$ref(initial)` | Reference DOM |
+| `$memo(fn, deps)` | Memoisation |
+
+### Asset Imports
+
+Les composants supportent l import de fichiers statiques :
+
+```jsx
+import './styles.css';           // CSS -> injecte <link> dans la page
+import logo from './logo.png';   // Image -> URL /_vsv/assets/<hash>.png
+import './script.js';            // JS -> injecte <script> dans la page
+```
+
+Types supportes : `.css`, `.scss`, `.sass`, `.less`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`, `.ico`, `.webp`, `.avif`, `.woff`, `.woff2`, `.ttf`, `.eot`, `.otf`, `.js`, `.mjs`
+
+### Routes internes
+
+| Route | Description |
+|-------|-------------|
+| `/_vsv/runtime.js` | Runtime client VSV |
+| `/_vsv/component/:name` | Code client du composant |
+| `/_vsv/assets/:hash` | Fichiers assets (cache immutable) |
+| `/_vsv/tailwind.css` | CSS Tailwind genere |
+
+---
+
+## VekoTailwind
+
+Moteur Tailwind CSS integre a zero dependances. Scanne les composants et genere uniquement le CSS utilise.
+
+### Activation
+
 ```javascript
-app.routeManager.createRoute('GET', '/api/users/:id', handler, {
-  name: 'getUser',
-  rateLimit: { max: 60, windowMs: 60000 },
-  validation: {
-    params: {
-      id: { type: 'number', required: true }
+// Simple
+const app = await createVSVApp({ tailwind: true });
+
+// Avec config
+const app = await createVSVApp({
+  tailwind: {
+    prefix: '',
+    darkMode: 'class',     // 'class' ou 'media'
+    theme: {
+      colors: { brand: { 500: '#6366f1' } },
+      spacing: { '128': '32rem' }
     }
   }
 });
 ```
 
-#### `getRoute(method, path)`
+### CSS servi
 
-Récupère une route.
+Le CSS genere est servi a `/_vsv/tailwind.css` et automatiquement injecte dans le document HTML.
 
-```javascript
-const route = app.routeManager.getRoute('GET', '/users');
-```
+### Directive @apply
 
-#### `updateRoute(method, path, handler)`
-
-Met à jour le handler d'une route.
-
-```javascript
-app.routeManager.updateRoute('GET', '/users', newHandler);
-```
-
----
-
-## LayoutManager
-
-Gestion des layouts EJS.
-
-### Méthodes
-
-#### `createLayout(name, content?)`
-
-Crée un nouveau layout.
-
-```javascript
-app.layoutManager.createLayout('admin', `
-<!DOCTYPE html>
-<html>
-<head><title><%= title %></title></head>
-<body>
-  <nav>Admin Nav</nav>
-  <%- content %>
-</body>
-</html>
-`);
-```
-
-#### `deleteLayout(name)`
-
-Supprime un layout.
-
-```javascript
-app.layoutManager.deleteLayout('old-layout');
-```
-
-#### `listLayouts()`
-
-Liste les layouts disponibles.
-
-```javascript
-const layouts = app.layoutManager.listLayouts();
-// ['main', 'admin', 'minimal']
-```
-
-#### `setDefaultLayout(name)`
-
-Définit le layout par défaut.
-
-```javascript
-app.layoutManager.setDefaultLayout('main');
-```
-
----
-
-## AuthManager
-
-Gestion de l'authentification.
-
-### Initialisation
-
-```javascript
-await app.enableAuth({
-  strategy: 'jwt',
-  jwt: {
-    secret: 'my-secret',
-    expiresIn: '7d'
-  }
-});
-```
-
-### Méthodes
-
-#### `login(email, password)`
-
-Authentifie un utilisateur.
-
-```javascript
-const { token, refreshToken, user } = await app.auth.login(email, password);
-```
-
-#### `register(userData)`
-
-Inscrit un nouvel utilisateur.
-
-```javascript
-const user = await app.auth.register({
-  email: 'user@example.com',
-  password: 'securepassword',
-  name: 'John Doe'
-});
-```
-
-#### `verifyToken(token)`
-
-Vérifie un JWT.
-
-```javascript
-const payload = await app.auth.verifyToken(token);
-```
-
-#### `refresh(refreshToken)`
-
-Rafraîchit un token.
-
-```javascript
-const { token, refreshToken } = await app.auth.refresh(oldRefreshToken);
-```
-
-#### `logout(userId)`
-
-Déconnecte un utilisateur.
-
-```javascript
-await app.auth.logout(userId);
-```
-
-#### `requireAuth()`
-
-Middleware de protection.
-
-```javascript
-app.createRoute('GET', '/protected', app.requireAuth(), handler);
-```
-
-#### `requireRole(role)`
-
-Middleware de vérification de rôle.
-
-```javascript
-app.createRoute('GET', '/admin', app.requireRole('admin'), handler);
-```
-
----
-
-## PluginManager
-
-Gestion des plugins.
-
-### Méthodes
-
-#### `load(plugin, config?)`
-
-Charge un plugin.
-
-```javascript
-await app.plugins.load(require('./my-plugin'), {
-  option1: 'value'
-});
-```
-
-#### `get(name)`
-
-Récupère un plugin.
-
-```javascript
-const plugin = app.plugins.get('analytics');
-plugin.api.track('event', data);
-```
-
-#### `has(name)`
-
-Vérifie si un plugin existe.
-
-```javascript
-if (app.plugins.has('cache')) {
-  // ...
+```css
+.btn {
+  @apply px-4 py-2 bg-blue-500 text-white rounded;
 }
 ```
 
-#### `list()`
+### Directives @tailwind
 
-Liste tous les plugins.
-
-```javascript
-const plugins = app.plugins.list();
-// [{ name: 'analytics', version: '1.0.0', active: true }, ...]
+```css
+@tailwind base;        /* CSS reset (Preflight) */
+@tailwind components;  /* Placeholder */
+@tailwind utilities;   /* Placeholder */
 ```
 
-#### `disable(name)`
+### Couleurs
 
-Désactive un plugin.
+Palette complete : `slate`, `gray`, `zinc`, `neutral`, `stone`, `red`, `orange`, `amber`, `yellow`, `lime`, `green`, `emerald`, `teal`, `cyan`, `sky`, `blue`, `indigo`, `violet`, `purple`, `fuchsia`, `pink`, `rose`
 
-```javascript
-await app.plugins.disable('analytics');
-```
+Chaque couleur : 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950
 
-#### `enable(name)`
+### Breakpoints
 
-Réactive un plugin.
+| Prefix | Min-width |
+|--------|-----------|
+| `sm:` | 640px |
+| `md:` | 768px |
+| `lg:` | 1024px |
+| `xl:` | 1280px |
+| `2xl:` | 1536px |
 
-```javascript
-await app.plugins.enable('analytics');
-```
+### Variantes d etat
 
-#### `reload(name)`
-
-Recharge un plugin.
-
-```javascript
-await app.plugins.reload('analytics');
-```
-
-#### `executeHook(hookName, ...args)`
-
-Exécute un hook sur tous les plugins.
-
-```javascript
-await app.plugins.executeHook('custom:event', data);
-```
+`hover:`, `focus:`, `active:`, `visited:`, `disabled:`, `first:`, `last:`, `odd:`, `even:`, `focus-within:`, `focus-visible:`, `placeholder:`, `group-hover:`
 
 ---
 
-## ReactManager
+## VekoPHP
 
-Gestion du support React SSR/CSR.
-
-### Initialisation
+Support de templates PHP-like cote serveur.
 
 ```javascript
-await app.enableReact({
-  mode: 'hybrid',
-  componentsDir: 'components',
-  hmr: true
+app.phpRoute('/page', 'template.php', {
+  data: { title: 'Hello' }
 });
 ```
 
-### Méthodes
-
-#### `registerComponent(name, path)`
-
-Enregistre un composant.
-
-```javascript
-await app.react.registerComponent('Dashboard', './components/Dashboard.jsx');
-```
-
-#### `renderSSR(component, props)`
-
-Rendu côté serveur.
-
-```javascript
-const html = await app.react.renderSSR('HomePage', { title: 'Accueil' });
-```
-
-#### `renderCSR(component, props)`
-
-Rendu côté client.
-
-```javascript
-const html = await app.react.renderCSR('App', { user });
-```
-
-#### `renderHybrid(component, props, options)`
-
-Rendu hybride (SSR + hydratation).
-
-```javascript
-const html = await app.react.renderHybrid('Page', props, {
-  layout: 'MainLayout'
-});
-```
-
-#### `renderStream(component, props, res)`
-
-Streaming SSR.
-
-```javascript
-await app.react.renderStream('LargePage', props, res);
-```
-
-### Méthodes App
-
-#### `app.reactRoute(path, component, options)`
-
-Crée une route React.
-
-```javascript
-app.reactRoute('/dashboard', 'Dashboard', {
-  mode: 'ssr',
-  getInitialProps: async ({ req }) => {
-    return { user: req.user };
-  }
-});
-```
-
-#### `app.renderReact(component, props, options)`
-
-Render manuel d'un composant.
-
-```javascript
-const html = await app.renderReact('Widget', { data }, { mode: 'ssr' });
-```
-
-#### `app.buildReact(options)`
-
-Build pour production.
-
-```javascript
-await app.buildReact({
-  minify: true,
-  sourcemap: false
-});
-```
-
----
-
-## DevServer
-
-Serveur de développement avec hot reload.
-
-### Configuration
-
-```javascript
-const app = createApp({
-  isDev: true,
-  wsPort: 3008,
-  watchDirs: ['views', 'routes', 'public']
-});
-```
-
-### Méthodes
-
-#### `setup()`
-
-Configure le serveur de développement.
-
-```javascript
-app.devServer.setup();
-```
-
-#### `stop()`
-
-Arrête le serveur de développement.
-
-```javascript
-app.devServer.stop();
-```
-
-#### `notifyClients(type, data)`
-
-Notifie les clients connectés.
-
-```javascript
-app.devServer.notifyClients('custom-event', { message: 'Hello' });
-```
+Voir [documentation VekoPHP](vsv.md) pour plus de details.
 
 ---
 
 ## Logger
 
-Système de logging.
+Systeme de logging integre.
 
-### Méthodes
-
-#### `log(type, message, details?)`
-
-Log un message.
+### Methodes
 
 ```javascript
-app.log('info', 'Message informatif');
-app.log('success', 'Opération réussie', '✓');
-app.log('warning', 'Attention', 'Détails...');
-app.log('error', 'Erreur', error.message);
-app.log('debug', 'Debug info', data);
+app.logger.log(type, message, details?)
 ```
 
 ### Types de Log
 
 | Type | Couleur | Usage |
 |------|---------|-------|
-| `info` | Bleu | Informations générales |
-| `success` | Vert | Opérations réussies |
+| `info` | Bleu | Informations generales |
+| `success` | Vert | Operations reussies |
 | `warning` | Jaune | Avertissements |
 | `error` | Rouge | Erreurs |
-| `debug` | Gris | Débogage |
-| `server` | Violet | Événements serveur |
-| `dev` | Cyan | Mode développement |
-| `route` | Vert | Création de routes |
+| `debug` | Gris | Debogage |
+| `server` | Violet | Evenements serveur |
+| `route` | Vert | Creation de routes |
 
 ---
 
 ## Types TypeScript
 
 ```typescript
-// types/veko.d.ts
 declare module 'veko' {
-  import { Express, Request, Response, NextFunction } from 'express';
+  import { EventEmitter } from 'events';
 
-  export interface VekoApp {
-    app: Express;
-    express: Express;
-    
-    // Routing
-    createRoute(method: string, path: string, ...handlers: Function[]): void;
-    deleteRoute(method: string, path: string): void;
-    loadRoutes(dir?: string): void;
-    listRoutes(): Route[];
-    
-    // Layouts
-    createLayout(name: string, content?: string): void;
-    deleteLayout(name: string): void;
-    listLayouts(): string[];
-    
-    // Auth
-    enableAuth(config: AuthConfig): Promise<void>;
-    requireAuth(): Function;
-    requireRole(role: string): Function;
-    
-    // React
-    enableReact(config: ReactConfig): Promise<void>;
-    reactRoute(path: string, component: string, options?: ReactRouteOptions): void;
-    renderReact(component: string, props?: object, options?: RenderOptions): Promise<string>;
-    
-    // Plugins
-    plugins: PluginManager;
-    
-    // Lifecycle
-    listen(port?: number, callback?: Function): void;
-    startDev(port?: number): void;
-    stop(): Promise<void>;
-    use(middleware: Function): this;
-    
-    // Logging
-    log(type: string, message: string, details?: string): void;
+  export interface AppOptions {
+    port?: number;
+    host?: string;
+    staticDir?: string;
+    isDev?: boolean;
+    rateLimit?: {
+      windowMs?: number;
+      max?: number;
+    } | false;
   }
 
-  export interface Route {
-    method: string;
-    path: string;
-    name?: string;
-    handler: Function;
-  }
-
-  export interface AuthConfig {
-    strategy: 'jwt' | 'session' | 'hybrid';
-    jwt?: JWTConfig;
-    session?: SessionConfig;
-    oauth?: OAuthConfig;
-  }
-
-  export interface ReactConfig {
-    enabled?: boolean;
-    mode?: 'ssr' | 'csr' | 'hybrid' | 'streaming';
+  export interface VSVOptions {
     componentsDir?: string;
-    hydration?: boolean;
-    hmr?: boolean;
+    pagesDir?: string;
+    cacheDir?: string;
+    ssr?: boolean;
+    hydrate?: boolean;
+    minify?: boolean;
+    precompile?: boolean;
+    tailwind?: boolean | TailwindOptions;
   }
 
-  export function createApp(options?: AppOptions): VekoApp;
-  export function createReactApp(options?: AppOptions): Promise<VekoApp>;
+  export interface TailwindOptions {
+    prefix?: string;
+    darkMode?: 'class' | 'media';
+    theme?: {
+      colors?: Record<string, Record<string, string>>;
+      spacing?: Record<string, string>;
+    };
+  }
+
+  export interface SEOOptions {
+    title?: string;
+    description?: string;
+    keywords?: string[];
+    robots?: string;
+    canonical?: string;
+    og?: {
+      title?: string;
+      description?: string;
+      image?: string;
+      type?: string;
+    };
+    twitter?: {
+      card?: string;
+      site?: string;
+      title?: string;
+      image?: string;
+    };
+    jsonLd?: object;
+  }
+
+  export interface VSVRouteOptions {
+    title?: string;
+    props?: Record<string, any>;
+    getProps?: (req: VekoRequest) => Promise<Record<string, any>>;
+    seo?: SEOOptions;
+    hydrate?: boolean;
+    ssr?: boolean;
+  }
+
+  export interface VekoRequest {
+    method: string;
+    pathname: string;
+    query: Record<string, string>;
+    params: Record<string, string>;
+    body: any;
+    cookies: Record<string, string>;
+    headers: Record<string, string>;
+  }
+
+  export interface VekoResponse {
+    json(data: any): void;
+    html(html: string): void;
+    send(data: any): void;
+    redirect(url: string, code?: number): void;
+    status(code: number): VekoResponse;
+    setCookie(name: string, value: string, options?: CookieOptions): void;
+    setHeader(name: string, value: string): void;
+  }
+
+  export interface CookieOptions {
+    maxAge?: number;
+    path?: string;
+    httpOnly?: boolean;
+    secure?: boolean;
+    sameSite?: 'Strict' | 'Lax' | 'None';
+  }
+
+  export class App extends EventEmitter {
+    constructor(options?: AppOptions);
+
+    // Routes
+    get(path: string, ...handlers: Function[]): this;
+    post(path: string, ...handlers: Function[]): this;
+    put(path: string, ...handlers: Function[]): this;
+    delete(path: string, ...handlers: Function[]): this;
+    patch(path: string, ...handlers: Function[]): this;
+    all(path: string, ...handlers: Function[]): this;
+
+    // Middleware
+    use(handler: Function): this;
+    use(path: string, handler: Function): this;
+
+    // VSV
+    enableVSV(options?: VSVOptions): Promise<this>;
+    vsvRoute(path: string, component: string, options?: VSVRouteOptions): this;
+    renderVSV(component: string, props?: object, options?: object): Promise<string>;
+
+    // PHP Templates
+    phpRoute(path: string, template: string, options?: object): this;
+    renderPHP(template: string, data?: object): Promise<string>;
+    phpGlobal(name: string, value: any): this;
+    phpFunction(name: string, fn: Function): this;
+
+    // Server
+    listen(port?: number, callback?: Function): any;
+    close(): void;
+  }
+
+  export function createApp(options?: AppOptions): App;
+  export function createVSVApp(options?: AppOptions & VSVOptions): Promise<App>;
   export function startDev(options?: AppOptions): void;
   export function start(options?: AppOptions): void;
-  
-  export class App implements VekoApp { /* ... */ }
+
+  export const VSV: any;
+  export const VekoPHP: any;
+  export const VekoTailwind: any;
 }
 ```
 
 ---
 
+## En-tetes de Securite
+
+Veko.js ajoute automatiquement les en-tetes de securite suivants :
+
+| En-tete | Valeur |
+|---------|--------|
+| `X-Content-Type-Options` | `nosniff` |
+| `X-Frame-Options` | `SAMEORIGIN` |
+| `X-XSS-Protection` | `1; mode=block` |
+
+---
+
 <p align="center">
-  <a href="plugins.md">← Plugins</a> •
-  <a href="security.md">Sécurité →</a>
+  <a href="plugins.md">Plugins</a> |
+  <a href="security.md">Securite</a> |
+  <a href="vsv.md">VSV</a>
 </p>

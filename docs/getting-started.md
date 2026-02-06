@@ -1,29 +1,29 @@
-# 🚀 Guide de Démarrage - Veko.js
+﻿# Guide de Demarrage - Veko.js
 
-Ce guide vous accompagne dans l'installation et la création de votre premier projet Veko.js.
+Guide complet pour demarrer avec Veko.js, le framework Node.js ultra-leger avec zero dependances.
 
-## Table des Matières
+## Table des Matieres
 
-- [Prérequis](#prérequis)
+- [Prerequis](#prerequis)
 - [Installation](#installation)
-- [Créer un Projet](#créer-un-projet)
+- [Creer un Projet](#creer-un-projet)
 - [Structure du Projet](#structure-du-projet)
 - [Premier Serveur](#premier-serveur)
 - [Routes](#routes)
-- [Templates EJS](#templates-ejs)
-- [Mode Développement](#mode-développement)
+- [Composants VSV](#composants-vsv)
+- [Importer des Assets](#importer-des-assets)
+- [Tailwind CSS](#tailwind-css)
+- [Mode Developpement](#mode-developpement)
 
 ---
 
-## Prérequis
+## Prerequis
 
-- **Node.js** version 16.0.0 ou supérieure
-- **npm** version 8.0.0 ou supérieure
-
-Vérifiez vos versions :
+- **Node.js** version 18.0.0 ou superieure
+- **npm** version 8.0.0 ou superieure
 
 ```bash
-node --version  # v16.0.0+
+node --version  # v18.0.0+
 npm --version   # 8.0.0+
 ```
 
@@ -31,68 +31,54 @@ npm --version   # 8.0.0+
 
 ## Installation
 
-### Installation Globale (Recommandée)
-
 ```bash
+# Installation globale (CLI)
 npm install -g veko
-```
 
-Cela vous donne accès aux commandes CLI :
-- `veko` - CLI principal
-- `create-veko-app` - Créer un nouveau projet
-- `veko-update` - Gérer les mises à jour
-
-### Installation Locale
-
-```bash
+# Ou installation locale
 npm install veko
 ```
 
+Aucune autre dependance n est requise. Veko.js fonctionne avec **zero dependances npm**.
+
 ---
 
-## Créer un Projet
-
-### Avec le CLI
-
-```bash
-create-veko-app mon-projet
-cd mon-projet
-npm install
-npm run dev
-```
+## Creer un Projet
 
 ### Manuellement
-
-1. Créez un dossier et initialisez le projet :
 
 ```bash
 mkdir mon-projet
 cd mon-projet
 npm init -y
 npm install veko
+mkdir -p components pages public/css public/js public/images
 ```
 
-2. Créez la structure de base :
+### Fichier d entree
 
-```bash
-mkdir -p views/layouts routes public/css public/js
-```
-
-3. Créez le fichier principal `app.js` :
+Creez `app.js` :
 
 ```javascript
-const { createApp } = require('veko');
+const { createVSVApp } = require('veko');
 
-const app = createApp({
-  port: 3000,
-  isDev: true
-});
+async function main() {
+  const app = await createVSVApp({
+    port: 3000,
+    tailwind: true  // Active Tailwind CSS integre
+  });
 
-app.createRoute('GET', '/', (req, res) => {
-  res.render('index', { title: 'Mon App Veko' });
-});
+  app.vsvRoute('/', 'Home', {
+    title: 'Bienvenue',
+    getProps: async (req) => ({
+      message: 'Hello World!'
+    })
+  });
 
-app.listen();
+  app.listen();
+}
+
+main();
 ```
 
 ---
@@ -101,23 +87,27 @@ app.listen();
 
 ```
 mon-projet/
-├── app.js                 # Point d'entrée
-├── package.json
-├── views/                 # Templates EJS
-│   ├── index.ejs
-│   └── layouts/
-│       └── main.ejs       # Layout principal
-├── routes/                # Fichiers de routes (auto-chargement)
-│   ├── api.js
-│   └── auth.js
-├── public/                # Fichiers statiques
-│   ├── css/
-│   │   └── style.css
-│   └── js/
-│       └── main.js
-├── components/            # Composants React (si activé)
-├── plugins/               # Plugins personnalisés
-└── logs/                  # Fichiers de logs
++-- app.js                 # Point d entree
++-- package.json
++-- components/            # Composants VSV (.jsv / .tsv)
+|   +-- Home.jsv
+|   +-- Header.jsv
+|   +-- Footer.jsv
+|   +-- styles/
+|   |   +-- main.css
+|   |   +-- header.css
+|   +-- images/
+|       +-- logo.png
++-- pages/                 # Pages VSV (routing)
+|   +-- Home.jsv
+|   +-- About.jsv
+|   +-- Contact.jsv
++-- public/                # Fichiers statiques
+|   +-- css/
+|   +-- js/
+|   +-- images/
++-- .veko/                 # Cache (auto-genere)
+    +-- vsv-cache/
 ```
 
 ---
@@ -130,224 +120,262 @@ mon-projet/
 const { createApp } = require('veko');
 
 const app = createApp();
+
+app.get('/', (req, res) => {
+  res.json({ message: 'Hello Veko!' });
+});
+
 app.listen();
-// Serveur sur http://localhost:3000
+// Server running at http://localhost:3000
 ```
 
-### Configuration Complète
+### Configuration Complete
 
 ```javascript
 const { createApp } = require('veko');
 
 const app = createApp({
-  // Serveur
   port: 3000,
-  wsPort: 3008,
-  isDev: process.env.NODE_ENV !== 'production',
-  
-  // Répertoires
-  viewsDir: 'views',
+  host: '0.0.0.0',
   staticDir: 'public',
-  routesDir: 'routes',
-  
-  // Sécurité
-  security: {
-    helmet: true,
-    rateLimit: {
-      windowMs: 15 * 60 * 1000,  // 15 minutes
-      max: 100                    // 100 requêtes max
-    }
-  },
-  
-  // Layouts
-  layouts: {
-    enabled: true,
-    layoutsDir: 'views/layouts',
-    defaultLayout: 'main',
-    extension: '.ejs'
-  },
-  
-  // Plugins
-  plugins: {
-    enabled: true,
-    autoLoad: true,
-    pluginsDir: 'plugins'
+  isDev: process.env.NODE_ENV !== 'production',
+
+  // Rate limiting integre
+  rateLimit: {
+    windowMs: 15 * 60 * 1000,
+    max: 100
   }
 });
 
-app.listen(() => {
-  console.log('Serveur démarré!');
-});
+app.listen();
 ```
 
 ---
 
 ## Routes
 
-### Création Manuelle
+### Routes Basiques
 
 ```javascript
-// Routes basiques
-app.createRoute('GET', '/', (req, res) => {
-  res.render('index');
+// GET
+app.get('/', (req, res) => {
+  res.html('<h1>Accueil</h1>');
 });
 
-app.createRoute('POST', '/api/users', (req, res) => {
+// POST
+app.post('/api/users', (req, res) => {
   const { name, email } = req.body;
   res.json({ success: true, user: { name, email } });
 });
 
-// Route avec paramètres
-app.createRoute('GET', '/users/:id', (req, res) => {
-  const userId = req.params.id;
-  res.json({ userId });
+// Route avec parametres
+app.get('/users/:id', (req, res) => {
+  res.json({ userId: req.params.id });
 });
 
 // Route avec query string
-app.createRoute('GET', '/search', (req, res) => {
-  const { q, page } = req.query;
-  res.json({ query: q, page: page || 1 });
+app.get('/search', (req, res) => {
+  res.json({ query: req.query.q });
 });
 ```
 
-### Auto-chargement des Routes
-
-Créez des fichiers dans le dossier `routes/` :
+### Middleware
 
 ```javascript
-// routes/api.js
-module.exports = (app) => {
-  app.createRoute('GET', '/api/status', (req, res) => {
-    res.json({ status: 'ok', timestamp: Date.now() });
-  });
-  
-  app.createRoute('GET', '/api/users', async (req, res) => {
-    const users = await User.findAll();
-    res.json(users);
-  });
-};
+// Middleware global
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.pathname}`);
+  next();
+});
+
+// Middleware sur un chemin
+app.use('/api', (req, res, next) => {
+  if (!req.headers.authorization) {
+    res.status(401).json({ error: 'Non autorise' });
+    return;
+  }
+  next();
+});
 ```
 
-Les routes sont automatiquement chargées au démarrage.
+### Reponses
 
----
-
-## Templates EJS
-
-### Layout Principal
-
-```html
-<!-- views/layouts/main.ejs -->
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title || 'Mon App' %></title>
-  <link rel="stylesheet" href="/css/style.css">
-  <%- head || '' %>
-</head>
-<body>
-  <header>
-    <%- header || '' %>
-  </header>
-  
-  <main>
-    <%- content %>
-  </main>
-  
-  <footer>
-    <%- footer || '' %>
-  </footer>
-  
-  <script src="/js/main.js"></script>
-  <%- scripts || '' %>
-</body>
-</html>
-```
-
-### Page avec Layout
-
-```html
-<!-- views/index.ejs -->
-<% layout('main') %>
-
-<% section('head') %>
-<meta name="description" content="Page d'accueil">
-<% endsection %>
-
-<% section('content') %>
-<h1>Bienvenue sur <%= title %>!</h1>
-<p>Ceci est ma première page Veko.js</p>
-<% endsection %>
-
-<% section('scripts') %>
-<script>
-  console.log('Page chargée!');
-</script>
-<% endsection %>
-```
-
-### Partials
-
-```html
-<!-- views/partials/navbar.ejs -->
-<nav class="navbar">
-  <a href="/">Accueil</a>
-  <a href="/about">À propos</a>
-  <a href="/contact">Contact</a>
-</nav>
-
-<!-- Utilisation -->
-<%- include('partials/navbar') %>
+```javascript
+res.json({ data: 'object' });                        // JSON
+res.html('<h1>HTML</h1>');                           // HTML
+res.send('text');                                     // Texte
+res.redirect('/autre-page');                          // Redirection
+res.status(404).json({ error: 'Not found' });        // Status + JSON
+res.setCookie('session', 'abc', { httpOnly: true });  // Cookie
 ```
 
 ---
 
-## Mode Développement
+## Composants VSV
 
-### Démarrer en Mode Dev
+### Creer un composant (.jsv)
+
+```jsx
+// components/Home.jsv
+import './styles/home.css';
+import logo from './images/logo.png';
+
+export default function Home({ title, message }) {
+  const [count, setCount] = $state(0);
+
+  return (
+    <div class="home">
+      <img src={logo} alt="Logo" />
+      <h1>{title}</h1>
+      <p>{message}</p>
+      <button $click={() => setCount(c => c + 1)}>
+        Clicks: {count()}
+      </button>
+    </div>
+  );
+}
+```
+
+### Route VSV
+
+```javascript
+app.vsvRoute('/', 'Home', {
+  title: 'Ma Page',
+  getProps: async (req) => ({
+    title: 'Bienvenue',
+    message: 'Hello World!'
+  })
+});
+```
+
+---
+
+## Importer des Assets
+
+Comme dans React, vous pouvez importer des fichiers directement dans vos composants :
+
+### CSS
+
+```jsx
+// Importe et injecte automatiquement le CSS dans la page
+import './styles.css';
+```
+
+### Images
+
+```jsx
+import logo from './logo.png';
+import avatar from '../images/avatar.jpg';
+
+export default function Header() {
+  return (
+    <header>
+      <img src={logo} alt="Logo" />
+      <img src={avatar} alt="Avatar" />
+    </header>
+  );
+}
+```
+
+### JavaScript
+
+```jsx
+import './analytics.js';  // Script injecte dans la page
+```
+
+### Formats supportes
+
+| Type | Extensions |
+|------|-----------|
+| CSS | `.css`, `.scss`, `.sass`, `.less` |
+| Images | `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`, `.ico`, `.webp`, `.avif` |
+| Fonts | `.woff`, `.woff2`, `.ttf`, `.eot`, `.otf` |
+| Scripts | `.js`, `.mjs` |
+
+Les fichiers importes sont servis automatiquement via `/_vsv/assets/` avec cache-busting (hash MD5).
+
+---
+
+## Tailwind CSS
+
+Veko.js inclut un moteur Tailwind CSS integre (zero dependances). Il scanne automatiquement vos composants et genere uniquement le CSS utilise.
+
+### Activation
+
+```javascript
+const app = await createVSVApp({
+  port: 3000,
+  tailwind: true  // Active Tailwind
+});
+```
+
+### Utilisation dans les composants
+
+```jsx
+// components/Card.jsv
+export default function Card({ title, description }) {
+  return (
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
+      <div class="p-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-2">{title}</h2>
+        <p class="text-gray-500">{description}</p>
+      </div>
+    </div>
+  );
+}
+```
+
+### Directive @apply
+
+```css
+/* components/styles/global.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.btn-primary {
+  @apply px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition;
+}
+```
+
+### Classes supportees
+
+| Categorie | Exemples |
+|-----------|----------|
+| **Display** | `flex`, `grid`, `block`, `hidden`, `inline-flex` |
+| **Flexbox** | `flex-col`, `items-center`, `justify-between`, `flex-1` |
+| **Grid** | `grid-cols-3`, `gap-4`, `col-span-2` |
+| **Spacing** | `p-4`, `mx-auto`, `mt-8`, `space-x-2` |
+| **Sizing** | `w-full`, `h-screen`, `max-w-7xl`, `min-h-screen` |
+| **Typography** | `text-xl`, `font-bold`, `text-gray-500`, `uppercase` |
+| **Background** | `bg-white`, `bg-blue-500` |
+| **Border** | `border`, `rounded-lg`, `border-gray-200` |
+| **Shadow** | `shadow`, `shadow-lg`, `shadow-xl` |
+| **Transform** | `scale-75`, `rotate-45`, `translate-x-4` |
+| **Transition** | `transition`, `duration-300`, `ease-in-out` |
+| **Responsive** | `sm:flex`, `md:grid-cols-2`, `lg:text-xl` |
+| **Dark mode** | `dark:bg-gray-900`, `dark:text-white` |
+| **States** | `hover:bg-blue-600`, `focus:ring`, `active:scale-95` |
+
+---
+
+## Mode Developpement
 
 ```javascript
 const app = createApp({ isDev: true });
-app.startDev();
+app.listen(3000);
 ```
 
-Ou avec le CLI :
-
-```bash
-veko dev
-```
-
-### Fonctionnalités du Mode Dev
-
-1. **Hot Reload** - Rechargement automatique des fichiers modifiés
-2. **WebSocket** - Actualisation du navigateur en temps réel
-3. **Logs détaillés** - Affichage coloré des événements
-4. **File watching** - Surveillance des dossiers configurés
-
-### Configuration du Hot Reload
-
-```javascript
-const app = createApp({
-  isDev: true,
-  wsPort: 3008,
-  watchDirs: ['views', 'routes', 'public', 'components'],
-  showStack: true  // Afficher les stack traces
-});
-```
+En mode developpement :
+- Logs colores de chaque requete
+- Stack traces detaillees en cas d erreur
+- Pas de cache sur les fichiers statiques
 
 ---
 
-## Étapes Suivantes
+## Etapes Suivantes
 
-- [Configuration de React SSR](react.md)
-- [Système d'authentification](auth.md)
-- [Créer des plugins](plugins.md)
-- [Référence API complète](api.md)
-
----
-
-<p align="center">
-  <a href="react.md">Suivant : React SSR →</a>
-</p>
+- [Composants VSV](vsv.md) - Guide complet des composants
+- [API Reference](api.md) - Toutes les methodes disponibles
+- [Securite](security.md) - Bonnes pratiques
+- [Plugins](plugins.md) - Etendre Veko.js

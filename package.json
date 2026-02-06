@@ -1,7 +1,7 @@
 {
   "name": "veko",
-  "version": "1.2.23",
-  "description": "🚀 Ultra-lightweight Node.js framework with ZERO dependencies - VSV components, hot reload, SSR",
+  "version": "1.2.25",
+  "description": "Ultra-lightweight Node.js framework with ZERO dependencies - VSV components, Tailwind CSS, asset imports, SSR",
   "main": "index.js",
   "bin": {
     "veko": "./bin/veko.js"
@@ -27,7 +27,11 @@
     "jsx",
     "no-dependencies",
     "minimal",
-    "fast"
+    "fast",
+    "tailwind",
+    "tailwindcss",
+    "asset-imports",
+    "css-imports"
   ],
   "author": "Wiltark <contact@wiltark.fr>",
   "license": "MIT",

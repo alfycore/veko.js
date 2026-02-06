@@ -1,7 +1,7 @@
 /**
  * VekoJS - Zero Dependencies Framework
  * @module veko
- * @version 1.2.18
+ * @version 1.2.25
  */
 
 const App = require('./lib/app');
@@ -9,9 +9,11 @@ const App = require('./lib/app');
 // Import VSV support
 let VSVSupport = null;
 let VekoPHP = null;
+let VekoTailwind = null;
 try {
   VSVSupport = require('./lib/vsv');
   VekoPHP = require('./lib/vsv/php');
+  VekoTailwind = require('./lib/vsv').VekoTailwind;
 } catch (error) {
   // VSV support error
 }
@@ -44,6 +46,7 @@ module.exports = {
   // VSV Support
   VSV: VSVSupport,
   VekoPHP: VekoPHP,
+  VekoTailwind: VekoTailwind,
   
   // Create a VSV app
   createVSVApp: async (options = {}) => {

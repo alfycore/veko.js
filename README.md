@@ -1,11 +1,11 @@
-<p align="center">
+﻿<p align="center">
   <img src="https://raw.githubusercontent.com/wiltark/veko.js/main/assets/logo.png" alt="Veko.js Logo" width="200"/>
 </p>
 
-<h1 align="center">🚀 Veko.js</h1>
+<h1 align="center">Veko.js</h1>
 
 <p align="center">
-  <strong>Framework Node.js ultra-moderne avec VSV (Veko Server Views), hot reload intelligent et sécurité avancée</strong>
+  <strong>Framework Node.js ultra-leger avec zero dependances - VSV Components, Tailwind CSS integre, SSR natif</strong>
 </p>
 
 <p align="center">
@@ -16,66 +16,59 @@
 </p>
 
 <p align="center">
-  <a href="#-installation">Installation</a> •
-  <a href="#-démarrage-rapide">Démarrage</a> •
-  <a href="#-fonctionnalités">Fonctionnalités</a> •
-  <a href="#-vsv-components">VSV Components</a> •
-  <a href="#-documentation">Documentation</a>
+  <a href="#installation">Installation</a> -
+  <a href="#demarrage-rapide">Demarrage</a> -
+  <a href="#fonctionnalites">Fonctionnalites</a> -
+  <a href="#vsv-components">VSV Components</a> -
+  <a href="#documentation">Documentation</a>
 </p>
 
 ---
 
-## ✨ Fonctionnalités
+## Fonctionnalites
 
-| Fonctionnalité | Description |
+| Fonctionnalite | Description |
 |----------------|-------------|
-| ⚛️ **VSV Components** | Veko Server Views - Composants JSX-like avec SSR natif, zéro dépendance externe |
-| 🔥 **Hot Reload Intelligent** | Rechargement sélectif des routes modifiées sans redémarrage |
-| 🔒 **Sécurité Avancée** | Helmet, rate limiting, validation XSS, protection CSRF |
-| 🔌 **Système de Plugins** | Architecture extensible avec hooks et API complète |
-| 🔐 **Authentification** | JWT, sessions, OAuth (Google, GitHub, Facebook) |
-| 📁 **Auto-loading** | Routes, vues et middlewares auto-configurés |
-| 🎨 **Layouts VSV** | Système de templates puissant avec sections |
-| 📦 **Auto-installation** | Gestion automatique des dépendances |
-| 🔄 **Auto-updater** | Mises à jour automatiques avec rollback |
+| **Zero Dependances** | Aucun package npm requis - Node.js pur |
+| **VSV Components** | Composants .jsv/.tsv avec JSX, SSR natif, hydratation selective |
+| **Asset Imports** | Import CSS, images, JS, fonts dans les composants (comme React) |
+| **Tailwind CSS** | Moteur Tailwind integre, zero config, genere uniquement le CSS utilise |
+| **SSR Natif** | Server-Side Rendering sans configuration |
+| **Securite** | Headers securises, rate limiting, protection XSS integres |
+| **PHP Templates** | Support de templates PHP-like pour le prototypage rapide |
+| **Serveur HTTP Pur** | Node.js http natif, pas d Express |
 
-## 📦 Installation
+## Installation
 
 ```bash
-# Installation globale (recommandée)
-npm install -g veko
-
-# Créer un nouveau projet
-create-veko-app mon-projet
-cd mon-projet
-npm run dev
-
-# Ou installation locale
 npm install veko
 ```
 
-## 🚀 Démarrage Rapide
+C est tout. **Zero dependances** a installer.
 
-### Application Express classique
+Prerequis : Node.js >= 18.0.0
+
+## Demarrage Rapide
+
+### API Simple
 
 ```javascript
 const { createApp } = require('veko');
 
-const app = createApp({
-  port: 3000,
-  isDev: true
+const app = createApp({ port: 3000 });
+
+app.get('/', (req, res) => {
+  res.json({ message: 'Hello Veko!' });
 });
 
-// Créer une route
-app.createRoute('GET', '/', (req, res) => {
-  res.render('index', { title: 'Bienvenue sur Veko.js!' });
+app.post('/api/users', (req, res) => {
+  res.status(201).json({ user: req.body });
 });
 
-// Démarrer le serveur
 app.listen();
 ```
 
-### Application avec VSV Components
+### Application VSV Avec Tailwind
 
 ```javascript
 const { createVSVApp } = require('veko');
@@ -83,19 +76,14 @@ const { createVSVApp } = require('veko');
 async function main() {
   const app = await createVSVApp({
     port: 3000,
-    vsv: {
-      componentsDir: 'components',
-      pagesDir: 'pages',
-      ssr: true,
-      hydrate: true
-    }
+    tailwind: true
   });
 
-  // Route VSV avec SSR
   app.vsvRoute('/', 'Home', {
-    getProps: async (req) => {
-      return { user: req.user, title: 'Accueil' };
-    }
+    title: 'Accueil',
+    getProps: async (req) => ({
+      message: 'Hello World!'
+    })
   });
 
   app.listen();
@@ -104,233 +92,153 @@ async function main() {
 main();
 ```
 
-## ⚛️ VSV Components
+## VSV Components
 
-Veko.js offre VSV (Veko Server Views), un système de composants moderne avec syntaxe JSX, zéro dépendance externe et SSR natif.
-
-### Syntaxe VSV (.jsv / .tsv)
+### Composant .jsv
 
 ```jsx
-// components/Counter.jsv
-export default function Counter(props) {
+// components/Home.jsv
+import './styles/home.css';
+import logo from './images/logo.png';
+
+export default function Home({ title, message }) {
   const [count, setCount] = $state(0);
-  
+
   return (
-    <div class="counter">
-      <h1>{props.title}</h1>
-      <p>Count: {count()}</p>
-      <button @click={() => setCount(c => c + 1)}>+</button>
-      <button @click={() => setCount(c => c - 1)}>-</button>
+    <div class="flex flex-col items-center p-8">
+      <img src={logo} alt="Logo" class="w-32 mb-4" />
+      <h1 class="text-3xl font-bold text-gray-900">{title}</h1>
+      <p class="text-gray-500 mt-2">{message}</p>
+      <button
+        class="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+        $click={() => setCount(c => c + 1)}
+      >
+        Clicks: {count()}
+      </button>
     </div>
   );
 }
 ```
 
-### Directives Réactives
+### Composant TypeScript .tsv
+
+```tsx
+// components/Card.tsv
+interface CardProps {
+  title: string;
+  description: string;
+  image?: string;
+}
+
+export default function Card({ title, description, image }: CardProps) {
+  return (
+    <div class="max-w-sm rounded-xl shadow-lg overflow-hidden bg-white">
+      {image && <img src={image} alt={title} class="w-full h-48 object-cover" />}
+      <div class="p-6">
+        <h2 class="text-xl font-bold mb-2">{title}</h2>
+        <p class="text-gray-600">{description}</p>
+      </div>
+    </div>
+  );
+}
+```
+
+### Directives Reactives
 
 | Directive | Description | Exemple |
 |-----------|-------------|---------|
-| `$state` | État réactif | `const [val, setVal] = $state(0)` |
-| `$computed` | Valeur dérivée | `const double = $computed(() => val() * 2)` |
+| `$state` | Etat reactif | `const [val, setVal] = $state(0)` |
+| `$computed` | Valeur derivee | `const double = $computed(() => val() * 2)` |
 | `$effect` | Effets de bord | `$effect(() => console.log(val()))` |
-| `$ref` | Référence DOM | `const el = $ref(null)` |
-| `$memo` | Mémoïsation | `const cached = $memo(() => heavy())` |
+| `$ref` | Reference DOM | `const el = $ref(null)` |
+| `$memo` | Memoisation | `const cached = $memo(() => heavy())` |
 
-### Événements
+## Asset Imports
+
+Importez des fichiers directement dans vos composants comme dans React :
 
 ```jsx
-<button @click={handleClick}>Click</button>
-<input @change={handleChange} />
-<form @submit={handleSubmit}>...</form>
+import './styles.css';           // CSS injecte automatiquement
+import logo from './logo.png';   // Image -> URL servie
+import './analytics.js';         // Script injecte
 ```
 
-### Exemple Complet
+| Type | Extensions |
+|------|-----------|
+| CSS | `.css`, `.scss`, `.sass`, `.less` |
+| Images | `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`, `.ico`, `.webp`, `.avif` |
+| Fonts | `.woff`, `.woff2`, `.ttf`, `.eot`, `.otf` |
+| Scripts | `.js`, `.mjs` |
+
+## Tailwind CSS Integre
+
+Activez Tailwind CSS sans aucune installation supplementaire :
 
 ```javascript
-const { createApp } = require('veko');
-
-const app = createApp({ port: 3000 });
-
-// Activer VSV
-await app.enableVSV({
-  componentsDir: 'components',
-  pagesDir: 'pages'
-});
-
-// Route VSV
-app.vsvRoute('/dashboard', 'Dashboard', {
-  getProps: async (req) => {
-    const data = await fetchDashboardData(req.params.id);
-    return { data };
-  }
-});
-
-app.listen();
+const app = await createVSVApp({ tailwind: true });
 ```
 
-## 🔐 Authentification
+Supporte : toutes les classes utilitaires, responsive (`sm:`, `md:`, `lg:`, `xl:`), dark mode (`dark:`), etats (`hover:`, `focus:`, `active:`), directive `@apply`.
 
-```javascript
-const app = createApp({ port: 3000 });
-
-// Activer l'authentification
-await app.enableAuth({
-  strategy: 'jwt',
-  secret: process.env.JWT_SECRET,
-  expiresIn: '7d',
-  
-  // OAuth (optionnel)
-  google: {
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET
-  }
-});
-
-// Route protégée
-app.createRoute('GET', '/profile', app.requireAuth(), (req, res) => {
-  res.json({ user: req.user });
-});
-
-// Route avec rôle
-app.createRoute('GET', '/admin', app.requireRole('admin'), (req, res) => {
-  res.render('admin/dashboard');
-});
-```
-
-## 🔌 Plugins
-
-```javascript
-// plugins/analytics.js
-module.exports = {
-  name: 'analytics',
-  version: '1.0.0',
-  
-  hooks: {
-    'app:init': (app) => {
-      console.log('Analytics plugin initialized');
-    },
-    'route:before': (req, res, route) => {
-      trackPageView(req.path);
-    }
-  },
-  
-  api: {
-    track: (event, data) => {
-      // Logique de tracking
-    }
-  }
-};
-
-// Utilisation
-app.plugins.get('analytics').api.track('click', { button: 'signup' });
-```
-
-## 📁 Structure du Projet
+## Structure du Projet
 
 ```
 mon-projet/
-├── components/          # Composants React
-│   ├── Layout.jsx
-│   └── HomePage.jsx
-├── pages/              # Pages React (routing automatique)
-│   ├── index.jsx
-│   └── about.jsx
-├── views/              # Templates EJS
-│   └── layouts/
-│       └── main.ejs
-├── routes/             # Routes Express
-│   └── api.js
-├── public/             # Fichiers statiques
-│   ├── css/
-│   └── js/
-├── plugins/            # Plugins personnalisés
-├── app.js              # Point d'entrée
-└── package.json
++-- app.js                 # Point d entree
++-- package.json
++-- components/            # Composants VSV
+|   +-- Home.jsv
+|   +-- Header.jsv
+|   +-- styles/
+|   |   +-- global.css
+|   +-- images/
+|       +-- logo.png
++-- pages/                 # Pages VSV
+|   +-- Home.jsv
+|   +-- About.jsv
++-- public/                # Fichiers statiques
+|   +-- css/
+|   +-- js/
+|   +-- images/
++-- plugins/               # Plugins custom
++-- .veko/                 # Cache (auto)
 ```
 
-## 🛠️ CLI
+## Securite
 
-```bash
-# Développement
-veko dev                    # Démarrer en mode développement
-veko dev --port 8080        # Port personnalisé
+Securite integree par defaut, sans dependances :
 
-# Production
-veko start                  # Démarrer en production
-veko build                  # Build pour production
-veko build --react          # Build React pour production
+- Headers securises automatiques (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection)
+- Rate limiting integre
+- Body parsing securise avec erreurs 400
+- Protection path traversal sur les fichiers statiques
+- HTML escaping dans les pages d erreur
 
-# Mises à jour
-veko update check           # Vérifier les mises à jour
-veko update                 # Mettre à jour
-
-# Utilitaires
-veko routes                 # Lister les routes
-veko plugins                # Lister les plugins
-```
-
-## 📚 Documentation
-
-Documentation complète disponible dans le dossier `/docs` :
+## Documentation
 
 | Document | Description |
 |----------|-------------|
-| [Guide de Démarrage](docs/getting-started.md) | Installation et premier projet |
-| [React SSR](docs/react.md) | Guide complet React SSR/CSR |
-| [Authentification](docs/auth.md) | Configuration auth et OAuth |
-| [Plugins](docs/plugins.md) | Créer et utiliser des plugins |
-| [API Reference](docs/api.md) | Référence complète de l'API |
-| [Sécurité](docs/security.md) | Bonnes pratiques sécurité |
-| [Déploiement](docs/deployment.md) | Déployer en production |
+| [Guide de Demarrage](docs/getting-started.md) | Installation et premier projet |
+| [VSV Components](docs/vsv.md) | Composants, assets, Tailwind |
+| [API Reference](docs/api.md) | Reference complete de l API |
+| [Securite](docs/security.md) | Bonnes pratiques securite |
+| [Plugins](docs/plugins.md) | Creer et utiliser des plugins |
+| [Authentification](docs/auth.md) | JWT, sessions, auth patterns |
 
-## ⚡ Performances
-
-Veko.js est optimisé pour les performances :
-
-- **Compilation JSX** avec esbuild (100x plus rapide que Babel)
-- **Cache intelligent** des composants compilés
-- **Streaming SSR** pour les grands composants
-- **Prefetching** automatique des routes
-- **Compression** gzip/brotli automatique
-- **Static file caching** optimisé
-
-## 🔒 Sécurité
-
-Sécurité intégrée par défaut :
-
-- ✅ Headers sécurisés (Helmet)
-- ✅ Rate limiting
-- ✅ Protection XSS
-- ✅ Validation des entrées
-- ✅ Protection CSRF
-- ✅ Sanitisation des chemins
-- ✅ Content Security Policy
-
-## 🤝 Contribution
-
-Les contributions sont les bienvenues ! Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour les guidelines.
+## Contribution
 
 ```bash
-# Cloner le repo
 git clone https://github.com/wiltark/veko.js.git
 cd veko.js
-
-# Installer les dépendances
-npm install
-
-# Lancer les tests
 npm test
-
-# Mode développement
-npm run dev
 ```
 
-## 📄 Licence
+## Licence
 
-MIT © [Wiltark](https://github.com/wiltark)
+MIT - Wiltark
 
 ---
 
 <p align="center">
-  Made with ❤️ by <a href="https://github.com/wiltark">Wiltark</a>
+  Made with <3 by <a href="https://github.com/wiltark">Wiltark</a>
 </p>
